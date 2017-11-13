@@ -1,0 +1,1 @@
+// Empty cpp so that the lib file gets generated

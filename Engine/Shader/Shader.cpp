@@ -56,14 +56,14 @@ Engine::Shader::Shader(const char * vertexShaderPath, const char * fragmentShade
 	}
 
 	// Create shader program
-	ID = glCreateProgram();
-	glAttachShader(ID, vertexShaderId);
-	glAttachShader(ID, fragmentShaderId);
-	glLinkProgram(ID);
-	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	shaderId = glCreateProgram();
+	glAttachShader(shaderId, vertexShaderId);
+	glAttachShader(shaderId, fragmentShaderId);
+	glLinkProgram(shaderId);
+	glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		glGetProgramInfoLog(ID, 512, NULL, infoLog);
+		glGetProgramInfoLog(shaderId, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 
@@ -73,25 +73,25 @@ Engine::Shader::Shader(const char * vertexShaderPath, const char * fragmentShade
 }
 
 Engine::Shader::~Shader() {
-	glDeleteProgram(ID);
+	glDeleteProgram(shaderId);
 }
 
 void Engine::Shader::Use()
 {
-	glUseProgram(ID);
+	glUseProgram(shaderId);
 }
 
 void Engine::Shader::SetBool(const std::string & name, bool value) const
 {
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
+	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), static_cast<int>(value));
 }
 
 void Engine::Shader::SetInt(const std::string & name, int value) const
 {
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), value);
 }
 
 void Engine::Shader::SetFloat(const std::string & name, float value) const
 {
-	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(shaderId, name.c_str()), value);
 }

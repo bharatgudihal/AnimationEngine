@@ -4,9 +4,7 @@
 
 namespace Engine {
 	class Shader {
-	public:
-
-		unsigned int ID;
+	public:	
 
 		Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 		~Shader();
@@ -16,6 +14,9 @@ namespace Engine {
 		void SetBool(const std::string& name, bool value) const;
 		void SetInt(const std::string& name, int value) const;
 		void SetFloat(const std::string& name, float value) const;
+
+	private:
+		unsigned int shaderId;
 
 	};
 }

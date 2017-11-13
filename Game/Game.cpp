@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Engine/Shader/Shader.h>
 #include <Engine/Sprite/Sprite.h>
+#include <Engine/Texture/Texture.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, 800, 600);
@@ -38,23 +39,33 @@ int main(int argc, char* argv[]) {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	//Build and compile shader program
-	Engine::Shader shader("Shaders/shader.vs", "Shaders/shader.fs");
+	Engine::Shader shader("Assets/Shaders/shader.vs", "Assets/Shaders/shader.fs");
 	
 	//vertex data
 	float vertices[] = {
-		// positions		// colors
-		0.5f,  0.5f, 0.0f,	1.0f, 0.0f, 0.0f,	// bottom right
-		-0.5f, 0.5f, 0.0f,	0.0f, 1.0f, 0.0f,	// bottom left
-		0.0f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f	// top
+		// positions          // colors           // texture coords
+		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 	};
 
 	//index data
 	unsigned int indices[] = {
-		0,2,1
-	};	
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
+	};
 
 	//Initialize sprite
 	Engine::Sprite* sprite = Engine::Sprite::CreateSprite(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+
+	//Initialize texture
+	Engine::Texture* texture1 = Engine::Texture::CreateTexture("Assets/Textures/container.jpg",0);
+	Engine::Texture* texture2 = Engine::Texture::CreateTexture("Assets/Textures/awesomeface.png",1);
+
+	shader.Use();
+	shader.SetInt("texture1", 0);
+	shader.SetInt("texture2", 1);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -69,6 +80,11 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 		
+		
+		// bind textures on corresponding texture units
+		texture1->Bind();
+		texture2->Bind();
+
 		//draw triangle
 		shader.Use();		
 		sprite->Draw();
@@ -81,6 +97,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	Engine::Sprite::DestroySprite(sprite);
+	Engine::Texture::DestroyTexture(texture1);
+	Engine::Texture::DestroyTexture(texture2);
 
 	glfwTerminate();
 	return 0;
