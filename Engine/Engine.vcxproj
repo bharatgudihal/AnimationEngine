@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="GLAD\glad.c" />
     <ClCompile Include="Shader\Shader.cpp" />
+    <ClCompile Include="Sprite\Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h" />
+    <ClInclude Include="Sprite\Sprite.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
