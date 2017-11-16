@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
 	shader.Use();
 	shader.SetInt("texture1", 0);
 	shader.SetInt("texture2", 1);
+	shader.SetFloat("blendRatio", 0.2f);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
