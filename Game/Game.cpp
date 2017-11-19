@@ -4,6 +4,7 @@
 #include <Engine/Shader/Shader.h>
 #include <Engine/Sprite/Sprite.h>
 #include <Engine/Texture/Texture.h>
+#include <Externals/glm/Includes.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, 800, 600);
@@ -62,7 +63,7 @@ int main(int argc, char* argv[]) {
 	//Initialize texture
 	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg",0);
 	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png",1);
-
+	
 	shader.Use();
 	shader.SetInt("texture1", 0);
 	shader.SetInt("texture2", 1);
@@ -81,6 +82,10 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 		
+		glm::mat4 trans;
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,0.0f,1.0f));
+		shader.SetMatrix("transform", trans);
 		
 		// bind textures on corresponding texture units
 		texture1->Bind();
