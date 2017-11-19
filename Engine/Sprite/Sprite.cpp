@@ -2,12 +2,12 @@
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
 
-Engine::Sprite* Engine::Sprite::CreateSprite(const float * vertexArray, const unsigned int vertexCount, const unsigned int * indexArray, const unsigned int indexCount)
+Engine::Graphics::Sprite* Engine::Graphics::Sprite::CreateSprite(const float * vertexArray, const unsigned int vertexCount, const unsigned int * indexArray, const unsigned int indexCount)
 {
 	return new Sprite(vertexArray, vertexCount, indexArray, indexCount);
 }
 
-Engine::Sprite::Sprite(const float * vertexArray, const unsigned int vertexCount, const unsigned int * indexArray, const unsigned int indexCount)
+Engine::Graphics::Sprite::Sprite(const float * vertexArray, const unsigned int vertexCount, const unsigned int * indexArray, const unsigned int indexCount)
 {
 	this->indexCount = indexCount;
 	glGenVertexArrays(1, &VAO);
@@ -36,20 +36,20 @@ Engine::Sprite::Sprite(const float * vertexArray, const unsigned int vertexCount
 
 }
 
-Engine::Sprite::~Sprite()
+Engine::Graphics::Sprite::~Sprite()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
 
-void Engine::Sprite::Draw()
+void Engine::Graphics::Sprite::Draw()
 {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 }
 
-void Engine::Sprite::DestroySprite(Sprite* sprite)
+void Engine::Graphics::Sprite::DestroySprite(Sprite* sprite)
 {
 	delete sprite;
 }

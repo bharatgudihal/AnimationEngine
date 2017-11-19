@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-Engine::Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath)
+Engine::Graphics::Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath)
 {
 	std::string vertexShaderCode;
 	std::string fragmentShaderCode;
@@ -72,26 +72,26 @@ Engine::Shader::Shader(const char * vertexShaderPath, const char * fragmentShade
 	glDeleteShader(fragmentShaderId);
 }
 
-Engine::Shader::~Shader() {
+Engine::Graphics::Shader::~Shader() {
 	glDeleteProgram(shaderId);
 }
 
-void Engine::Shader::Use()
+void Engine::Graphics::Shader::Use()
 {
 	glUseProgram(shaderId);
 }
 
-void Engine::Shader::SetBool(const std::string & name, bool value) const
+void Engine::Graphics::Shader::SetBool(const std::string & name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), static_cast<int>(value));
 }
 
-void Engine::Shader::SetInt(const std::string & name, int value) const
+void Engine::Graphics::Shader::SetInt(const std::string & name, int value) const
 {
 	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), value);
 }
 
-void Engine::Shader::SetFloat(const std::string & name, float value) const
+void Engine::Graphics::Shader::SetFloat(const std::string & name, float value) const
 {
 	glUniform1f(glGetUniformLocation(shaderId, name.c_str()), value);
 }

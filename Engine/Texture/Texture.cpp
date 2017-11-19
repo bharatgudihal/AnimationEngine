@@ -3,7 +3,7 @@
 #include <iostream>
 #include <Externals/stb_image/Includes.h>
 
-Engine::Texture::Texture(const char * textureFileName, const unsigned int textureUnit) {
+Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned int textureUnit) {
 
 	this->textureUnit = textureUnit;
 
@@ -36,22 +36,22 @@ Engine::Texture::Texture(const char * textureFileName, const unsigned int textur
 	stbi_image_free(data);
 }
 
-Engine::Texture * Engine::Texture::CreateTexture(const char * textureFileName, const unsigned int textureUnit)
+Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const char * textureFileName, const unsigned int textureUnit)
 {
 	return new Texture(textureFileName, textureUnit);
 }
 
-void Engine::Texture::DestroyTexture(Texture * texture)
+void Engine::Graphics::Texture::DestroyTexture(Texture * texture)
 {
 	delete texture;
 }
 
-void Engine::Texture::Bind()
+void Engine::Graphics::Texture::Bind()
 {
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
-Engine::Texture::~Texture()
+Engine::Graphics::Texture::~Texture()
 {
 }

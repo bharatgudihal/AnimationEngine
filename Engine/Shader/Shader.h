@@ -3,20 +3,22 @@
 #include <string>
 
 namespace Engine {
-	class Shader {
-	public:	
+	namespace Graphics {
+		class Shader {
+		public:
 
-		Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
-		~Shader();
+			Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
+			~Shader();
 
-		void Use();
+			void Use();
 
-		void SetBool(const std::string& name, bool value) const;
-		void SetInt(const std::string& name, int value) const;
-		void SetFloat(const std::string& name, float value) const;
+			void SetBool(const std::string& name, bool value) const;
+			void SetInt(const std::string& name, int value) const;
+			void SetFloat(const std::string& name, float value) const;
 
-	private:
-		unsigned int shaderId;
+		private:
+			unsigned int shaderId;
 
-	};
+		};
+	}
 }

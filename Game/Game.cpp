@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	//Build and compile shader program
-	Engine::Shader shader("Assets/Shaders/shader.vs", "Assets/Shaders/shader.fs");
+	Engine::Graphics::Shader shader("Assets/Shaders/shader.vs", "Assets/Shaders/shader.fs");
 	
 	//vertex data
 	float vertices[] = {
@@ -57,11 +57,11 @@ int main(int argc, char* argv[]) {
 	};
 
 	//Initialize sprite
-	Engine::Sprite* sprite = Engine::Sprite::CreateSprite(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 
 	//Initialize texture
-	Engine::Texture* texture1 = Engine::Texture::CreateTexture("Assets/Textures/container.jpg",0);
-	Engine::Texture* texture2 = Engine::Texture::CreateTexture("Assets/Textures/awesomeface.png",1);
+	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg",0);
+	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png",1);
 
 	shader.Use();
 	shader.SetInt("texture1", 0);
@@ -97,9 +97,9 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	Engine::Sprite::DestroySprite(sprite);
-	Engine::Texture::DestroyTexture(texture1);
-	Engine::Texture::DestroyTexture(texture2);
+	Engine::Graphics::Sprite::DestroySprite(sprite);
+	Engine::Graphics::Texture::DestroyTexture(texture1);
+	Engine::Graphics::Texture::DestroyTexture(texture2);
 
 	glfwTerminate();
 	return 0;
