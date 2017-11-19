@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include <glad/glad.h>
 #include <iostream>
-#include <Externals/Includes.h>
+#include <Externals/stb_image/Includes.h>
 
 Engine::Texture::Texture(const char * textureFileName, const unsigned int textureUnit) {
 

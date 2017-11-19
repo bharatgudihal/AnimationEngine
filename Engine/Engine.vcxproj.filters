@@ -13,30 +13,51 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{930f8d53-2bd5-4b17-afb5-f77546953b5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sprite">
+      <UniqueIdentifier>{2f527f47-42df-40da-aec3-42406668437c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{86f055a8-c621-4c2e-b1f3-015e801174ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLAD">
+      <UniqueIdentifier>{fed3729b-c6dd-4a6f-9f91-0b7807bf4f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{729b402d-ed6c-4b25-bbd2-3e5b5fcaefd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sprite">
+      <UniqueIdentifier>{79d7fb48-3189-4df9-9aaa-3f1a77b6dba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{887902a1-fb68-4338-8249-7311c7f1e6a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Externals\GLAD\src\glad.c">
+      <Filter>Source Files\GLAD</Filter>
+    </ClCompile>
     <ClCompile Include="Shader\Shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shader</Filter>
     </ClCompile>
     <ClCompile Include="Sprite\Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Externals\GLAD\src\glad.c">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="Texture\Texture.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Shader</Filter>
     </ClInclude>
     <ClInclude Include="Sprite\Sprite.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="Texture\Texture.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
