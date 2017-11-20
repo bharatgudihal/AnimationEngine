@@ -4,7 +4,6 @@
 #include <Engine/Shader/Shader.h>
 #include <Engine/Sprite/Sprite.h>
 #include <Engine/Texture/Texture.h>
-#include <Externals/glm/Includes.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, 800, 600);
@@ -38,9 +37,6 @@ int main(int argc, char* argv[]) {
 
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	//Build and compile shader program
-	Engine::Graphics::Shader shader("Assets/Shaders/shader.vs", "Assets/Shaders/shader.fs");
 	
 	//vertex data
 	float vertices[] = {
@@ -59,15 +55,9 @@ int main(int argc, char* argv[]) {
 
 	//Initialize sprite
 	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-
-	//Initialize texture
-	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg",0);
-	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png",1);
-	
-	shader.Use();
-	shader.SetInt("texture1", 0);
-	shader.SetInt("texture2", 1);
-	shader.SetFloat("blendRatio", 0.2f);
+	sprite->SetTexture1("Assets/Textures/container.jpg");
+	sprite->SetTexture2("Assets/Textures/awesomeface.png",0.2f);
+	sprite->transform.position = Engine::Graphics::Math::Vector3(0.5f, -0.5f, 0.0f);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -82,17 +72,9 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 		
-		glm::mat4 trans;
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,0.0f,1.0f));
-		shader.SetMatrix("transform", trans);
-		
-		// bind textures on corresponding texture units
-		texture1->Bind();
-		texture2->Bind();
+		sprite->transform.Rotate((float)glfwGetTime(), Engine::Graphics::Math::Vector3(0.0f, 0.0f, 1.0f));
 
-		//draw triangle
-		shader.Use();		
+		//draw		
 		sprite->Draw();
 
 		//Call events and swap buffers
@@ -103,8 +85,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	Engine::Graphics::Sprite::DestroySprite(sprite);
-	Engine::Graphics::Texture::DestroyTexture(texture1);
-	Engine::Graphics::Texture::DestroyTexture(texture2);
 
 	glfwTerminate();
 	return 0;
