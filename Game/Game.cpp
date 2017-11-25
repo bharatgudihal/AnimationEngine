@@ -6,7 +6,7 @@
 #include <Engine/Texture/Texture.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow* window) {
