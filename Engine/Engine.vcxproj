@@ -22,6 +22,7 @@
     <ClCompile Include="..\Externals\GLAD\src\glad.c" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
+    <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Sprite\Sprite.cpp" />
@@ -30,10 +31,12 @@
   <ItemGroup>
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Transform.h" />
+    <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Shader\Shader.h" />
     <ClInclude Include="Sprite\Sprite.h" />
     <ClInclude Include="Texture\Texture.h" />
+    <ClInclude Include="VertexFormats.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Externals\Externals.vcxproj">

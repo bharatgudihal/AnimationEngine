@@ -1,5 +1,7 @@
 #pragma once
 #include <Engine/Math/Transform.h>
+#include <Engine/VertexFormats.h>
+#include <stdint.h>
 
 namespace Engine {
 	namespace Graphics {
@@ -9,7 +11,7 @@ namespace Engine {
 
 		class Sprite {
 		public:
-			static Sprite* CreateSprite(const float* vertexArray, const unsigned int vertexCount, const unsigned int* indexArray, const unsigned int indexCount);
+			static Sprite* CreateSprite(const float width, const float height, const VertexFormat::Color color = {0.0f,0.0f,0.0f,0.0f});
 			void Draw();
 			static void DestroySprite(Sprite* sprite);
 			void SetTexture1(const char* textureFile);
@@ -18,7 +20,7 @@ namespace Engine {
 			Math::Transform transform;
 
 		private:
-			Sprite(const float* vertexArray, const unsigned int vertexCount, const unsigned int* indexArray, const unsigned int indexCount);
+			Sprite(const VertexFormat::Sprite* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount);
 			Sprite();
 			Sprite(Sprite& other);
 			~Sprite();
@@ -33,7 +35,7 @@ namespace Engine {
 
 			//Vertex Buffer Object, Vertex Array Object and Element Buffer Object
 			unsigned int VBO, VAO, EBO;
-			unsigned int indexCount;
+			uint32_t indexCount;
 		};
 	}
 }

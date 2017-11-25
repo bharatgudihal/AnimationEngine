@@ -53,8 +53,11 @@ int main(int argc, char* argv[]) {
 		1, 2, 3  // second triangle
 	};
 
+	float width = 1.0f;
+	float height = 1.0f;	
+
 	//Initialize sprite
-	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(1.0f,1.0f);
 	sprite->SetTexture1("Assets/Textures/container.jpg");
 	sprite->SetTexture2("Assets/Textures/awesomeface.png",0.2f);
 	sprite->transform.position = Engine::Graphics::Math::Vector3(0.5f, -0.5f, 0.0f);
