@@ -3,7 +3,7 @@
 #include <GLFW\glfw3.h>
 
 Engine::Graphics::Camera::Camera(const float FOVDegrees, const float aspectRatio, const float nearPlane, const float farPlane):
-	FOV(glm::radians(FOVDegrees)),aspectRatio(aspectRatio),nearPlane(nearPlane),farPlane(farPlane)
+	FOV(FOVDegrees),aspectRatio(aspectRatio),nearPlane(nearPlane),farPlane(farPlane)
 {
 	transform.position.z = 3.0f;
 	transform.forward = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -23,5 +23,5 @@ glm::mat4 Engine::Graphics::Camera::GetViewMatrix() const
 
 glm::mat4 Engine::Graphics::Camera::GetProjectionMatrix() const
 {
-	return glm::perspective(FOV,aspectRatio,nearPlane,farPlane);
+	return glm::perspective(glm::radians(FOV),aspectRatio,nearPlane,farPlane);
 }

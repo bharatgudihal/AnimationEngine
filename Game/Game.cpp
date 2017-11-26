@@ -16,7 +16,7 @@ float pitch = 0.0f, yaw = -90.0f;
 bool firstMouse = true;
 Engine::Graphics::Camera camera(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
@@ -45,7 +45,7 @@ void processInput(GLFWwindow* window) {
 		
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	
 	if (firstMouse)
 	{
@@ -78,6 +78,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	camera.transform.forward = glm::normalize(front);
 }
 
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+	if (camera.FOV >= 1.0f && camera.FOV <= 45.0f) {
+		camera.FOV -= static_cast<float>(yoffset);
+	}
+	if (camera.FOV < 1.0f) {
+		camera.FOV = 1.0f;
+	}
+	if (camera.FOV > 45.0f) {
+		camera.FOV = 45.0f;
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	glfwInit();
@@ -100,10 +112,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	glViewport(0, 0, 800, 600);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
