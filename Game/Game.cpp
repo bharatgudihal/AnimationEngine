@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -41,20 +42,59 @@ int main(int argc, char* argv[]) {
 	float screenHeight = 600.0f;
 
 	glViewport(0, 0, 800, 600);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	
 	
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
-		// positions          // colors           // texture coords
-		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+		// positions			// colors			// texture coords
+		//Back face
+		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		0.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		0.0f, 1.0f,		
+		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		1.0f, 1.0f,
+
+		//Front face
+		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,		
+		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
+
+		//Left face
+		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,		
+		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		1.0f, 0.0f,
+
+		//Right face
+		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,		
+		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		0.0f, 0.0f,
+
+		//Bottom face
+		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,		
+		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
+
+		//Top face
+		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,		
+		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f	
 	};
 
 	//index data
 	uint32_t indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
+		0, 2, 1, 0, 3, 2,
+		4, 5, 6, 4, 6, 7,
+		10, 11, 8, 10, 8, 9,
+		15, 14, 13, 15, 13, 12,
+		16, 17, 18, 16, 18, 19,
+		23, 22, 21, 23, 21, 20
 	};
 
 	float width = 1.0f;
@@ -71,7 +111,6 @@ int main(int argc, char* argv[]) {
 	mesh->SetTexture1("Assets/Textures/container.jpg");
 	mesh->SetTexture2("Assets/Textures/awesomeface.png", 0.2f);
 	mesh->transform.position = Engine::Graphics::Math::Vector3(0.0f, 0.0f, 0.0f);
-	mesh->transform.RotateDegrees(-55.0f, Engine::Graphics::Math::Vector3::RIGHT);
 
 	//Initialize camera
 	Engine::Graphics::Camera camera(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
@@ -87,12 +126,14 @@ int main(int argc, char* argv[]) {
 		//Clear color
 		{
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
 		//draw		
-		sprite->Draw();
-
+		//sprite->Draw();
+		
+		
+		mesh->transform.Rotate((float)glfwGetTime() * glm::radians(50.0f), Engine::Graphics::Math::Vector3(0.5f, 1.0f, 0.0f));
 		mesh->Draw(&camera);
 
 		//Call events and swap buffers
