@@ -8,3 +8,8 @@ glm::mat4 Engine::Graphics::Math::CalculateTransform(const Transform & transform
 	trans = glm::scale(trans, glm::vec3(transform.scale.x, transform.scale.y, transform.scale.z));
 	return trans;
 }
+
+float Engine::Graphics::Math::CovertDegreesToRadians(float angleDegrees)
+{
+	return glm::radians(angleDegrees);
+}

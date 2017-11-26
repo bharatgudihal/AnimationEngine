@@ -3,7 +3,9 @@
 #include <iostream>
 #include <Engine/Shader/Shader.h>
 #include <Engine/Sprite/Sprite.h>
+#include <Engine/Mesh/Mesh.h>
 #include <Engine/Texture/Texture.h>
+#include <Engine/Camera/Camera.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -35,11 +37,13 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	float screenWidth = 800.0f;
+	float screenHeight = 600.0f;
+
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	
-	//vertex data
-	float vertices[] = {
+	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
 		// positions          // colors           // texture coords
 		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
 		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
@@ -48,7 +52,7 @@ int main(int argc, char* argv[]) {
 	};
 
 	//index data
-	unsigned int indices[] = {
+	uint32_t indices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
@@ -57,10 +61,21 @@ int main(int argc, char* argv[]) {
 	float height = 1.0f;	
 
 	//Initialize sprite
-	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(1.0f,1.0f);
+	Engine::Graphics::Sprite* sprite = Engine::Graphics::Sprite::CreateSprite(0.5f,0.5f);
 	sprite->SetTexture1("Assets/Textures/container.jpg");
 	sprite->SetTexture2("Assets/Textures/awesomeface.png",0.2f);
-	sprite->transform.position = Engine::Graphics::Math::Vector3(0.5f, -0.5f, 0.0f);
+	sprite->transform.position = Engine::Graphics::Math::Vector3(0.75f, -0.75f, 0.0f);
+
+	//Initialize mesh
+	Engine::Graphics::Mesh* mesh = Engine::Graphics::Mesh::CreateMesh(meshVertexData, sizeof(meshVertexData) / sizeof(Engine::Graphics::VertexFormat::Mesh), indices, sizeof(indices) / sizeof(uint32_t));
+	mesh->SetTexture1("Assets/Textures/container.jpg");
+	mesh->SetTexture2("Assets/Textures/awesomeface.png", 0.2f);
+	mesh->transform.position = Engine::Graphics::Math::Vector3(0.0f, 0.0f, 0.0f);
+	mesh->transform.RotateDegrees(-55.0f, Engine::Graphics::Math::Vector3::RIGHT);
+
+	//Initialize camera
+	Engine::Graphics::Camera camera(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
+	camera.transform.position.z = -3.0f;
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -74,11 +89,11 @@ int main(int argc, char* argv[]) {
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
-		
-		sprite->transform.Rotate((float)glfwGetTime(), Engine::Graphics::Math::Vector3(0.0f, 0.0f, 1.0f));
 
 		//draw		
 		sprite->Draw();
+
+		mesh->Draw(&camera);
 
 		//Call events and swap buffers
 		{
@@ -88,6 +103,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	Engine::Graphics::Sprite::DestroySprite(sprite);
+	Engine::Graphics::Mesh::DestroyMesh(mesh);
 
 	glfwTerminate();
 	return 0;

@@ -9,11 +9,12 @@ namespace Engine {
 			public:
 				Transform();
 				void Rotate(float angleRadians, Vector3 axis);
+				void RotateDegrees(float angleDegrees, Vector3 axis);
 
 				Vector3 position;
 				Vector3 scale;
 				Vector3 rotationAxis;
-				float rotationAngle;
+				float rotationAngle;				
 			};
 		}
 	}

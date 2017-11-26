@@ -24,6 +24,22 @@ namespace Engine {
 
 			};
 
+			struct Mesh {
+
+				struct {
+					float x, y, z;
+				}position;
+
+				struct {
+					float r, g, b;
+				}color;
+
+				struct {
+					float u, v;
+				}UV;
+
+			};
+
 		}
 	}
  }
