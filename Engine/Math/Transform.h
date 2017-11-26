@@ -1,5 +1,5 @@
 #pragma once
-#include "Vector3.h"
+#include <Externals/glm/Includes.h>
 
 namespace Engine {
 	namespace Graphics {
@@ -8,13 +8,15 @@ namespace Engine {
 
 			public:
 				Transform();
-				void Rotate(float angleRadians, Vector3 axis);
-				void RotateDegrees(float angleDegrees, Vector3 axis);
+				void Rotate(float angleRadians, const glm::vec3& axis);
+				void RotateDegrees(float angleDegrees, const glm::vec3& axis);
 
-				Vector3 position;
-				Vector3 scale;
-				Vector3 rotationAxis;
-				float rotationAngle;				
+				glm::vec3 position;
+				glm::vec3 scale;
+				glm::vec3 rotationAxis;
+				glm::vec3 forward;
+				glm::vec3 up;
+				float rotationAngle;
 			};
 		}
 	}

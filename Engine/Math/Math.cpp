@@ -3,13 +3,8 @@
 glm::mat4 Engine::Graphics::Math::CalculateTransform(const Transform & transform)
 {
 	glm::mat4 trans;
-	trans = glm::translate(trans, glm::vec3(transform.position.x, transform.position.y, transform.position.z));
-	trans = glm::rotate(trans, transform.rotationAngle, glm::vec3(transform.rotationAxis.x, transform.rotationAxis.y, transform.rotationAxis.z));
-	trans = glm::scale(trans, glm::vec3(transform.scale.x, transform.scale.y, transform.scale.z));
+	trans = glm::translate(trans, transform.position);
+	trans = glm::rotate(trans, transform.rotationAngle, transform.rotationAxis);
+	trans = glm::scale(trans, transform.scale);
 	return trans;
-}
-
-float Engine::Graphics::Math::CovertDegreesToRadians(float angleDegrees)
-{
-	return glm::radians(angleDegrees);
 }

@@ -69,13 +69,7 @@
     <ClCompile Include="Math\Transform.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Vector3.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Math.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Vector2.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Mesh\Mesh.cpp">
@@ -95,16 +89,10 @@
     <ClInclude Include="Texture\Texture.h">
       <Filter>Header Files\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Vector3.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Transform.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\Math.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Vector2.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="VertexFormats.h">

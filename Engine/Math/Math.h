@@ -6,7 +6,6 @@ namespace Engine {
 	namespace Graphics {
 		namespace Math {
 			glm::mat4 CalculateTransform(const Transform& transform);
-			float CovertDegreesToRadians(float angleDegrees);
 		}
 	}
 }

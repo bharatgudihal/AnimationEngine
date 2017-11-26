@@ -23,8 +23,6 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
-    <ClCompile Include="Math\Vector2.cpp" />
-    <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Sprite\Sprite.cpp" />
@@ -34,8 +32,6 @@
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Transform.h" />
-    <ClInclude Include="Math\Vector2.h" />
-    <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="Shader\Shader.h" />
     <ClInclude Include="Sprite\Sprite.h" />
