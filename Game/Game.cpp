@@ -12,7 +12,7 @@ float screenHeight = 600.0f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float lastX = 400.0f, lastY = 300.0f;
-float pitch = 0.0f, yaw = 0.0f;
+float pitch = 0.0f, yaw = -90.0f;
 bool firstMouse = true;
 Engine::Graphics::Camera camera(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
 

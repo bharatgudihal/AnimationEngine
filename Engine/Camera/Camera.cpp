@@ -6,7 +6,7 @@ Engine::Graphics::Camera::Camera(const float FOVDegrees, const float aspectRatio
 	FOV(glm::radians(FOVDegrees)),aspectRatio(aspectRatio),nearPlane(nearPlane),farPlane(farPlane)
 {
 	transform.position.z = 3.0f;
-	transform.RotateDegrees(180.0f, glm::vec3(0.0f,1.0f,0.0f));
+	transform.forward = glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
 Engine::Graphics::Camera::~Camera()
