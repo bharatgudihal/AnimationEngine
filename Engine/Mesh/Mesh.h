@@ -13,8 +13,10 @@ namespace Engine {
 		class Mesh {
 		public:
 			static Mesh* CreateMesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount);
+			static Mesh* GetCube();
 			void Draw(const Camera* camera);
 			static void DestroyMesh(Mesh* mesh);
+			void SetShaders(const char* vertexShaderFile, const char* fragmentShader);
 			void SetTexture1(const char* textureFile);
 			void SetTexture2(const char* textureFile, float blendRatio);
 

@@ -6,6 +6,7 @@
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Texture/Texture.h>
 #include <Engine/Camera/Camera.h>
+#include <Engine/Shader/UniformBuffer.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -122,84 +123,14 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
-		// positions			// colors			// texture coords
-		//Back face
-		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		1.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		0.0f, 1.0f,		
-		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		1.0f, 1.0f,
+	//Initialize meshes	
+	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube();
+	cube->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-		//Front face
-		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,		
-		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
-
-		//Left face
-		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,		
-		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		1.0f, 0.0f,
-
-		//Right face
-		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,		
-		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		0.0f, 0.0f,
-
-		//Bottom face
-		-0.5f, -0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,		
-		-0.5f, -0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
-
-		//Top face
-		-0.5f,  0.5f, -0.5f,	0.0f,0.0f,0.0f,		0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,		0.0f,0.0f,0.0f,		1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,		0.0f,0.0f,0.0f,		1.0f, 0.0f,		
-		-0.5f,  0.5f,  0.5f,	0.0f,0.0f,0.0f,		0.0f, 0.0f	
-	};
-
-	//index data
-	uint32_t indices[] = {
-		0, 2, 1, 0, 3, 2,
-		4, 5, 6, 4, 6, 7,
-		10, 11, 8, 10, 8, 9,
-		15, 14, 13, 15, 13, 12,
-		16, 17, 18, 16, 18, 19,
-		23, 22, 21, 23, 21, 20
-	};
-
-	float width = 1.0f;
-	float height = 1.0f;
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	Engine::Graphics::Mesh* meshArray[10];
-
-	//Initialize meshes
-	for (unsigned int i = 0; i < 10; i++)
-	{
-		Engine::Graphics::Mesh* mesh = Engine::Graphics::Mesh::CreateMesh(meshVertexData, sizeof(meshVertexData) / sizeof(Engine::Graphics::VertexFormat::Mesh), indices, sizeof(indices) / sizeof(uint32_t));
-		mesh->SetTexture1("Assets/Textures/container.jpg");
-		mesh->SetTexture2("Assets/Textures/awesomeface.png", 0.2f);
-		mesh->transform.position = cubePositions[i];
-		float angle = 20.0f * i;
-		mesh->transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
-		meshArray[i] = mesh;
-	}
+	//Initialize constant buffers
+	Engine::Graphics::UniformBuffers::UniformBufferTypes type = Engine::Graphics::UniformBuffers::UniformBufferTypes::DATA_PER_FRAME;
+	Engine::Graphics::UniformBuffers::dataPerFrame dataPerFrame;
+	Engine::Graphics::UniformBuffer* uniformBuffer = Engine::Graphics::UniformBuffer::CreateUniformBuffer(type, &dataPerFrame);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -215,14 +146,15 @@ int main(int argc, char* argv[]) {
 		
 		//Clear color
 		{
-			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
 		//draw
-		for (unsigned int i = 0; i < 10; i++) {
-			meshArray[i]->Draw(&camera);
-		}
+		dataPerFrame.view = camera.GetViewMatrix();
+		dataPerFrame.projection = camera.GetProjectionMatrix();
+		uniformBuffer->Update(&dataPerFrame);
+		cube->Draw(&camera);
 
 		//Call events and swap buffers
 		{
@@ -231,9 +163,8 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	for (unsigned int i = 0; i < 10; i++) {
-		Engine::Graphics::Mesh::DestroyMesh(meshArray[i]);
-	}	
+	//Engine::Graphics::UniformBuffer::DestroyUniformBuffer(uniformBuffer);
+	Engine::Graphics::Mesh::DestroyMesh(cube);
 
 	glfwTerminate();
 	return 0;

@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Camera">
       <UniqueIdentifier>{878a84d2-5da5-4d06-8f0e-273d7bc3629e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lighting">
+      <UniqueIdentifier>{55ef847b-5d40-49ee-9b0a-758bb60944ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lighting">
+      <UniqueIdentifier>{88da3fb2-a371-4330-96f2-4785b5834ce2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\GLAD\src\glad.c">
@@ -78,6 +84,12 @@
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Source Files\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Lighting\SimpleLight.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\UniformBuffer.cpp">
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h">
@@ -103,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="Camera\Camera.h">
       <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\SimpleLight.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\UniformBuffer.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\UniformBufferTypes.h">
+      <Filter>Header Files\Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
