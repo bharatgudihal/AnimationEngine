@@ -11,45 +11,44 @@ Engine::Graphics::Mesh* Engine::Graphics::Mesh::CreateMesh(const VertexFormat::M
 	return new Mesh(vertexArray, vertexCount, indexArray, indexCount);
 }
 
-Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube()
-{
+Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube(const float r, const float g, const float b) {
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
-		// positions			// colors				// texture coords
+		// positions			// colors		// texture coords
 		//Back face
-		-0.5f, -0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,		1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,		0.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,		r, g, b,		0.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,	r, g, b,		1.0f, 1.0f,
 
 		//Front face
-		-0.5f, -0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,	r, g, b,		0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		r, g, b,		1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,
 
 		//Left face
-		-0.5f,  0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	r, g, b,		1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,	r, g, b,		1.0f, 0.0f,
 
 		//Right face
-		0.5f,  0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,		r, g, b,		0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		r, g, b,		0.0f, 0.0f,
 
 		//Bottom face
-		-0.5f, -0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,
 
 		//Top face
-		-0.5f,  0.5f, -0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,		1.0f, 0.5f, 0.31f,		1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	1.0f, 0.5f, 0.31f,		0.0f, 0.0f
+		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 0.0f
 	};
 
 	//index data
@@ -61,8 +60,13 @@ Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube()
 		16, 17, 18, 16, 18, 19,
 		23, 22, 21, 23, 21, 20
 	};
-	Mesh* mesh = CreateMesh(meshVertexData, sizeof(meshVertexData) / sizeof(Engine::Graphics::VertexFormat::Mesh), indices, sizeof(indices) / sizeof(uint32_t));	
+	Mesh* mesh = CreateMesh(meshVertexData, sizeof(meshVertexData) / sizeof(Engine::Graphics::VertexFormat::Mesh), indices, sizeof(indices) / sizeof(uint32_t));
 	return mesh;
+}
+
+Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube()
+{	
+	return GetCube(1.0f,1.0f,1.0f);
 }
 
 Engine::Graphics::Mesh::Mesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount)

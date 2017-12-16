@@ -1,11 +1,5 @@
 #version 420 core
 
-layout (std140, binding = 0) uniform dataPerFrame
-{ 
-  mat4 view1;
-  mat4 projection1;
-};
-
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec2 aTexCoord;

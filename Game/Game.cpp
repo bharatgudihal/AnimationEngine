@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	//Initialize meshes	
-	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube();
+	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
 
 	//Initialize shaders
 	Engine::Graphics::Shader shader("Assets/Shaders/mesh.vs", "Assets/Shaders/mesh.fs");
@@ -134,22 +134,16 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
 	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png", 1);
 
-	//Initialize constant buffers
-	Engine::Graphics::UniformBuffers::UniformBufferTypes type = Engine::Graphics::UniformBuffers::UniformBufferTypes::DATA_PER_FRAME;
-	Engine::Graphics::UniformBuffers::dataPerFrame dataPerFrame;
-	Engine::Graphics::UniformBuffer* uniformBuffer = Engine::Graphics::UniformBuffer::CreateUniformBuffer(type, &dataPerFrame);
-
-
 	//Configure shader
 	shader.Use();
-	shader.SetBool("useTexture1", true);
-	shader.SetBool("useTexture2", true);
+	//shader.SetBool("useTexture1", true);
+	//shader.SetBool("useTexture2", true);
 	shader.SetInt("texture1", 0);
 	shader.SetInt("texture2", 1);
 	shader.SetFloat("blendRatio", 0.2f);
 
 	//Cube position
-	Engine::Graphics::Math::Transform transform;
+	Engine::Math::Transform cubeTransform;
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -170,13 +164,10 @@ int main(int argc, char* argv[]) {
 		}
 
 		//draw
-		dataPerFrame.view = camera.GetViewMatrix();
-		dataPerFrame.projection = camera.GetProjectionMatrix();
-		uniformBuffer->Update(&dataPerFrame);
 		texture1->Bind();
 		texture2->Bind();
 		shader.Use();
-		shader.SetMatrix("model", Engine::Graphics::Math::CalculateTransform(transform));
+		shader.SetMatrix("model", Engine::Math::CalculateTransform(cubeTransform));
 		shader.SetMatrix("view", camera.GetViewMatrix());
 		shader.SetMatrix("projection", camera.GetProjectionMatrix());
 		cube->Draw();
@@ -188,8 +179,10 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	//Engine::Graphics::UniformBuffer::DestroyUniformBuffer(uniformBuffer);
+	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cube);
+	Engine::Graphics::Texture::DestroyTexture(texture1);
+	Engine::Graphics::Texture::DestroyTexture(texture2);
 
 	glfwTerminate();
 	return 0;

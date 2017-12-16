@@ -1,12 +1,12 @@
 #include "Transform.h"
 #include <Engine/Math/Math.h>
 
-Engine::Graphics::Math::Transform::Transform() : position(), scale(1.0f, 1.0f, 1.0f), rotationAxis(0.0f, 0.0f, 1.0f), 
+Engine::Math::Transform::Transform() : position(), scale(1.0f, 1.0f, 1.0f), rotationAxis(0.0f, 0.0f, 1.0f), 
 forward(0.0f,0.0f,1.0f), up(0.0f,1.0f,0.0f), rotationAngle(0.0f)
 {
 }
 
-void Engine::Graphics::Math::Transform::Rotate(float angle, const glm::vec3& axis)
+void Engine::Math::Transform::Rotate(float angle, const glm::vec3& axis)
 {
 	rotationAngle = angle;
 	rotationAxis = axis;
@@ -16,7 +16,7 @@ void Engine::Graphics::Math::Transform::Rotate(float angle, const glm::vec3& axi
 	up = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(up, 1.0f)));
 }
 
-void Engine::Graphics::Math::Transform::RotateDegrees(float angleDegrees, const glm::vec3& axis)
+void Engine::Math::Transform::RotateDegrees(float angleDegrees, const glm::vec3& axis)
 {
 	float angleRadians = glm::radians(angleDegrees);
 	Rotate(angleRadians, axis);

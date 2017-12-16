@@ -87,9 +87,6 @@
     <ClCompile Include="Lighting\SimpleLight.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="Shader\UniformBuffer.cpp">
-      <Filter>Source Files\Shader</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h">
@@ -118,12 +115,6 @@
     </ClInclude>
     <ClInclude Include="Lighting\SimpleLight.h">
       <Filter>Header Files\Lighting</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader\UniformBuffer.h">
-      <Filter>Header Files\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader\UniformBufferTypes.h">
-      <Filter>Header Files\Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

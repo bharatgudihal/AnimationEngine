@@ -10,6 +10,7 @@ namespace Engine {
 		public:
 			static Mesh* CreateMesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount);
 			static Mesh* GetCube();
+			static Mesh* GetCube(const float r, const float g, const float b);
 			void Draw();
 			static void DestroyMesh(Mesh* mesh);
 

@@ -23,6 +23,6 @@ void Engine::Graphics::Lighting::SimpleLight::ShowMesh(const bool showMesh)
 void Engine::Graphics::Lighting::SimpleLight::Draw()
 {
 	if (showMesh) {
-		//mesh->Draw();
+		mesh->Draw();
 	}
 }
