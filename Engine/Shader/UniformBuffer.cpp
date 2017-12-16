@@ -14,9 +14,9 @@ void Engine::Graphics::UniformBuffer::DestroyUniformBuffer(UniformBuffer * unifo
 
 void Engine::Graphics::UniformBuffer::Update(const void * data)
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, bufferId);	
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, dataSize, data);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, bufferId);
+	GLintptr offset = 0;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, static_cast<GLsizeiptr>(dataSize), data);
 }
 
 Engine::Graphics::UniformBuffer::UniformBuffer(const UniformBuffers::UniformBufferTypes type, const void* data):type(type) {
@@ -32,7 +32,6 @@ Engine::Graphics::UniformBuffer::UniformBuffer(const UniformBuffers::UniformBuff
 
 	glBufferData(bufferId, dataSize, data, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(type), bufferId);
-	//glBindBufferRange(GL_UNIFORM_BUFFER, static_cast<GLuint>(type), bufferId, 0, dataSize);
 }
 
 Engine::Graphics::UniformBuffer::~UniformBuffer()

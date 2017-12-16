@@ -17,7 +17,6 @@ void Engine::Graphics::Lighting::SimpleLight::ShowMesh(const bool showMesh)
 	this->showMesh = showMesh;
 	if (!mesh) {
 		mesh = Engine::Graphics::Mesh::GetCube();
-		mesh->transform.scale = glm::vec3(0.5f);
 	}
 }
 

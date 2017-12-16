@@ -181,22 +181,21 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <CustomBuildStep>
+      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Copying Assets</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>ALWAYS_RUN</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
       <Command>
       </Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Message>
-      </Message>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>
-      </Outputs>
-    </CustomBuildStep>
-    <PostBuildEvent>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying Assets</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

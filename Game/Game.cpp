@@ -7,6 +7,7 @@
 #include <Engine/Texture/Texture.h>
 #include <Engine/Camera/Camera.h>
 #include <Engine/Shader/UniformBuffer.h>
+#include <Engine/Math/Math.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -125,12 +126,30 @@ int main(int argc, char* argv[]) {
 
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube();
-	cube->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	//Initialize shaders
+	Engine::Graphics::Shader shader("Assets/Shaders/mesh.vs", "Assets/Shaders/mesh.fs");
+	
+	//Initialize textures
+	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
+	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png", 1);
 
 	//Initialize constant buffers
 	Engine::Graphics::UniformBuffers::UniformBufferTypes type = Engine::Graphics::UniformBuffers::UniformBufferTypes::DATA_PER_FRAME;
 	Engine::Graphics::UniformBuffers::dataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer* uniformBuffer = Engine::Graphics::UniformBuffer::CreateUniformBuffer(type, &dataPerFrame);
+
+
+	//Configure shader
+	shader.Use();
+	shader.SetBool("useTexture1", true);
+	shader.SetBool("useTexture2", true);
+	shader.SetInt("texture1", 0);
+	shader.SetInt("texture2", 1);
+	shader.SetFloat("blendRatio", 0.2f);
+
+	//Cube position
+	Engine::Graphics::Math::Transform transform;
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -154,7 +173,13 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		uniformBuffer->Update(&dataPerFrame);
-		cube->Draw(&camera);
+		texture1->Bind();
+		texture2->Bind();
+		shader.Use();
+		shader.SetMatrix("model", Engine::Graphics::Math::CalculateTransform(transform));
+		shader.SetMatrix("view", camera.GetViewMatrix());
+		shader.SetMatrix("projection", camera.GetProjectionMatrix());
+		cube->Draw();
 
 		//Call events and swap buffers
 		{
