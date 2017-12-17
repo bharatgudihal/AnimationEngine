@@ -171,6 +171,7 @@ int main(int argc, char* argv[]) {
 		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));
 		cubeShader.SetMatrix("view", camera.GetViewMatrix());
 		cubeShader.SetMatrix("projection", camera.GetProjectionMatrix());
+		cubeShader.SetVector("viewPos", camera.transform.position);
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
 		lightShader.SetMatrix("view", camera.GetViewMatrix());
