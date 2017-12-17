@@ -130,8 +130,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize shaders
-	Engine::Graphics::Shader cubeShader("Assets/Shaders/mesh.vs", "Assets/Shaders/mesh.fs");
-	Engine::Graphics::Shader lightShader("Assets/Shaders/mesh.vs", "Assets/Shaders/lightMesh.fs");
+	Engine::Graphics::Shader cubeShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
+	Engine::Graphics::Shader lightShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");
 	
 	//Initialize textures
 	Engine::Graphics::Texture* cubeTexture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
