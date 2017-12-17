@@ -1,28 +1,30 @@
 #include "SimpleLight.h"
-#include <Engine/Mesh/Mesh.h>
+#include <Engine/Actor/Actor.h>
+#include <Engine/Shader/Shader.h>
 
-Engine::Graphics::Lighting::SimpleLight::SimpleLight(glm::vec3 color):color(color), mesh(nullptr), showMesh(false)
+Engine::Lighting::SimpleLight::SimpleLight(glm::vec3 color, Engine::Actor* i_actor):color(color), actor(i_actor), showMesh(false)
 {
 }
 
-Engine::Graphics::Lighting::SimpleLight::~SimpleLight()
+Engine::Lighting::SimpleLight::~SimpleLight()
 {
-	if(mesh){
-		Mesh::DestroyMesh(mesh);
-	}
 }
 
-void Engine::Graphics::Lighting::SimpleLight::ShowMesh(const bool showMesh)
+void Engine::Lighting::SimpleLight::Apply(Graphics::Shader * shader)
 {
-	this->showMesh = showMesh;
-	if (!mesh) {
-		mesh = Engine::Graphics::Mesh::GetCube();
-	}
+	shader->Use();
+	shader->SetVector("lightColor", color);
+	shader->SetVector("lightPos", actor->transform.position);
 }
 
-void Engine::Graphics::Lighting::SimpleLight::Draw()
+void Engine::Lighting::SimpleLight::ShowMesh(const bool showMesh)
 {
-	if (showMesh) {
-		mesh->Draw();
+	this->showMesh = showMesh;	
+}
+
+void Engine::Lighting::SimpleLight::Draw()
+{
+	if (showMesh && actor) {
+		actor->Draw();
 	}
 }

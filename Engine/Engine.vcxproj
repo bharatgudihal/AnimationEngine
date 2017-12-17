@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Externals\GLAD\src\glad.c" />
+    <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Lighting\SimpleLight.cpp" />
     <ClCompile Include="Math\Math.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor\Actor.h" />
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Lighting\SimpleLight.h" />
     <ClInclude Include="Math\Math.h" />

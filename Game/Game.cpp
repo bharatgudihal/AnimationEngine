@@ -6,8 +6,9 @@
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Texture/Texture.h>
 #include <Engine/Camera/Camera.h>
-#include <Engine/Shader/UniformBuffer.h>
+#include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>
+#include <Engine/Lighting/SimpleLight.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -126,24 +127,25 @@ int main(int argc, char* argv[]) {
 
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
+	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize shaders
-	Engine::Graphics::Shader shader("Assets/Shaders/mesh.vs", "Assets/Shaders/mesh.fs");
+	Engine::Graphics::Shader cubeShader("Assets/Shaders/mesh.vs", "Assets/Shaders/mesh.fs");
+	Engine::Graphics::Shader lightShader("Assets/Shaders/mesh.vs", "Assets/Shaders/lightMesh.fs");
 	
 	//Initialize textures
-	Engine::Graphics::Texture* texture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
-	Engine::Graphics::Texture* texture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png", 1);
+	Engine::Graphics::Texture* cubeTexture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
+	Engine::Graphics::Texture* cubeTexture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png", 1);
 
-	//Configure shader
-	shader.Use();
-	//shader.SetBool("useTexture1", true);
-	//shader.SetBool("useTexture2", true);
-	shader.SetInt("texture1", 0);
-	shader.SetInt("texture2", 1);
-	shader.SetFloat("blendRatio", 0.2f);
+	//Initialize actor
+	Engine::Actor cubeActor(cube, &cubeShader);	
+	Engine::Actor lightActor(lightingCube, &lightShader);
+	lightActor.transform.scale = glm::vec3(0.2f);
+	lightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
-	//Cube position
-	Engine::Math::Transform cubeTransform;
+	//Initialize light
+	Engine::Lighting::SimpleLight simpleLight(glm::vec3(1.0f), &lightActor);
+	simpleLight.ShowMesh(true);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -164,13 +166,18 @@ int main(int argc, char* argv[]) {
 		}
 
 		//draw
-		texture1->Bind();
-		texture2->Bind();
-		shader.Use();
-		shader.SetMatrix("model", Engine::Math::CalculateTransform(cubeTransform));
-		shader.SetMatrix("view", camera.GetViewMatrix());
-		shader.SetMatrix("projection", camera.GetProjectionMatrix());
-		cube->Draw();
+		simpleLight.Apply(&cubeShader);
+		cubeShader.Use();
+		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));
+		cubeShader.SetMatrix("view", camera.GetViewMatrix());
+		cubeShader.SetMatrix("projection", camera.GetProjectionMatrix());
+		lightShader.Use();
+		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
+		lightShader.SetMatrix("view", camera.GetViewMatrix());
+		lightShader.SetMatrix("projection", camera.GetProjectionMatrix());
+		
+		cubeActor.Draw();
+		simpleLight.Draw();
 
 		//Call events and swap buffers
 		{
@@ -181,8 +188,9 @@ int main(int argc, char* argv[]) {
 
 	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cube);
-	Engine::Graphics::Texture::DestroyTexture(texture1);
-	Engine::Graphics::Texture::DestroyTexture(texture2);
+	Engine::Graphics::Mesh::DestroyMesh(lightingCube);
+	Engine::Graphics::Texture::DestroyTexture(cubeTexture1);
+	Engine::Graphics::Texture::DestroyTexture(cubeTexture2);
 
 	glfwTerminate();
 	return 0;
