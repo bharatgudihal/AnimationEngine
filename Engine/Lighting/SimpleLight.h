@@ -18,10 +18,10 @@ namespace Engine {
 			void Apply(Graphics::Shader* shader);
 			void ShowMesh(const bool showMesh);
 			void Draw();					
-		private:
 			glm::vec3 ambient;
 			glm::vec3 diffuse;
 			glm::vec3 specular;
+		private:			
 			Actor* actor;
 			bool showMesh;
 		};
