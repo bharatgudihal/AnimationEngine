@@ -122,5 +122,8 @@
     <ClInclude Include="Actor\Actor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

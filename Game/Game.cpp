@@ -9,6 +9,7 @@
 #include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>
 #include <Engine/Lighting/SimpleLight.h>
+#include <Engine/Material/Material.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -144,8 +145,18 @@ int main(int argc, char* argv[]) {
 	lightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	//Initialize light
-	Engine::Lighting::SimpleLight simpleLight(glm::vec3(1.0f), &lightActor);
+	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
+	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
+	glm::vec3 specular(1.0f, 1.0f, 1.0f);
+	Engine::Lighting::SimpleLight simpleLight(ambient, diffuse, specular, &lightActor);
 	simpleLight.ShowMesh(true);
+
+	//Initialize Material
+	Engine::Graphics::Material cubeMaterial;
+	cubeMaterial.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+	cubeMaterial.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+	cubeMaterial.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	cubeMaterial.shininess = 32.0f;
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -172,6 +183,10 @@ int main(int argc, char* argv[]) {
 		cubeShader.SetMatrix("view", camera.GetViewMatrix());
 		cubeShader.SetMatrix("projection", camera.GetProjectionMatrix());
 		cubeShader.SetVector("viewPos", camera.transform.position);
+		cubeShader.SetVector("material.ambient", cubeMaterial.ambient);
+		cubeShader.SetVector("material.diffuse", cubeMaterial.diffuse);
+		cubeShader.SetVector("material.specular", cubeMaterial.specular);
+		cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
 		lightShader.SetMatrix("view", camera.GetViewMatrix());

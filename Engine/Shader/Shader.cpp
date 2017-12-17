@@ -81,29 +81,29 @@ void Engine::Graphics::Shader::Use()
 	glUseProgram(shaderId);
 }
 
-void Engine::Graphics::Shader::SetBool(const std::string & name, bool value) const
+void Engine::Graphics::Shader::SetBool(const char* name, bool value) const
 {
-	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), static_cast<int>(value));
+	glUniform1i(glGetUniformLocation(shaderId, name), static_cast<int>(value));
 }
 
-void Engine::Graphics::Shader::SetInt(const std::string & name, int value) const
+void Engine::Graphics::Shader::SetInt(const char* name, int value) const
 {
-	glUniform1i(glGetUniformLocation(shaderId, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(shaderId, name), value);
 }
 
-void Engine::Graphics::Shader::SetFloat(const std::string & name, float value) const
+void Engine::Graphics::Shader::SetFloat(const char* name, float value) const
 {
-	glUniform1f(glGetUniformLocation(shaderId, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(shaderId, name), value);
 }
 
-void Engine::Graphics::Shader::SetVector(const std::string & name, const glm::vec3 & vector)
+void Engine::Graphics::Shader::SetVector(const char* name, const glm::vec3 & vector)
 {
-	unsigned int location = glGetUniformLocation(shaderId, name.c_str());
+	unsigned int location = glGetUniformLocation(shaderId, name);
 	glUniform3f(location, vector.x, vector.y, vector.z);
 }
 
-void Engine::Graphics::Shader::SetMatrix(const std::string & name, const glm::mat4& matrix) const
+void Engine::Graphics::Shader::SetMatrix(const char* name, const glm::mat4& matrix) const
 {
-	unsigned int location = glGetUniformLocation(shaderId, name.c_str());
+	unsigned int location = glGetUniformLocation(shaderId, name);
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
