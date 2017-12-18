@@ -29,11 +29,13 @@
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Sprite\Sprite.cpp" />
     <ClCompile Include="Texture\Texture.cpp" />
+    <ClCompile Include="UniformBuffer\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Lighting\SimpleLight.h" />
+    <ClInclude Include="Lighting\SimpleLight_Inl.h" />
     <ClInclude Include="Material\Material.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Transform.h" />
@@ -41,6 +43,8 @@
     <ClInclude Include="Shader\Shader.h" />
     <ClInclude Include="Sprite\Sprite.h" />
     <ClInclude Include="Texture\Texture.h" />
+    <ClInclude Include="UniformBuffer\UniformBuffer.h" />
+    <ClInclude Include="UniformBuffer\UniformBuffers.h" />
     <ClInclude Include="VertexFormats.h" />
   </ItemGroup>
   <ItemGroup>

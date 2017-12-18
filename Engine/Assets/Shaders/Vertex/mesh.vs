@@ -11,8 +11,21 @@ out vec3 Normal;
 out vec3 FragPos;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+
+layout (std140, binding = 0) uniform dataPerFrame{
+	mat4 view;
+	mat4 projection;
+	vec3 viewPos;
+	float a;
+	vec3 lightPosition;
+	float b;
+	vec3 lightAmbient;
+	float c;
+	vec3 lightDiffuse;
+	float d;
+	vec3 lightSpecular;
+	float e;
+};
 
 void main()
 {

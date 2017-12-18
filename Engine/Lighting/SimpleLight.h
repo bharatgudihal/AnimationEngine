@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Math/Transform.h>
+#include <Externals/glm/Includes.h>
 
 namespace Engine {		
 
@@ -15,15 +15,18 @@ namespace Engine {
 		public:
 			SimpleLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor);
 			~SimpleLight();
-			void Apply(Graphics::Shader* shader);
 			void ShowMesh(const bool showMesh);
-			void Draw();					
+			void Draw();
+			glm::vec3 GetPosition() const;
 			glm::vec3 ambient;
 			glm::vec3 diffuse;
 			glm::vec3 specular;
 		private:			
 			Actor* actor;
 			bool showMesh;
+			unsigned int bufferId;
 		};
 	}
 }
+
+#include "SimpleLight_Inl.h"

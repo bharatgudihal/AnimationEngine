@@ -10,6 +10,8 @@
 #include <Engine/Math/Math.h>
 #include <Engine/Lighting/SimpleLight.h>
 #include <Engine/Material/Material.h>
+#include <Engine/UniformBuffer/UniformBuffer.h>
+#include <Engine/UniformBuffer/UniformBuffers.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -158,6 +160,11 @@ int main(int argc, char* argv[]) {
 	cubeMaterial.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 	cubeMaterial.shininess = 32.0f;
 
+	//Initialize uniform buffer
+	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
+	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
+	
+
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
 		//Time calculations
@@ -177,20 +184,23 @@ int main(int argc, char* argv[]) {
 		}
 
 		//draw
-		simpleLight.Apply(&cubeShader);
+		dataPerFrame.view = camera.GetViewMatrix();
+		dataPerFrame.projection = camera.GetProjectionMatrix();
+		dataPerFrame.viewPos = camera.transform.position;
+		dataPerFrame.lightAmbient = simpleLight.ambient;
+		dataPerFrame.lightDiffuse = simpleLight.diffuse;
+		dataPerFrame.lightPosition = simpleLight.GetPosition();
+		dataPerFrame.lightSpecular = simpleLight.specular;
+		cameraBuffer.Update(&dataPerFrame);
+
 		cubeShader.Use();
 		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));
-		cubeShader.SetMatrix("view", camera.GetViewMatrix());
-		cubeShader.SetMatrix("projection", camera.GetProjectionMatrix());
-		cubeShader.SetVector("viewPos", camera.transform.position);
 		cubeShader.SetVector("material.ambient", cubeMaterial.ambient);
 		cubeShader.SetVector("material.diffuse", cubeMaterial.diffuse);
 		cubeShader.SetVector("material.specular", cubeMaterial.specular);
 		cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
 		lightShader.Use();
-		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
-		lightShader.SetMatrix("view", camera.GetViewMatrix());
-		lightShader.SetMatrix("projection", camera.GetProjectionMatrix());
+		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));		
 		
 		cubeActor.Draw();
 		simpleLight.Draw();
