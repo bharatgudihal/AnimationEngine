@@ -3,9 +3,9 @@
 
 namespace Engine {
 	namespace Graphics {
+		class Texture;
 		struct Material {
-			glm::vec3 ambient;
-			glm::vec3 diffuse;
+			Graphics::Texture* diffuse;
 			glm::vec3 specular;
 			float shininess;
 		};

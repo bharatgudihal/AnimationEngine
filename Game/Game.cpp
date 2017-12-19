@@ -137,8 +137,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Shader lightShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");
 	
 	//Initialize textures
-	Engine::Graphics::Texture* cubeTexture1 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg", 0);
-	Engine::Graphics::Texture* cubeTexture2 = Engine::Graphics::Texture::CreateTexture("Assets/Textures/awesomeface.png", 1);
+	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png");
 
 	//Initialize actor
 	Engine::Actor cubeActor(cube, &cubeShader);	
@@ -155,8 +154,7 @@ int main(int argc, char* argv[]) {
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
-	cubeMaterial.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-	cubeMaterial.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+	cubeMaterial.diffuse = diffuseTexture;
 	cubeMaterial.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 	cubeMaterial.shininess = 32.0f;
 
@@ -194,11 +192,11 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		cubeShader.Use();
-		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));
-		cubeShader.SetVector("material.ambient", cubeMaterial.ambient);
-		cubeShader.SetVector("material.diffuse", cubeMaterial.diffuse);
+		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));		
+		cubeShader.SetInt("material.diffuse", 0);
 		cubeShader.SetVector("material.specular", cubeMaterial.specular);
 		cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
+		diffuseTexture->Bind();
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));		
 		
@@ -215,8 +213,7 @@ int main(int argc, char* argv[]) {
 	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cube);
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);
-	Engine::Graphics::Texture::DestroyTexture(cubeTexture1);
-	Engine::Graphics::Texture::DestroyTexture(cubeTexture2);
+	Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
 
 	glfwTerminate();
 	return 0;
