@@ -6,7 +6,7 @@ namespace Engine {
 		class Texture;
 		struct Material {
 			Graphics::Texture* diffuse;
-			glm::vec3 specular;
+			Graphics::Texture* specular;
 			float shininess;
 		};
 	}

@@ -137,7 +137,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Shader lightShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");
 	
 	//Initialize textures
-	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png");
+	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png", 0);
+	Engine::Graphics::Texture* specularTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Specular/container2_specular.png", 1);
 
 	//Initialize actor
 	Engine::Actor cubeActor(cube, &cubeShader);	
@@ -155,7 +156,7 @@ int main(int argc, char* argv[]) {
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
 	cubeMaterial.diffuse = diffuseTexture;
-	cubeMaterial.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	cubeMaterial.specular = specularTexture;
 	cubeMaterial.shininess = 32.0f;
 
 	//Initialize uniform buffer
@@ -193,10 +194,12 @@ int main(int argc, char* argv[]) {
 
 		cubeShader.Use();
 		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));		
-		cubeShader.SetInt("material.diffuse", 0);
-		cubeShader.SetVector("material.specular", cubeMaterial.specular);
+		cubeShader.SetInt("material.diffuse", cubeMaterial.diffuse->GetTextureUnit());
+		cubeShader.SetInt("material.specular", cubeMaterial.specular->GetTextureUnit());
 		cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
 		diffuseTexture->Bind();
+		specularTexture->Bind();
+
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));		
 		
@@ -214,6 +217,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh::DestroyMesh(cube);
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);
 	Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
+	Engine::Graphics::Texture::DestroyTexture(specularTexture);
 
 	glfwTerminate();
 	return 0;

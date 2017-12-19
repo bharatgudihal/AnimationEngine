@@ -24,7 +24,7 @@ layout (std140, binding = 0) uniform dataPerFrame{
 
 struct Material{
 	sampler2D diffuse;
-	vec3 specular;
+	sampler2D specular;
 	float shininess;
 };
 
@@ -33,6 +33,7 @@ uniform Material material;
 void main()
 {
 	vec3 matDiffuse = vec3(texture(material.diffuse, TexCoord));
+	vec3 matSpecular = vec3(texture(material.specular, TexCoord));
 
 	//ambient
 	vec3 ambient = lightAmbient * matDiffuse;
@@ -47,7 +48,7 @@ void main()
 	vec3 viewDirection = normalize(viewPos - FragPos);
 	vec3 reflectedDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectedDirection), 0.0), material.shininess);
-	vec3 specular = lightSpecular * (spec * material.specular);
+	vec3 specular = lightSpecular * spec * matSpecular;
 
 	vec3 result = ambient + diffuse + specular;
 	FragColor = vec4(result, 1.0);

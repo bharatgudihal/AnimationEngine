@@ -52,6 +52,10 @@ void Engine::Graphics::Texture::Bind()
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
+const unsigned int Engine::Graphics::Texture::GetTextureUnit() const {
+	return textureUnit;
+}
+
 Engine::Graphics::Texture::~Texture()
 {
 }
