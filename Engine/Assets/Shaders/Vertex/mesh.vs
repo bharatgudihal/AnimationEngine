@@ -15,16 +15,11 @@ uniform mat4 model;
 layout (std140, binding = 0) uniform dataPerFrame{
 	mat4 view;
 	mat4 projection;
-	vec3 viewPos;
-	float a;
-	vec3 lightPosition;
-	float b;
-	vec3 lightAmbient;
-	float c;
-	vec3 lightDiffuse;
-	float d;
-	vec3 lightSpecular;
-	float e;
+	vec4 viewPos;
+	vec4 lightVector;
+	vec4 lightAmbient;
+	vec4 lightDiffuse;
+	vec4 lightSpecular;
 };
 
 void main()

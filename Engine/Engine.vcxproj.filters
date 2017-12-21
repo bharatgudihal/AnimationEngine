@@ -90,8 +90,14 @@
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lighting\PointLight.cpp">
+    <ClCompile Include="Lighting\PointLight\PointLight.cpp">
       <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighting\DirectionalLight\DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighting\Light.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,10 +137,19 @@
     <ClInclude Include="UniformBuffer\UniformBuffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting\PointLight.h">
+    <ClInclude Include="Lighting\PointLight\PointLight.h">
       <Filter>Header Files\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting\PointLight_Inl.h">
+    <ClInclude Include="Lighting\DirectionalLight\DirectionalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\Light_Inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\DirectionalLight\DirectionalLight_Inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

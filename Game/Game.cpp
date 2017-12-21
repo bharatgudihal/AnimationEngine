@@ -8,7 +8,7 @@
 #include <Engine/Camera/Camera.h>
 #include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>
-#include <Engine/Lighting/PointLight.h>
+#include <Engine/Lighting/DirectionalLight/DirectionalLight.h>
 #include <Engine/Material/Material.h>
 #include <Engine/UniformBuffer/UniformBuffer.h>
 #include <Engine/UniformBuffer/UniformBuffers.h>
@@ -182,8 +182,9 @@ int main(int argc, char* argv[]) {
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
-	Engine::Lighting::PointLight pointLight(ambient, diffuse, specular, &lightActor);
-	pointLight.ShowMesh(true);
+	glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
+	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &lightActor, lightDirection);
+	directionalLight.ShowMesh(true);
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
@@ -217,11 +218,11 @@ int main(int argc, char* argv[]) {
 		//draw
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
-		dataPerFrame.viewPos = camera.transform.position;
-		dataPerFrame.lightAmbient = pointLight.ambient;
-		dataPerFrame.lightDiffuse = pointLight.diffuse;
-		dataPerFrame.lightPosition = pointLight.GetPosition();
-		dataPerFrame.lightSpecular = pointLight.specular;
+		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
+		dataPerFrame.lightAmbient = glm::vec4(directionalLight.ambient, 1.0f);
+		dataPerFrame.lightDiffuse = glm::vec4(directionalLight.diffuse, 1.0f);
+		dataPerFrame.lightVector = glm::vec4(directionalLight.GetLightDirection(), 0.0f);
+		dataPerFrame.lightSpecular = glm::vec4(directionalLight.specular, 1.0f);
 		cameraBuffer.Update(&dataPerFrame);
 
 		for (uint8_t i = 0; i < numberOfCubes; i++) {
@@ -237,7 +238,7 @@ int main(int argc, char* argv[]) {
 
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
-		pointLight.Draw();
+		directionalLight.Draw();
 
 		//Call events and swap buffers
 		{

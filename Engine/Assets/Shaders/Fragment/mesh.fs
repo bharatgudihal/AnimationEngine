@@ -10,16 +10,11 @@ in vec3 FragPos;
 layout (std140, binding = 0) uniform dataPerFrame{
 	mat4 view;
 	mat4 projection;
-	vec3 viewPos;
-	float a;
-	vec3 lightPosition;
-	float b;
-	vec3 lightAmbient;
-	float c;
-	vec3 lightDiffuse;
-	float d;
-	vec3 lightSpecular;
-	float e;
+	vec4 viewPos;
+	vec4 lightVector;
+	vec4 lightAmbient;
+	vec4 lightDiffuse;
+	vec4 lightSpecular;
 };
 
 struct Material{
@@ -35,20 +30,27 @@ void main()
 	vec3 matDiffuse = vec3(texture(material.diffuse, TexCoord));
 	vec3 matSpecular = vec3(texture(material.specular, TexCoord));
 
+	vec3 lightDirection;
+
+	if(lightVector.w == 0.0f){
+		lightDirection = normalize(-vec3(lightVector));
+	}else{
+		lightDirection = normalize(vec3(lightVector) - FragPos);
+	}
+
 	//ambient
-	vec3 ambient = lightAmbient * matDiffuse;
+	vec3 ambient = vec3(lightAmbient) * matDiffuse;
 
 	//diffuse
 	vec3 norm = normalize(Normal);
-	vec3 lightDirection = normalize(lightPosition - FragPos);
 	float diff = max(dot(norm, lightDirection), 0.0);
-	vec3 diffuse = lightDiffuse * diff * matDiffuse;
+	vec3 diffuse = vec3(lightDiffuse) * diff * matDiffuse;
 
 	//specular
-	vec3 viewDirection = normalize(viewPos - FragPos);
+	vec3 viewDirection = normalize(vec3(viewPos) - FragPos);
 	vec3 reflectedDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectedDirection), 0.0), material.shininess);
-	vec3 specular = lightSpecular * spec * matSpecular;
+	vec3 specular = vec3(lightSpecular) * spec * matSpecular;
 
 	vec3 result = ambient + diffuse + specular;
 	FragColor = vec4(result, 1.0);
