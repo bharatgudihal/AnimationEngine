@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
-	
+
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	
+
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -135,13 +135,45 @@ int main(int argc, char* argv[]) {
 	//Initialize shaders
 	Engine::Graphics::Shader cubeShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
 	Engine::Graphics::Shader lightShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");
-	
+
 	//Initialize textures
 	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png", 0);
 	Engine::Graphics::Texture* specularTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Specular/container2_specular.png", 1);
 
-	//Initialize actor
-	Engine::Actor cubeActor(cube, &cubeShader);	
+	//Initialize actors
+	const uint8_t numberOfCubes = 10;
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
+	Engine::Actor cubes[] = {
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader),
+		Engine::Actor(cube, &cubeShader)
+	};
+	
+	for (uint8_t i = 0; i < numberOfCubes; i++) {
+		cubes[i].transform.position = cubePositions[i];
+		float angle = 20.0f * i;
+		cubes[i].transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
+	}
+	
 	Engine::Actor lightActor(lightingCube, &lightShader);
 	lightActor.transform.scale = glm::vec3(0.2f);
 	lightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
@@ -192,18 +224,19 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.lightSpecular = pointLight.specular;
 		cameraBuffer.Update(&dataPerFrame);
 
-		cubeShader.Use();
-		cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubeActor.transform));		
-		cubeShader.SetInt("material.diffuse", cubeMaterial.diffuse->GetTextureUnit());
-		cubeShader.SetInt("material.specular", cubeMaterial.specular->GetTextureUnit());
-		cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
-		diffuseTexture->Bind();
-		specularTexture->Bind();
+		for (uint8_t i = 0; i < numberOfCubes; i++) {
+			cubeShader.Use();
+			cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubes[i].transform));
+			cubeShader.SetInt("material.diffuse", cubeMaterial.diffuse->GetTextureUnit());
+			cubeShader.SetInt("material.specular", cubeMaterial.specular->GetTextureUnit());
+			cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
+			diffuseTexture->Bind();
+			specularTexture->Bind();
+			cubes[i].Draw();
+		}
 
 		lightShader.Use();
-		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));		
-		
-		cubeActor.Draw();
+		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
 		pointLight.Draw();
 
 		//Call events and swap buffers
