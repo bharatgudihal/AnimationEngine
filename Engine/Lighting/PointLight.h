@@ -11,10 +11,10 @@ namespace Engine {
 	}
 
 	namespace Lighting {
-		class SimpleLight {
+		class PointLight {
 		public:
-			SimpleLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor);
-			~SimpleLight();
+			PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor);
+			~PointLight();
 			void ShowMesh(const bool showMesh);
 			void Draw();
 			glm::vec3 GetPosition() const;
@@ -29,4 +29,4 @@ namespace Engine {
 	}
 }
 
-#include "SimpleLight_Inl.h"
+#include "PointLight_Inl.h"

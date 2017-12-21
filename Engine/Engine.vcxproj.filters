@@ -84,14 +84,14 @@
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Source Files\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Lighting\SimpleLight.cpp">
-      <Filter>Source Files\Lighting</Filter>
-    </ClCompile>
     <ClCompile Include="Actor\Actor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighting\PointLight.cpp">
+      <Filter>Source Files\Lighting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +119,6 @@
     <ClInclude Include="Camera\Camera.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting\SimpleLight.h">
-      <Filter>Header Files\Lighting</Filter>
-    </ClInclude>
     <ClInclude Include="Actor\Actor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,7 +131,10 @@
     <ClInclude Include="UniformBuffer\UniformBuffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting\SimpleLight_Inl.h">
+    <ClInclude Include="Lighting\PointLight.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\PointLight_Inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

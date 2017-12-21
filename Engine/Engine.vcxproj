@@ -22,7 +22,7 @@
     <ClCompile Include="..\Externals\GLAD\src\glad.c" />
     <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Lighting\SimpleLight.cpp" />
+    <ClCompile Include="Lighting\PointLight.cpp" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
@@ -34,8 +34,8 @@
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
     <ClInclude Include="Camera\Camera.h" />
-    <ClInclude Include="Lighting\SimpleLight.h" />
-    <ClInclude Include="Lighting\SimpleLight_Inl.h" />
+    <ClInclude Include="Lighting\PointLight.h" />
+    <ClInclude Include="Lighting\PointLight_Inl.h" />
     <ClInclude Include="Material\Material.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\Transform.h" />

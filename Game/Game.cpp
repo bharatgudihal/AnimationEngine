@@ -8,7 +8,7 @@
 #include <Engine/Camera/Camera.h>
 #include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>
-#include <Engine/Lighting/SimpleLight.h>
+#include <Engine/Lighting/PointLight.h>
 #include <Engine/Material/Material.h>
 #include <Engine/UniformBuffer/UniformBuffer.h>
 #include <Engine/UniformBuffer/UniformBuffers.h>
@@ -150,8 +150,8 @@ int main(int argc, char* argv[]) {
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
-	Engine::Lighting::SimpleLight simpleLight(ambient, diffuse, specular, &lightActor);
-	simpleLight.ShowMesh(true);
+	Engine::Lighting::PointLight pointLight(ambient, diffuse, specular, &lightActor);
+	pointLight.ShowMesh(true);
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
@@ -186,10 +186,10 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = camera.transform.position;
-		dataPerFrame.lightAmbient = simpleLight.ambient;
-		dataPerFrame.lightDiffuse = simpleLight.diffuse;
-		dataPerFrame.lightPosition = simpleLight.GetPosition();
-		dataPerFrame.lightSpecular = simpleLight.specular;
+		dataPerFrame.lightAmbient = pointLight.ambient;
+		dataPerFrame.lightDiffuse = pointLight.diffuse;
+		dataPerFrame.lightPosition = pointLight.GetPosition();
+		dataPerFrame.lightSpecular = pointLight.specular;
 		cameraBuffer.Update(&dataPerFrame);
 
 		cubeShader.Use();
@@ -204,7 +204,7 @@ int main(int argc, char* argv[]) {
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));		
 		
 		cubeActor.Draw();
-		simpleLight.Draw();
+		pointLight.Draw();
 
 		//Call events and swap buffers
 		{
