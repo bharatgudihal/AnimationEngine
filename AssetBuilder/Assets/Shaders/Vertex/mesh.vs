@@ -12,7 +12,10 @@ struct Light {
 	float quadratic;
 
 	float isSpotLight;
-	float cutOff;
+	float innerCutOff;
+	float outerCutOff;
+
+	vec3 padding;
 };
 
 struct Material {

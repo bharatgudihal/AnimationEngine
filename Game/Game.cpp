@@ -189,9 +189,11 @@ int main(int argc, char* argv[]) {
 	Engine::Lighting::Attenuation attenuation;
 	attenuation.linear = 0.09f;
 	attenuation.quadratic = 0.032f;
+	float innerCutOff = 12.5f;
+	float outerCutOff = 17.5f;
 	//Engine::Lighting::PointLight light(ambient, diffuse, specular, &lightActor, attenuation);
 	//Engine::Lighting::DirectionalLight light(ambient, diffuse, specular, &lightActor, lightDirection);
-	Engine::Lighting::SpotLight light(ambient, diffuse, specular, &lightActor, lightDirection, glm::radians(12.5f));
+	Engine::Lighting::SpotLight light(ambient, diffuse, specular, &lightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
 	//light.ShowMesh(true);
 
 	//Initialize Material
@@ -246,7 +248,8 @@ int main(int argc, char* argv[]) {
 		//Enable block for spot light
 		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);
 		dataPerFrame.lightData.direction = glm::vec4(light.GetDirection(), 0.0f);
-		dataPerFrame.lightData.cutOff = glm::cos(light.GetCutOff());
+		dataPerFrame.lightData.innerCutOff = glm::cos(light.GetInnerCutOff());
+		dataPerFrame.lightData.outerCutOff = glm::cos(light.GetOuterCutOff());
 		dataPerFrame.lightData.isSpotLight = 1.0f;
 
 		cameraBuffer.Update(&dataPerFrame);

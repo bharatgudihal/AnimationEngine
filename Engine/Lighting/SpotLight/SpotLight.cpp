@@ -1,7 +1,7 @@
 #include "SpotLight.h"
 
-Engine::Lighting::SpotLight::SpotLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor * actor, glm::vec3 i_direction, float cutOffRadians) :
-	Light(ambient, diffuse, specular, actor), direction(direction), cutOff(cutOffRadians)
+Engine::Lighting::SpotLight::SpotLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor * actor, glm::vec3 i_direction, float innerCutOffRadians, float outerCutOffRadians) :
+	Light(ambient, diffuse, specular, actor), direction(direction), innerCutOff(innerCutOffRadians), outerCutOff(outerCutOffRadians)
 {
 }
 

@@ -16,7 +16,10 @@ namespace Engine {
 				float quadratic = 0.0f;
 
 				float isSpotLight = 0.0;
-				float cutOff = 1.0f;
+				float innerCutOff = 1.0f;
+				float outerCutOff = 1.0f;
+
+				float padding[3];
 			};
 
 			struct DataPerFrame {
@@ -24,7 +27,7 @@ namespace Engine {
 				glm::mat4 projection;
 				glm::vec4 viewPos;
 				
-				LightData lightData;
+				LightData lightData;				
 			};
 		}
 	}
