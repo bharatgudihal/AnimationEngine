@@ -1,1 +1,1 @@
-xcopy /E /S %1 %2 /y
+xcopy /E /S %1 %2 /y /d
