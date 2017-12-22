@@ -2,6 +2,7 @@
 
 struct Light {
 	vec4 vector;
+	vec4 direction;
 	
 	vec4 ambient;
 	vec4 diffuse;
@@ -9,6 +10,9 @@ struct Light {
 		
 	float linear;
 	float quadratic;
+
+	float isSpotLight;
+	float cutOff;
 };
 
 struct Material {
@@ -23,8 +27,6 @@ layout (std140, binding = 0) uniform dataPerFrame {
 	vec4 viewPos;
 	
 	Light light;
-
-	vec2 padding;
 };
 
 layout (location = 0) in vec3 aPos;

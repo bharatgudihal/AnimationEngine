@@ -10,6 +10,7 @@
 #include <Engine/Math/Math.h>
 #include <Engine/Lighting/DirectionalLight/DirectionalLight.h>
 #include <Engine/Lighting/PointLight/PointLight.h>
+#include <Engine/Lighting/SpotLight/SpotLight.h>
 #include <Engine/Material/Material.h>
 #include <Engine/UniformBuffer/UniformBuffer.h>
 #include <Engine/UniformBuffer/UniformBuffers.h>
@@ -188,8 +189,10 @@ int main(int argc, char* argv[]) {
 	Engine::Lighting::Attenuation attenuation;
 	attenuation.linear = 0.09f;
 	attenuation.quadratic = 0.032f;
-	Engine::Lighting::PointLight light(ambient, diffuse, specular, &lightActor, attenuation);
-	light.ShowMesh(true);
+	//Engine::Lighting::PointLight light(ambient, diffuse, specular, &lightActor, attenuation);
+	//Engine::Lighting::DirectionalLight light(ambient, diffuse, specular, &lightActor, lightDirection);
+	Engine::Lighting::SpotLight light(ambient, diffuse, specular, &lightActor, lightDirection, glm::radians(12.5f));
+	//light.ShowMesh(true);
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
@@ -213,12 +216,16 @@ int main(int argc, char* argv[]) {
 		{
 			processInput(window);
 		}
+
+		//Update spot light position direction
+		light.SetPosition(camera.transform.position);
+		light.SetDirection(camera.transform.forward);
 		
 		//Clear color
 		{
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}
+		}		
 
 		//draw
 		dataPerFrame.view = camera.GetViewMatrix();
@@ -226,10 +233,21 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
 		dataPerFrame.lightData.ambient = glm::vec4(light.ambient, 1.0f);
 		dataPerFrame.lightData.diffuse = glm::vec4(light.diffuse, 1.0f);
-		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);
 		dataPerFrame.lightData.specular = glm::vec4(light.specular, 1.0f);
-		dataPerFrame.lightData.linear = light.GetAttenuation().linear;
+				
+		//Enable block for point light
+		/*dataPerFrame.lightData.linear = light.GetAttenuation().linear;
 		dataPerFrame.lightData.quadratic = light.GetAttenuation().quadratic;
+		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);*/
+
+		//Enable block for directional light
+		/*dataPerFrame.lightData.vector = glm::vec4(light.GetLightDirection(), 0.0f);*/
+
+		//Enable block for spot light
+		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);
+		dataPerFrame.lightData.direction = glm::vec4(light.GetDirection(), 0.0f);
+		dataPerFrame.lightData.cutOff = glm::cos(light.GetCutOff());
+		dataPerFrame.lightData.isSpotLight = 1.0f;
 
 		cameraBuffer.Update(&dataPerFrame);
 

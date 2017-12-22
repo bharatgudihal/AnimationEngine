@@ -6,13 +6,17 @@ namespace Engine {
 		namespace UniformBuffers {
 			struct LightData {
 				glm::vec4 vector;
+				glm::vec4 direction;
 				
 				glm::vec4 ambient;
 				glm::vec4 diffuse;
 				glm::vec4 specular;
 								
-				float linear;
-				float quadratic;				
+				float linear = 0.0f;
+				float quadratic = 0.0f;
+
+				float isSpotLight = 0.0;
+				float cutOff = 1.0f;
 			};
 
 			struct DataPerFrame {
@@ -21,8 +25,6 @@ namespace Engine {
 				glm::vec4 viewPos;
 				
 				LightData lightData;
-				
-				float padding[2];
 			};
 		}
 	}
