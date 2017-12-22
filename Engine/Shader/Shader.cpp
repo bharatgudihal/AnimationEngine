@@ -25,7 +25,7 @@ Engine::Graphics::Shader::Shader(const char * vertexShaderPath, const char * fra
 
 	vertexShaderCode = vertexShaderStream.str();
 	fragmentShaderCode = fragmentShaderStream.str();
-
+		
 	const char* vertexShader = vertexShaderCode.c_str();
 	const char* fragmentShader = fragmentShaderCode.c_str();
 

@@ -9,9 +9,11 @@
 #include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>
 #include <Engine/Lighting/DirectionalLight/DirectionalLight.h>
+#include <Engine/Lighting/PointLight/PointLight.h>
 #include <Engine/Material/Material.h>
 #include <Engine/UniformBuffer/UniformBuffer.h>
 #include <Engine/UniformBuffer/UniformBuffers.h>
+#include <Engine/Lighting/Attenuation.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -183,8 +185,11 @@ int main(int argc, char* argv[]) {
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
 	glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
-	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &lightActor, lightDirection);
-	directionalLight.ShowMesh(true);
+	Engine::Lighting::Attenuation attenuation;
+	attenuation.linear = 0.09f;
+	attenuation.quadratic = 0.032f;
+	Engine::Lighting::PointLight light(ambient, diffuse, specular, &lightActor, attenuation);
+	light.ShowMesh(true);
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
@@ -219,10 +224,13 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
-		dataPerFrame.lightAmbient = glm::vec4(directionalLight.ambient, 1.0f);
-		dataPerFrame.lightDiffuse = glm::vec4(directionalLight.diffuse, 1.0f);
-		dataPerFrame.lightVector = glm::vec4(directionalLight.GetLightDirection(), 0.0f);
-		dataPerFrame.lightSpecular = glm::vec4(directionalLight.specular, 1.0f);
+		dataPerFrame.lightData.ambient = glm::vec4(light.ambient, 1.0f);
+		dataPerFrame.lightData.diffuse = glm::vec4(light.diffuse, 1.0f);
+		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);
+		dataPerFrame.lightData.specular = glm::vec4(light.specular, 1.0f);
+		dataPerFrame.lightData.linear = light.GetAttenuation().linear;
+		dataPerFrame.lightData.quadratic = light.GetAttenuation().quadratic;
+
 		cameraBuffer.Update(&dataPerFrame);
 
 		for (uint8_t i = 0; i < numberOfCubes; i++) {
@@ -238,7 +246,7 @@ int main(int argc, char* argv[]) {
 
 		lightShader.Use();
 		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
-		directionalLight.Draw();
+		light.Draw();
 
 		//Call events and swap buffers
 		{

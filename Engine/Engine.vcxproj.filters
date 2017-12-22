@@ -152,5 +152,11 @@
     <ClInclude Include="Lighting\DirectionalLight\DirectionalLight_Inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lighting\Attenuation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting\PointLight\PointLight_Inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,8 +3,8 @@
 #include <Engine/Shader/Shader.h>
 #include <glad\glad.h>
 
-Engine::Lighting::PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor * actor):
-	Light(ambient, diffuse, specular, actor)
+Engine::Lighting::PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor * actor, Attenuation& i_attenuation):
+	Light(ambient, diffuse, specular, actor), attenuation(i_attenuation)
 {
 }
 

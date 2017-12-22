@@ -1,5 +1,32 @@
 #version 420 core
 
+struct Light {
+	vec4 vector;
+	
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+		
+	float linear;
+	float quadratic;
+};
+
+struct Material {
+	sampler2D diffuse;
+	sampler2D specular;
+	float shininess;
+};
+
+layout (std140, binding = 0) uniform dataPerFrame {
+	mat4 view;
+	mat4 projection;
+	vec4 viewPos;
+	
+	Light light;
+
+	vec2 padding;
+};
+
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec2 aTexCoord;
@@ -11,16 +38,6 @@ out vec3 Normal;
 out vec3 FragPos;
 
 uniform mat4 model;
-
-layout (std140, binding = 0) uniform dataPerFrame{
-	mat4 view;
-	mat4 projection;
-	vec4 viewPos;
-	vec4 lightVector;
-	vec4 lightAmbient;
-	vec4 lightDiffuse;
-	vec4 lightSpecular;
-};
 
 void main()
 {
