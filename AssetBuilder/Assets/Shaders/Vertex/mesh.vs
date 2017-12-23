@@ -1,21 +1,44 @@
 #version 420 core
 
-struct Light {
-	vec4 vector;
-	vec4 direction;
-	
+struct LightData {	
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-		
+};
+
+struct DirectionalLight {
+	vec4 direction;
+				
+	LightData lightData;
+				
+	vec4 isActive;
+};
+
+struct PointLight {
+	vec4 position;
+				
+	LightData lightData;
+
 	float linear;
 	float quadratic;
 
-	float isSpotLight;
+	float isActive;
+
+	float padding;
+};
+
+struct SpotLight {
+	vec4 direction;
+	vec4 position;
+
+	LightData lightData;
+				
 	float innerCutOff;
 	float outerCutOff;
+				
+	float isActive;
 
-	vec3 padding;
+	float padding;
 };
 
 struct Material {
@@ -24,12 +47,17 @@ struct Material {
 	float shininess;
 };
 
+#define NR_POINT_LIGHTS 4
 layout (std140, binding = 0) uniform dataPerFrame {
 	mat4 view;
 	mat4 projection;
 	vec4 viewPos;
 	
-	Light light;
+	DirectionalLight directionalLight;
+
+	PointLight pointLights[NR_POINT_LIGHTS];
+
+	SpotLight spotLight;
 };
 
 layout (location = 0) in vec3 aPos;

@@ -131,6 +131,8 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
+	const unsigned int numberOfPointLights = 4;
+
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
@@ -177,24 +179,60 @@ int main(int argc, char* argv[]) {
 		cubes[i].transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
 	}
 	
-	Engine::Actor lightActor(lightingCube, &lightShader);
-	lightActor.transform.scale = glm::vec3(0.2f);
-	lightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
+	Engine::Actor directionalLightActor(lightingCube, &lightShader);
+	directionalLightActor.transform.scale = glm::vec3(0.2f);
+	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
-	//Initialize light
+	Engine::Actor pointLightActors[]{
+		Engine::Actor(lightingCube, &lightShader),
+		Engine::Actor(lightingCube, &lightShader),
+		Engine::Actor(lightingCube, &lightShader),
+		Engine::Actor(lightingCube, &lightShader)
+	};
+
+	for (unsigned int i = 0; i < numberOfPointLights; i++) {
+		pointLightActors[i].transform.scale = glm::vec3(0.2f);
+	}
+
+	Engine::Actor spotLightActor(lightingCube, &lightShader);
+	spotLightActor.transform.scale = glm::vec3(0.2f);
+	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
+
+	//Initialize lights	
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+	
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
+	
 	glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
 	Engine::Lighting::Attenuation attenuation;
 	attenuation.linear = 0.09f;
 	attenuation.quadratic = 0.032f;
 	float innerCutOff = 12.5f;
-	float outerCutOff = 17.5f;
-	//Engine::Lighting::PointLight light(ambient, diffuse, specular, &lightActor, attenuation);
-	//Engine::Lighting::DirectionalLight light(ambient, diffuse, specular, &lightActor, lightDirection);
-	Engine::Lighting::SpotLight light(ambient, diffuse, specular, &lightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
-	//light.ShowMesh(true);
+	float outerCutOff = 15.0f;
+
+	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &directionalLightActor, lightDirection);
+
+	Engine::Lighting::PointLight pointLights[]{
+		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[0], attenuation),
+		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[1], attenuation),
+		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[2], attenuation),
+		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[3], attenuation)
+	};
+	
+	for (unsigned int i = 0; i < numberOfPointLights; i++) {
+		pointLights[i].SetPosition(pointLightPositions[i]);
+		pointLights[i].ShowMesh(true);
+	}
+
+	Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
+	
 
 	//Initialize Material
 	Engine::Graphics::Material cubeMaterial;
@@ -220,8 +258,8 @@ int main(int argc, char* argv[]) {
 		}
 
 		//Update spot light position direction
-		light.SetPosition(camera.transform.position);
-		light.SetDirection(camera.transform.forward);
+		spotLight.SetPosition(camera.transform.position);
+		spotLight.SetDirection(camera.transform.forward);
 		
 		//Clear color
 		{
@@ -233,24 +271,34 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
-		dataPerFrame.lightData.ambient = glm::vec4(light.ambient, 1.0f);
-		dataPerFrame.lightData.diffuse = glm::vec4(light.diffuse, 1.0f);
-		dataPerFrame.lightData.specular = glm::vec4(light.specular, 1.0f);
+
+		//Direction light data
+		dataPerFrame.directionalLight.isActive = glm::vec4(1.0f);
+		dataPerFrame.directionalLight.direction = glm::vec4(directionalLight.GetLightDirection(), 0.0f);
+		dataPerFrame.directionalLight.lightData.ambient = glm::vec4(directionalLight.ambient, 1.0f);		
+		dataPerFrame.directionalLight.lightData.diffuse = glm::vec4(directionalLight.diffuse, 1.0f);
+		dataPerFrame.directionalLight.lightData.specular = glm::vec4(directionalLight.specular, 1.0f);
 				
-		//Enable block for point light
-		/*dataPerFrame.lightData.linear = light.GetAttenuation().linear;
-		dataPerFrame.lightData.quadratic = light.GetAttenuation().quadratic;
-		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);*/
+		//Point light data
+		for (unsigned int i = 0; i < numberOfPointLights; i++) {
+			dataPerFrame.pointLights[i].isActive = 1.0f;
+			dataPerFrame.pointLights[i].lightData.ambient = glm::vec4(pointLights[i].ambient, 1.0f);
+			dataPerFrame.pointLights[i].lightData.diffuse = glm::vec4(pointLights[i].diffuse, 1.0f);
+			dataPerFrame.pointLights[i].lightData.specular = glm::vec4(pointLights[i].specular, 1.0f);
+			dataPerFrame.pointLights[i].linear = pointLights[i].GetAttenuation().linear;
+			dataPerFrame.pointLights[i].quadratic = pointLights[i].GetAttenuation().quadratic;
+			dataPerFrame.pointLights[i].position = glm::vec4(pointLights[i].GetPosition(), 1.0f);
+		}
 
-		//Enable block for directional light
-		/*dataPerFrame.lightData.vector = glm::vec4(light.GetLightDirection(), 0.0f);*/
-
-		//Enable block for spot light
-		dataPerFrame.lightData.vector = glm::vec4(light.GetPosition(), 1.0f);
-		dataPerFrame.lightData.direction = glm::vec4(light.GetDirection(), 0.0f);
-		dataPerFrame.lightData.innerCutOff = glm::cos(light.GetInnerCutOff());
-		dataPerFrame.lightData.outerCutOff = glm::cos(light.GetOuterCutOff());
-		dataPerFrame.lightData.isSpotLight = 1.0f;
+		//Spot light data
+		dataPerFrame.spotLight.isActive = 1.0f;
+		dataPerFrame.spotLight.direction = glm::vec4(spotLight.GetDirection(), 0.0f);
+		dataPerFrame.spotLight.position = glm::vec4(spotLight.GetPosition(), 1.0f);
+		dataPerFrame.spotLight.innerCutOff = glm::cos(spotLight.GetInnerCutOff());
+		dataPerFrame.spotLight.outerCutOff = glm::cos(spotLight.GetOuterCutOff());
+		dataPerFrame.spotLight.lightData.ambient = glm::vec4(spotLight.ambient, 1.0f);
+		dataPerFrame.spotLight.lightData.diffuse = glm::vec4(spotLight.diffuse, 1.0f);
+		dataPerFrame.spotLight.lightData.specular = glm::vec4(spotLight.specular, 1.0f);
 
 		cameraBuffer.Update(&dataPerFrame);
 
@@ -266,8 +314,18 @@ int main(int argc, char* argv[]) {
 		}
 
 		lightShader.Use();
-		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(lightActor.transform));
-		light.Draw();
+		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(directionalLightActor.transform));
+		directionalLight.Draw();
+
+		for (unsigned int i = 0; i < numberOfPointLights; i++) {
+			lightShader.Use();
+			lightShader.SetMatrix("model", Engine::Math::CalculateTransform(pointLightActors[i].transform));
+			pointLights[i].Draw();
+		}
+		lightShader.Use();
+		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(spotLightActor.transform));
+		spotLightActor.Draw();
+
 
 		//Call events and swap buffers
 		{
