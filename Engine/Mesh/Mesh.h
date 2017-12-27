@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine/Math/Transform.h>
 #include <Engine/VertexFormats.h>
+#include <Engine/Utility/ReferenceCounted.h>
 #include <stdint.h>
 
 namespace Engine {
@@ -13,16 +14,19 @@ namespace Engine {
 			static Mesh* GetCube(const float r, const float g, const float b);
 			void Draw();
 			static void DestroyMesh(Mesh* mesh);
+			REFERENCE_COUNT_FUNCTIONS
 
 		private:
 			Mesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount);
 			Mesh();
 			Mesh(Mesh& other);
+			void operator=(Mesh& other);
 			~Mesh();
 
 			//Vertex Buffer Object, Vertex Array Object and Element Buffer Object
 			unsigned int VBO, VAO, EBO;
 			uint32_t indexCount;
+			REFERENCE_COUNT_VARIABLES
 		};
 	}
 }

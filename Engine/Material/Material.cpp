@@ -5,6 +5,8 @@
 Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_specularTexture, const float i_shininess):
 	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), shininess(i_shininess)
 {
+	diffuseTexture->IncrementReferenceCount();
+	specularTexture->IncrementReferenceCount();
 }
 
 void Engine::Graphics::Material::Bind(Shader* shader)
@@ -19,4 +21,11 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 
 Engine::Graphics::Material::~Material()
 {
+	if (!diffuseTexture->DecrementReferenceCount()) {
+		Texture::DestroyTexture(diffuseTexture);
+	}
+
+	if (!specularTexture->DecrementReferenceCount()) {
+		Texture::DestroyTexture(specularTexture);
+	}
 }

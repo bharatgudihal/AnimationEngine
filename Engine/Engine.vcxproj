@@ -59,6 +59,7 @@
     <ClInclude Include="UniformBuffer\UniformBuffer.h" />
     <ClInclude Include="UniformBuffer\UniformBuffers.h" />
     <ClInclude Include="Utility\ModelImporter.h" />
+    <ClInclude Include="Utility\ReferenceCounted.h" />
     <ClInclude Include="VertexFormats.h" />
   </ItemGroup>
   <ItemGroup>

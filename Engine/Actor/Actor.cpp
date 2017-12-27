@@ -7,10 +7,12 @@
 
 Engine::Actor::Actor(Graphics::Mesh * i_mesh):mesh(i_mesh), material(nullptr)
 {
+	mesh->IncrementReferenceCount();
 }
 
 Engine::Actor::~Actor()
 {
+	Graphics::Mesh::DestroyMesh(mesh);
 }
 
 void Engine::Actor::Draw(Graphics::Shader* shader)

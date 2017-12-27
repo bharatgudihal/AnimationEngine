@@ -16,7 +16,7 @@ namespace Engine {
 			void SetInt(const char* name, int value) const;
 			void SetFloat(const char* name, float value) const;
 			void SetVector(const char* name, const glm::vec3& vector);
-			void SetMatrix(const char* name, const glm::mat4& matrix) const;
+			void SetMatrix(const char* name, const glm::mat4& matrix) const;			
 
 		private:
 			unsigned int shaderId;

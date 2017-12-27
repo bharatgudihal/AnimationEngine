@@ -43,7 +43,9 @@ Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const char 
 
 void Engine::Graphics::Texture::DestroyTexture(Texture * texture)
 {
-	delete texture;
+	if (!texture->DecrementReferenceCount()) {
+		delete texture;
+	}
 }
 
 void Engine::Graphics::Texture::Bind()

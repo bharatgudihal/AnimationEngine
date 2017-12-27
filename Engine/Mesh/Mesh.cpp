@@ -120,7 +120,9 @@ void Engine::Graphics::Mesh::Draw()
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 }
 
-void Engine::Graphics::Mesh::DestroyMesh(Mesh* Mesh)
+void Engine::Graphics::Mesh::DestroyMesh(Mesh* mesh)
 {
-	delete Mesh;
+	if (!mesh->DecrementReferenceCount()) {
+		delete mesh;
+	}
 }
