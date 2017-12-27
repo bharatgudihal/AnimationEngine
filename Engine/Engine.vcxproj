@@ -26,6 +26,7 @@
     <ClCompile Include="Lighting\Light.cpp" />
     <ClCompile Include="Lighting\PointLight\PointLight.cpp" />
     <ClCompile Include="Lighting\SpotLight\SpotLight.cpp" />
+    <ClCompile Include="Material\Material.cpp" />
     <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="Mesh\Mesh.cpp" />
@@ -33,9 +34,11 @@
     <ClCompile Include="Sprite\Sprite.cpp" />
     <ClCompile Include="Texture\Texture.cpp" />
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp" />
+    <ClCompile Include="Utility\ModelImporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
+    <ClInclude Include="Actor\Actor_Inl.h" />
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Lighting\Attenuation.h" />
     <ClInclude Include="Lighting\DirectionalLight\DirectionalLight.h" />
@@ -55,6 +58,7 @@
     <ClInclude Include="Texture\Texture.h" />
     <ClInclude Include="UniformBuffer\UniformBuffer.h" />
     <ClInclude Include="UniformBuffer\UniformBuffers.h" />
+    <ClInclude Include="Utility\ModelImporter.h" />
     <ClInclude Include="VertexFormats.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +139,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Externals\GLFW\include;$(SolutionDir)Externals\GLAD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)External\GLFW</AdditionalLibraryDirectories>
@@ -161,13 +165,17 @@
       <Message>
       </Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Externals\assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <CustomBuildStep>
       <Command>
@@ -187,6 +195,10 @@
     <PostBuildEvent>
       <Message>Copying Assets</Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Externals\assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -196,7 +208,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Externals\GLFW\include;$(SolutionDir)Externals\GLAD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -219,6 +231,10 @@
       <Message>
       </Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Externals\assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -227,7 +243,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -251,6 +267,10 @@
     <PostBuildEvent>
       <Message>Copying Assets</Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Externals\assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

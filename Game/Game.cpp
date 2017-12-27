@@ -145,6 +145,10 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png", 0);
 	Engine::Graphics::Texture* specularTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Specular/container2_specular.png", 1);
 
+	//Initialize Material
+	const float shininess = 32.0f;
+	Engine::Graphics::Material cubeMaterial(diffuseTexture, specularTexture, shininess);
+
 	//Initialize actors
 	const uint8_t numberOfCubes = 10;
 	glm::vec3 cubePositions[] = {
@@ -161,40 +165,41 @@ int main(int argc, char* argv[]) {
 	};
 
 	Engine::Actor cubes[] = {
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader),
-		Engine::Actor(cube, &cubeShader)
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube),
+		Engine::Actor(cube)
 	};
 	
 	for (uint8_t i = 0; i < numberOfCubes; i++) {
 		cubes[i].transform.position = cubePositions[i];
 		float angle = 20.0f * i;
 		cubes[i].transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
+		cubes[i].SetMaterial(&cubeMaterial);
 	}
 	
-	Engine::Actor directionalLightActor(lightingCube, &lightShader);
+	Engine::Actor directionalLightActor(lightingCube);
 	directionalLightActor.transform.scale = glm::vec3(0.2f);
 	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	Engine::Actor pointLightActors[]{
-		Engine::Actor(lightingCube, &lightShader),
-		Engine::Actor(lightingCube, &lightShader),
-		Engine::Actor(lightingCube, &lightShader),
-		Engine::Actor(lightingCube, &lightShader)
+		Engine::Actor(lightingCube),
+		Engine::Actor(lightingCube),
+		Engine::Actor(lightingCube),
+		Engine::Actor(lightingCube)
 	};
 
 	for (unsigned int i = 0; i < numberOfPointLights; i++) {
 		pointLightActors[i].transform.scale = glm::vec3(0.2f);
 	}
 
-	Engine::Actor spotLightActor(lightingCube, &lightShader);
+	Engine::Actor spotLightActor(lightingCube);
 	spotLightActor.transform.scale = glm::vec3(0.2f);
 	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
@@ -233,13 +238,6 @@ int main(int argc, char* argv[]) {
 
 	Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
 	
-
-	//Initialize Material
-	Engine::Graphics::Material cubeMaterial;
-	cubeMaterial.diffuse = diffuseTexture;
-	cubeMaterial.specular = specularTexture;
-	cubeMaterial.shininess = 32.0f;
-
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
@@ -266,8 +264,7 @@ int main(int argc, char* argv[]) {
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}		
-
-		//draw
+				
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
@@ -302,29 +299,17 @@ int main(int argc, char* argv[]) {
 
 		cameraBuffer.Update(&dataPerFrame);
 
+		//draw all meshes
 		for (uint8_t i = 0; i < numberOfCubes; i++) {
-			cubeShader.Use();
-			cubeShader.SetMatrix("model", Engine::Math::CalculateTransform(cubes[i].transform));
-			cubeShader.SetInt("material.diffuse", cubeMaterial.diffuse->GetTextureUnit());
-			cubeShader.SetInt("material.specular", cubeMaterial.specular->GetTextureUnit());
-			cubeShader.SetFloat("material.shininess", cubeMaterial.shininess);
-			diffuseTexture->Bind();
-			specularTexture->Bind();
-			cubes[i].Draw();
+			cubes[i].Draw(&cubeShader);
 		}
+				
+		directionalLight.Draw(&lightShader);
 
-		lightShader.Use();
-		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(directionalLightActor.transform));
-		directionalLight.Draw();
-
-		for (unsigned int i = 0; i < numberOfPointLights; i++) {
-			lightShader.Use();
-			lightShader.SetMatrix("model", Engine::Math::CalculateTransform(pointLightActors[i].transform));
-			pointLights[i].Draw();
+		for (unsigned int i = 0; i < numberOfPointLights; i++) {			
+			pointLights[i].Draw(&lightShader);
 		}
-		lightShader.Use();
-		lightShader.SetMatrix("model", Engine::Math::CalculateTransform(spotLightActor.transform));
-		spotLightActor.Draw();
+		spotLightActor.Draw(&lightShader);
 
 
 		//Call events and swap buffers

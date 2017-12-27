@@ -9,9 +9,9 @@ Engine::Lighting::DirectionalLight::~DirectionalLight()
 {
 }
 
-void Engine::Lighting::DirectionalLight::Draw()
+void Engine::Lighting::DirectionalLight::Draw(Graphics::Shader* shader)
 {
 	if (showMesh && actor) {
-		actor->Draw();
+		actor->Draw(shader);
 	}
 }

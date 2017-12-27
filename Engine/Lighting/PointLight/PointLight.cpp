@@ -12,9 +12,9 @@ Engine::Lighting::PointLight::~PointLight()
 {
 }
 
-void Engine::Lighting::PointLight::Draw()
+void Engine::Lighting::PointLight::Draw(Graphics::Shader* shader)
 {
 	if (showMesh && actor) {
-		actor->Draw();
+		actor->Draw(shader);
 	}
 }

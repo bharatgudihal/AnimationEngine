@@ -102,6 +102,12 @@
     <ClCompile Include="Lighting\SpotLight\SpotLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utility\ModelImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h">
@@ -165,6 +171,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Lighting\SpotLight\SpotLight_Inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ModelImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Actor_Inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

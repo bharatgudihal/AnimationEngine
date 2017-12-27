@@ -8,7 +8,7 @@ namespace Engine {
 		public:
 			DirectionalLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor, glm::vec3 direction);
 			~DirectionalLight();
-			void Draw();
+			void Draw(Graphics::Shader* shader);
 			glm::vec3 GetLightDirection() const;
 		private:
 			glm::vec3 lightDirection;

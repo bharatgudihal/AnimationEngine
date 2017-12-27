@@ -12,7 +12,7 @@ namespace Engine {
 		public:
 			PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor, Attenuation& attenuation);
 			~PointLight();
-			void Draw();
+			void Draw(Graphics::Shader* shader);
 			void SetAttenuation(Attenuation& attenuation);
 			Attenuation GetAttenuation() const;
 		private:

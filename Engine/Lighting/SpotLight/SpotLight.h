@@ -8,7 +8,7 @@ namespace Engine {
 		public:
 			SpotLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, Actor* actor, glm::vec3 direction, float innerCutOff, float outerCutOff);
 			~SpotLight();
-			void Draw();
+			void Draw(Graphics::Shader* shader);
 			void SetInnerCutOffDegrees(float cutOffDegrees);
 			void SetInnerCutOff(float cutOff);
 			float GetInnerCutOff() const;

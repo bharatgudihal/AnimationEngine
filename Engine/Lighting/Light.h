@@ -4,6 +4,11 @@
 
 namespace Engine {
 	class Actor;
+
+	namespace Graphics {
+		class Shader;
+	}
+
 	namespace Lighting {
 		class Light {
 		public:
@@ -11,7 +16,7 @@ namespace Engine {
 			void ShowMesh(const bool showMesh);			
 			void SetPosition(glm::vec3 position);
 			glm::vec3 GetPosition() const;
-			virtual void Draw() = 0;
+			virtual void Draw(Graphics::Shader* shader) = 0;
 			virtual ~Light() {};
 			glm::vec3 ambient;
 			glm::vec3 diffuse;

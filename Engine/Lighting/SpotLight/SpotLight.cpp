@@ -9,9 +9,9 @@ Engine::Lighting::SpotLight::~SpotLight()
 {
 }
 
-void Engine::Lighting::SpotLight::Draw()
+void Engine::Lighting::SpotLight::Draw(Graphics::Shader* shader)
 {
 	if (showMesh && actor) {
-		actor->Draw();
+		actor->Draw(shader);
 	}
 }

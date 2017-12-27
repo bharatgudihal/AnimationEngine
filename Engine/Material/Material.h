@@ -4,9 +4,16 @@
 namespace Engine {
 	namespace Graphics {
 		class Texture;
-		struct Material {
-			Graphics::Texture* diffuse;
-			Graphics::Texture* specular;
+		class Shader;
+
+		class Material {
+		public:
+			Material(Texture* diffuseTexture, Texture* specularTexture, const float shininess);
+			void Bind(Shader* shader);
+			~Material();
+		private:
+			Texture* diffuseTexture;
+			Texture* specularTexture;
 			float shininess;
 		};
 	}
