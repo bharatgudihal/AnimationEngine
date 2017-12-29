@@ -176,9 +176,6 @@
     <ClInclude Include="Utility\ModelImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\Actor_Inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\ReferenceCounted.h">
       <Filter>Header Files</Filter>
     </ClInclude>

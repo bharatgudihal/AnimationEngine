@@ -15,6 +15,8 @@
 #include <Engine/UniformBuffer/UniformBuffer.h>
 #include <Engine/UniformBuffer/UniformBuffers.h>
 #include <Engine/Lighting/Attenuation.h>
+#include <Engine/Utility/ModelImporter.h>
+#include <vector>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -164,42 +166,50 @@ int main(int argc, char* argv[]) {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+	std::vector<Engine::Graphics::Mesh*> meshes;
+	meshes.push_back(cube);
+	std::vector<Engine::Graphics::Material*> materials;
+	materials.push_back(&cubeMaterial);
+
 	Engine::Actor cubes[] = {
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube),
-		Engine::Actor(cube)
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials),
+		Engine::Actor(meshes, materials)
 	};
 	
 	for (uint8_t i = 0; i < numberOfCubes; i++) {
 		cubes[i].transform.position = cubePositions[i];
 		float angle = 20.0f * i;
 		cubes[i].transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
-		cubes[i].SetMaterial(&cubeMaterial);
 	}
+
+	std::vector<Engine::Graphics::Mesh*> lightMeshes;
+	lightMeshes.push_back(lightingCube);
+	std::vector<Engine::Graphics::Material*> lightMaterials;
 	
-	Engine::Actor directionalLightActor(lightingCube);
+	Engine::Actor directionalLightActor(lightMeshes, lightMaterials);
 	directionalLightActor.transform.scale = glm::vec3(0.2f);
 	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	Engine::Actor pointLightActors[]{
-		Engine::Actor(lightingCube),
-		Engine::Actor(lightingCube),
-		Engine::Actor(lightingCube),
-		Engine::Actor(lightingCube)
+		Engine::Actor(lightMeshes, lightMaterials),
+		Engine::Actor(lightMeshes, lightMaterials),
+		Engine::Actor(lightMeshes, lightMaterials),
+		Engine::Actor(lightMeshes, lightMaterials)
 	};
 
 	for (unsigned int i = 0; i < numberOfPointLights; i++) {
 		pointLightActors[i].transform.scale = glm::vec3(0.2f);
 	}
 
-	Engine::Actor spotLightActor(lightingCube);
+	Engine::Actor spotLightActor(lightMeshes, lightMaterials);
 	spotLightActor.transform.scale = glm::vec3(0.2f);
 	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
@@ -242,6 +252,9 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
+	Engine::Actor* model = nullptr;
+
+	Engine::Utility::ImportModel("Assets/nanosuit/nanosuit.obj", model);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -299,10 +312,12 @@ int main(int argc, char* argv[]) {
 
 		cameraBuffer.Update(&dataPerFrame);
 
-		//draw all meshes
+		//draw all actors
 		for (uint8_t i = 0; i < numberOfCubes; i++) {
 			cubes[i].Draw(&cubeShader);
 		}
+
+		model->Draw(&cubeShader);
 				
 		directionalLight.Draw(&lightShader);
 
@@ -324,6 +339,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);
 	Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
 	Engine::Graphics::Texture::DestroyTexture(specularTexture);
+	delete model;
 
 	glfwTerminate();
 	return 0;

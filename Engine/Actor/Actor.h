@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine/Math/Transform.h>
+#include <vector>
 
 namespace Engine {
 
@@ -11,15 +12,12 @@ namespace Engine {
 
 	class Actor {
 	public:
-		Actor(Graphics::Mesh* mesh);
+		Actor(std::vector<Graphics::Mesh*> meshes, std::vector<Graphics::Material*> materials);
 		~Actor();
-		void SetMaterial(Graphics::Material* material);
 		void Draw(Graphics::Shader* shader);
 		Math::Transform transform;
 	private:
-		Graphics::Mesh* mesh;
-		Graphics::Material* material;
+		std::vector<Graphics::Mesh*> meshes;
+		std::vector<Graphics::Material*> materials;
 	};
 }
-
-#include "Actor_Inl.h"

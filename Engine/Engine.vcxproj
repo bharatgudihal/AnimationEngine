@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
-    <ClInclude Include="Actor\Actor_Inl.h" />
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Lighting\Attenuation.h" />
     <ClInclude Include="Lighting\DirectionalLight\DirectionalLight.h" />

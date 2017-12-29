@@ -1,12 +1,12 @@
 #pragma once
 
+#include <string>
+
 namespace Engine {
 
-	namespace Graphics {
-		class Mesh;
-	}
+	class Actor;
 
 	namespace Utility {
-		Graphics::Mesh* ImportModel(const char* path);
+		void ImportModel(const std::string path, Actor*& o_actor);
 	}
 }

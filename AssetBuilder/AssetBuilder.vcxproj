@@ -118,6 +118,12 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>ALWAYS_RUN</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,6 +141,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>ALWAYS_RUN</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,6 +164,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>ALWAYS_RUN</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssetBuilder.cpp" />

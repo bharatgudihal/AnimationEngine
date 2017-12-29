@@ -5,22 +5,28 @@
 #include <Engine/Math/Math.h>
 #include <Engine/Material/Material.h>
 
-Engine::Actor::Actor(Graphics::Mesh * i_mesh):mesh(i_mesh), material(nullptr)
+Engine::Actor::Actor(std::vector<Graphics::Mesh*> i_meshes, std::vector<Graphics::Material*> i_materials):meshes(i_meshes), materials(i_materials)
 {
-	mesh->IncrementReferenceCount();
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i]->IncrementReferenceCount();
+	}
 }
 
 Engine::Actor::~Actor()
 {
-	Graphics::Mesh::DestroyMesh(mesh);
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		Graphics::Mesh::DestroyMesh(meshes[i]);
+	}	
 }
 
 void Engine::Actor::Draw(Graphics::Shader* shader)
 {	
 	shader->Use();
 	shader->SetMatrix("model", Engine::Math::CalculateTransform(transform));
-	if (material) {
-		material->Bind(shader);
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		if (i < materials.size()) {
+			materials[i]->Bind(shader);
+		}
+		meshes[i]->Draw();
 	}
-	mesh->Draw();
 }
