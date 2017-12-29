@@ -38,6 +38,10 @@ namespace Engine {
 					float u, v;
 				}UV;
 
+				struct {
+					float x, y, z;
+				}normal;
+
 			};
 
 		}

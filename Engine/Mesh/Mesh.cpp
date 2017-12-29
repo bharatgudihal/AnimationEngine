@@ -93,17 +93,17 @@ Engine::Graphics::Mesh::Mesh(const VertexFormat::Mesh* vertexArray, const uint32
 
 	//color attribute (3 floats)
 	//offset = 3 floats
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, color));
 	glEnableVertexAttribArray(1);
 
 	//UV attribute (2 floats)
 	//offset = 6 floats
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, UV));
 	glEnableVertexAttribArray(2);
 
 	//Normal attribute (3 floats)
 	//offset = 8 floats
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(8 * sizeof(float)));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, normal));
 	glEnableVertexAttribArray(3);
 }
 
