@@ -3,6 +3,8 @@
 #include <iostream>
 #include <Externals/stb_image/Includes.h>
 
+unsigned int Engine::Graphics::Texture::GLOBAL_TEXTURE_COUNT = 0;
+
 Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned int textureUnit) {
 
 	this->textureUnit = textureUnit;
@@ -36,9 +38,9 @@ Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned 
 	stbi_image_free(data);
 }
 
-Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const char * textureFileName, const unsigned int textureUnit)
+Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const char * textureFileName)
 {
-	return new Texture(textureFileName, textureUnit);
+	return new Texture(textureFileName, GLOBAL_TEXTURE_COUNT++);
 }
 
 void Engine::Graphics::Texture::DestroyTexture(Texture * texture)

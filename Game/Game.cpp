@@ -2,7 +2,6 @@
 #include <GLFW\glfw3.h>
 #include <iostream>
 #include <Engine/Shader/Shader.h>
-#include <Engine/Sprite/Sprite.h>
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Texture/Texture.h>
 #include <Engine/Camera/Camera.h>
@@ -17,6 +16,10 @@
 #include <Engine/Lighting/Attenuation.h>
 #include <Engine/Utility/ModelImporter.h>
 #include <vector>
+
+#define _CRTDBG_MAP_ALLOC  
+#include <stdlib.h>
+#include <crtdbg.h>
 
 float screenWidth = 800.0f;
 float screenHeight = 600.0f;
@@ -103,12 +106,13 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 
 int main(int argc, char* argv[]) {
 
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
-
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -140,56 +144,9 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize shaders
-	Engine::Graphics::Shader cubeShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
-	Engine::Graphics::Shader lightShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");
-
-	//Initialize textures
-	Engine::Graphics::Texture* diffuseTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Diffuse/container2.png", 0);
-	Engine::Graphics::Texture* specularTexture = Engine::Graphics::Texture::CreateTexture("Assets/Lighting_Maps/Specular/container2_specular.png", 1);
-
-	//Initialize Material
-	const float shininess = 32.0f;
-	Engine::Graphics::Material cubeMaterial(diffuseTexture, specularTexture, shininess);
-
-	//Initialize actors
-	const uint8_t numberOfCubes = 10;
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	std::vector<Engine::Graphics::Mesh*> meshes;
-	meshes.push_back(cube);
-	std::vector<Engine::Graphics::Material*> materials;
-	materials.push_back(&cubeMaterial);
-
-	Engine::Actor cubes[] = {
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials),
-		Engine::Actor(meshes, materials)
-	};
-	
-	for (uint8_t i = 0; i < numberOfCubes; i++) {
-		cubes[i].transform.position = cubePositions[i];
-		float angle = 20.0f * i;
-		cubes[i].transform.RotateDegrees(angle, glm::vec3(1.0f, 0.3f, 0.5f));
-	}
-
+	Engine::Graphics::Shader* cubeShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
+	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");	
+		
 	std::vector<Engine::Graphics::Mesh*> lightMeshes;
 	lightMeshes.push_back(lightingCube);
 	std::vector<Engine::Graphics::Material*> lightMaterials;
@@ -197,30 +154,13 @@ int main(int argc, char* argv[]) {
 	Engine::Actor directionalLightActor(lightMeshes, lightMaterials);
 	directionalLightActor.transform.scale = glm::vec3(0.2f);
 	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
-
-	Engine::Actor pointLightActors[]{
-		Engine::Actor(lightMeshes, lightMaterials),
-		Engine::Actor(lightMeshes, lightMaterials),
-		Engine::Actor(lightMeshes, lightMaterials),
-		Engine::Actor(lightMeshes, lightMaterials)
-	};
-
-	for (unsigned int i = 0; i < numberOfPointLights; i++) {
-		pointLightActors[i].transform.scale = glm::vec3(0.2f);
-	}
-
+	
 	Engine::Actor spotLightActor(lightMeshes, lightMaterials);
 	spotLightActor.transform.scale = glm::vec3(0.2f);
 	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	//Initialize lights	
-	glm::vec3 pointLightPositions[] = {
-		glm::vec3(0.7f,  0.2f,  2.0f),
-		glm::vec3(2.3f, -3.3f, -4.0f),
-		glm::vec3(-4.0f,  2.0f, -12.0f),
-		glm::vec3(0.0f,  0.0f, -3.0f)
-	};
-	
+		
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
@@ -233,28 +173,17 @@ int main(int argc, char* argv[]) {
 	float outerCutOff = 15.0f;
 
 	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &directionalLightActor, lightDirection);
-
-	Engine::Lighting::PointLight pointLights[]{
-		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[0], attenuation),
-		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[1], attenuation),
-		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[2], attenuation),
-		Engine::Lighting::PointLight(ambient, diffuse, specular, &pointLightActors[3], attenuation)
-	};
 	
-	for (unsigned int i = 0; i < numberOfPointLights; i++) {
-		pointLights[i].SetPosition(pointLightPositions[i]);
-		pointLights[i].ShowMesh(true);
-	}
-
-	Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
+	//Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
 	
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
 	Engine::Actor* model = nullptr;
-
 	Engine::Utility::ImportModel("Assets/nanosuit/nanosuit.obj", model);
+	model->transform.scale = glm::vec3(0.2f);
+	model->transform.position.y = -1.0f;
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -269,8 +198,8 @@ int main(int argc, char* argv[]) {
 		}
 
 		//Update spot light position direction
-		spotLight.SetPosition(camera.transform.position);
-		spotLight.SetDirection(camera.transform.forward);
+		//spotLight.SetPosition(camera.transform.position);
+		//spotLight.SetDirection(camera.transform.forward);
 		
 		//Clear color
 		{
@@ -288,44 +217,23 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.directionalLight.lightData.ambient = glm::vec4(directionalLight.ambient, 1.0f);		
 		dataPerFrame.directionalLight.lightData.diffuse = glm::vec4(directionalLight.diffuse, 1.0f);
 		dataPerFrame.directionalLight.lightData.specular = glm::vec4(directionalLight.specular, 1.0f);
-				
-		//Point light data
-		for (unsigned int i = 0; i < numberOfPointLights; i++) {
-			dataPerFrame.pointLights[i].isActive = 1.0f;
-			dataPerFrame.pointLights[i].lightData.ambient = glm::vec4(pointLights[i].ambient, 1.0f);
-			dataPerFrame.pointLights[i].lightData.diffuse = glm::vec4(pointLights[i].diffuse, 1.0f);
-			dataPerFrame.pointLights[i].lightData.specular = glm::vec4(pointLights[i].specular, 1.0f);
-			dataPerFrame.pointLights[i].linear = pointLights[i].GetAttenuation().linear;
-			dataPerFrame.pointLights[i].quadratic = pointLights[i].GetAttenuation().quadratic;
-			dataPerFrame.pointLights[i].position = glm::vec4(pointLights[i].GetPosition(), 1.0f);
-		}
 
 		//Spot light data
-		dataPerFrame.spotLight.isActive = 1.0f;
+		/*dataPerFrame.spotLight.isActive = 1.0f;
 		dataPerFrame.spotLight.direction = glm::vec4(spotLight.GetDirection(), 0.0f);
 		dataPerFrame.spotLight.position = glm::vec4(spotLight.GetPosition(), 1.0f);
 		dataPerFrame.spotLight.innerCutOff = glm::cos(spotLight.GetInnerCutOff());
 		dataPerFrame.spotLight.outerCutOff = glm::cos(spotLight.GetOuterCutOff());
 		dataPerFrame.spotLight.lightData.ambient = glm::vec4(spotLight.ambient, 1.0f);
 		dataPerFrame.spotLight.lightData.diffuse = glm::vec4(spotLight.diffuse, 1.0f);
-		dataPerFrame.spotLight.lightData.specular = glm::vec4(spotLight.specular, 1.0f);
+		dataPerFrame.spotLight.lightData.specular = glm::vec4(spotLight.specular, 1.0f);*/
 
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		for (uint8_t i = 0; i < numberOfCubes; i++) {
-			cubes[i].Draw(&cubeShader);
-		}
-
-		model->Draw(&cubeShader);
-				
-		directionalLight.Draw(&lightShader);
-
-		for (unsigned int i = 0; i < numberOfPointLights; i++) {			
-			pointLights[i].Draw(&lightShader);
-		}
-		spotLightActor.Draw(&lightShader);
-
+		model->Draw(cubeShader);				
+		directionalLight.Draw(lightShader);
+		spotLightActor.Draw(lightShader);
 
 		//Call events and swap buffers
 		{
@@ -335,12 +243,14 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Cleanup
+	lightMeshes.clear();
 	Engine::Graphics::Mesh::DestroyMesh(cube);
-	Engine::Graphics::Mesh::DestroyMesh(lightingCube);
-	Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
-	Engine::Graphics::Texture::DestroyTexture(specularTexture);
+	Engine::Graphics::Mesh::DestroyMesh(lightingCube);	
+	Engine::Graphics::Shader::DestroyShader(cubeShader);
+	Engine::Graphics::Shader::DestroyShader(lightShader);
 	delete model;
 
 	glfwTerminate();
+
 	return 0;
 }

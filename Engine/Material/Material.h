@@ -1,5 +1,6 @@
 #pragma once
-#include <Externals/glm/Includes.h>
+
+#include <Engine/Utility/ReferenceCounted.h>
 
 namespace Engine {
 	namespace Graphics {
@@ -9,13 +10,17 @@ namespace Engine {
 
 		class Material {
 		public:
-			Material(Texture* diffuseTexture, Texture* specularTexture, const float shininess);
+			static Material* CreateMaterial(Texture* diffuseTexture, Texture* specularTexture, const float shininess = 32.0f);
+			static void DestroyMaterial(Material* material);
 			void Bind(Shader* shader);
-			~Material();
+			REFERENCE_COUNT_FUNCTIONS
 		private:
+			Material(Texture* diffuseTexture, Texture* specularTexture, const float shininess);
+			~Material();
 			Texture* diffuseTexture;
 			Texture* specularTexture;
 			float shininess;
+			REFERENCE_COUNT_VARIABLES
 		};
 	}
 }

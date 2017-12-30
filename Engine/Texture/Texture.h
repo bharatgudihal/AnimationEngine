@@ -6,7 +6,7 @@ namespace Engine {
 	namespace Graphics {
 		class Texture {
 		public:
-			static Texture* CreateTexture(const char* textureFileName, const unsigned int textureUnit = 0);
+			static Texture* CreateTexture(const char* textureFileName);
 			static void DestroyTexture(Texture* texture);
 			void Bind();
 			const unsigned int GetTextureUnit() const;
@@ -19,6 +19,7 @@ namespace Engine {
 			void operator=(Texture& other);
 			~Texture();
 
+			static unsigned int GLOBAL_TEXTURE_COUNT;
 			unsigned int textureId;
 			unsigned int textureUnit : 4;
 			REFERENCE_COUNT_VARIABLES

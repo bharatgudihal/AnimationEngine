@@ -66,9 +66,6 @@
     <ClCompile Include="Shader\Shader.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite\Sprite.cpp">
-      <Filter>Source Files\Sprite</Filter>
-    </ClCompile>
     <ClCompile Include="Texture\Texture.cpp">
       <Filter>Source Files\Texture</Filter>
     </ClCompile>
@@ -112,9 +109,6 @@
   <ItemGroup>
     <ClInclude Include="Shader\Shader.h">
       <Filter>Header Files\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite\Sprite.h">
-      <Filter>Header Files\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="Texture\Texture.h">
       <Filter>Header Files\Texture</Filter>

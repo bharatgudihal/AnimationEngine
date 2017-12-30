@@ -10,13 +10,21 @@ Engine::Actor::Actor(std::vector<Graphics::Mesh*> i_meshes, std::vector<Graphics
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i]->IncrementReferenceCount();
 	}
+
+	for (unsigned int i = 0; i < materials.size(); i++) {
+		materials[i]->IncrementReferenceCount();
+	}
 }
 
 Engine::Actor::~Actor()
 {
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		Graphics::Mesh::DestroyMesh(meshes[i]);
-	}	
+	}
+
+	for (unsigned int i = 0; i < materials.size(); i++) {
+		Graphics::Material::DestroyMaterial(materials[i]);
+	}
 }
 
 void Engine::Actor::Draw(Graphics::Shader* shader)

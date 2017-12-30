@@ -1,6 +1,7 @@
 #include "ModelImporter.h"
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Material/Material.h>
+#include <Engine/Texture/Texture.h>
 #include <Externals/assimp/include/assimp/Importer.hpp>
 #include <Externals/assimp/include/assimp/scene.h>
 #include <Externals/assimp/include/assimp/postprocess.h>
@@ -9,7 +10,9 @@
 #include <Engine/Actor/Actor.h>
 
 void GetMeshes(aiNode* node, const aiScene* scene, std::vector<aiMesh*>& o_meshes);
-void ProcessMesh(aiMesh* mesh, const aiScene* scene, std::vector<Engine::Graphics::Mesh*>& o_meshes, std::vector<Engine::Graphics::Material*>& o_materials);
+void ProcessMesh(aiMesh* mesh, const aiScene* scene, std::vector<Engine::Graphics::Mesh*>& o_meshes, std::vector<Engine::Graphics::Material*>& o_materials, const std::string& directory);
+void ExtractVertexData(aiMesh * aiMesh, std::vector<Engine::Graphics::Mesh *> &o_meshes);
+void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::string& directory, std::vector<Engine::Graphics::Material *> &o_materials);
 
 void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 {
@@ -20,7 +23,7 @@ void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 		return;
 	}
 
-	std::string directory = path.substr(0, path.find_last_of('/'));
+	std::string directory = path.substr(0, path.find_last_of('/') + 1);
 
 	std::vector<aiMesh*> aiMeshes;
 
@@ -30,7 +33,7 @@ void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 	GetMeshes(scene->mRootNode, scene, aiMeshes);
 
 	for (unsigned int i = 0; i < aiMeshes.size(); i++) {
-		ProcessMesh(aiMeshes[i], scene, meshes, materials);
+		ProcessMesh(aiMeshes[i], scene, meshes, materials, directory);
 	}
 
 	o_actor = new Actor(meshes, materials);
@@ -39,6 +42,11 @@ void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 		Graphics::Mesh::DestroyMesh(meshes[i]);
 	}
 
+	for (unsigned int i = 0; i < materials.size(); i++) {
+		Graphics::Material::DestroyMaterial(materials[i]);
+	}
+
+	importer.FreeScene();
 }
 
 void GetMeshes(aiNode * node, const aiScene * scene, std::vector<aiMesh*>& o_meshes)
@@ -52,17 +60,28 @@ void GetMeshes(aiNode * node, const aiScene * scene, std::vector<aiMesh*>& o_mes
 	}
 }
 
-void ProcessMesh(aiMesh * aiMesh, const aiScene * scene, std::vector<Engine::Graphics::Mesh*>& o_meshes, std::vector<Engine::Graphics::Material*>& o_materials)
+void ProcessMesh(aiMesh * aiMesh, const aiScene * scene, std::vector<Engine::Graphics::Mesh*>& o_meshes, std::vector<Engine::Graphics::Material*>& o_materials, const std::string& directory)
+{
+
+	//Extract Vertex data
+	ExtractVertexData(aiMesh, o_meshes);
+	
+	//Extract Material Data
+	ExtractMaterialData(scene, aiMesh, directory, o_materials);
+
+}
+
+void ExtractVertexData(aiMesh * aiMesh, std::vector<Engine::Graphics::Mesh *> &o_meshes)
 {
 	Engine::Graphics::VertexFormat::Mesh* vertexData = new Engine::Graphics::VertexFormat::Mesh[aiMesh->mNumVertices];
 	uint32_t* indices = new uint32_t[aiMesh->mNumFaces * aiMesh->mFaces[0].mNumIndices];
-	
+
 	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++) {
 		vertexData[i].position.x = aiMesh->mVertices[i].x;
 		vertexData[i].position.y = aiMesh->mVertices[i].y;
 		vertexData[i].position.z = aiMesh->mVertices[i].z;
-		
-		if (aiMesh->HasVertexColors(0)) {			
+
+		if (aiMesh->HasVertexColors(0)) {
 			vertexData[i].color.r = aiMesh->mColors[0][i].r;
 			vertexData[i].color.g = aiMesh->mColors[0][i].g;
 			vertexData[i].color.b = aiMesh->mColors[0][i].b;
@@ -72,7 +91,7 @@ void ProcessMesh(aiMesh * aiMesh, const aiScene * scene, std::vector<Engine::Gra
 			vertexData[i].color.g = 80.0f / 255.0f;
 			vertexData[i].color.b = 80.0f / 255.0f;
 		}
-		
+
 		if (aiMesh->HasTextureCoords(0)) {
 			vertexData[i].UV.u = aiMesh->mTextureCoords[0][i].x;
 			vertexData[i].UV.v = aiMesh->mTextureCoords[0][i].y;
@@ -94,4 +113,41 @@ void ProcessMesh(aiMesh * aiMesh, const aiScene * scene, std::vector<Engine::Gra
 
 	delete[] vertexData;
 	delete[] indices;
+}
+
+void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::string& directory, std::vector<Engine::Graphics::Material *> &o_materials)
+{
+	aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
+	unsigned int diffuseCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+	unsigned int specularCount = aiMaterial->GetTextureCount(aiTextureType_SPECULAR);
+
+	Engine::Graphics::Texture* diffuseTexture = nullptr;
+	Engine::Graphics::Texture* specularTexture = nullptr;
+
+	if (diffuseCount > 0) {
+		aiString file;
+		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+		std::string filePath = std::string(file.C_Str());
+		filePath = directory + filePath;
+		diffuseTexture = Engine::Graphics::Texture::CreateTexture(filePath.c_str());
+	}
+
+	if (specularCount > 0) {
+		aiString file;
+		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+		std::string filePath = std::string(file.C_Str());
+		filePath = directory + filePath;
+		specularTexture = Engine::Graphics::Texture::CreateTexture(filePath.c_str());
+	}
+
+	Engine::Graphics::Material* material = Engine::Graphics::Material::CreateMaterial(diffuseTexture, specularTexture);
+	o_materials.push_back(material);
+
+	if (diffuseTexture) {
+		Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
+	}
+
+	if (specularTexture) {
+		Engine::Graphics::Texture::DestroyTexture(specularTexture);
+	}
 }

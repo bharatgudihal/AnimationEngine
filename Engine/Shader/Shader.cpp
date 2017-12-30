@@ -76,6 +76,18 @@ Engine::Graphics::Shader::~Shader() {
 	glDeleteProgram(shaderId);
 }
 
+Engine::Graphics::Shader * Engine::Graphics::Shader::CreateShader(const char * vertexShaderPath, const char * fragmentShaderPath)
+{
+	return new Shader(vertexShaderPath, fragmentShaderPath);
+}
+
+void Engine::Graphics::Shader::DestroyShader(Shader * shader)
+{
+	if (shader && !shader->DecrementReferenceCount()) {
+		delete shader;
+	}
+}
+
 void Engine::Graphics::Shader::Use()
 {
 	glUseProgram(shaderId);
