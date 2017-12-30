@@ -21,10 +21,12 @@ Engine::Actor::~Actor()
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		Graphics::Mesh::DestroyMesh(meshes[i]);
 	}
+	meshes.clear();
 
 	for (unsigned int i = 0; i < materials.size(); i++) {
 		Graphics::Material::DestroyMaterial(materials[i]);
 	}
+	materials.clear();
 }
 
 void Engine::Actor::Draw(Graphics::Shader* shader)
