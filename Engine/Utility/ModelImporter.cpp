@@ -46,6 +46,10 @@ void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 		Graphics::Material::DestroyMaterial(materials[i]);
 	}
 
+	aiMeshes.clear();
+	meshes.clear();
+	materials.clear();
+
 	importer.FreeScene();
 }
 
@@ -87,6 +91,7 @@ void ExtractVertexData(aiMesh * aiMesh, std::vector<Engine::Graphics::Mesh *> &o
 			vertexData[i].color.b = aiMesh->mColors[0][i].b;
 		}
 		else {
+			// Grey color
 			vertexData[i].color.r = 80.0f / 255.0f;
 			vertexData[i].color.g = 80.0f / 255.0f;
 			vertexData[i].color.b = 80.0f / 255.0f;

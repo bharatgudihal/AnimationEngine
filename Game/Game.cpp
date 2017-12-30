@@ -144,22 +144,28 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize shaders
-	Engine::Graphics::Shader* cubeShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
+	Engine::Graphics::Shader* modelShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");	
-		
+	
+	//Initialize lights	
+
 	std::vector<Engine::Graphics::Mesh*> lightMeshes;
 	lightMeshes.push_back(lightingCube);
 	std::vector<Engine::Graphics::Material*> lightMaterials;
-	
+
 	Engine::Actor directionalLightActor(lightMeshes, lightMaterials);
 	directionalLightActor.transform.scale = glm::vec3(0.2f);
 	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
-	
+
 	Engine::Actor spotLightActor(lightMeshes, lightMaterials);
 	spotLightActor.transform.scale = glm::vec3(0.2f);
 	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
 
-	//Initialize lights	
+	Engine::Actor pointLightActor1(lightMeshes, lightMaterials);
+	pointLightActor1.transform.scale = glm::vec3(0.2f);
+
+	Engine::Actor pointLightActor2(lightMeshes, lightMaterials);
+	pointLightActor2.transform.scale = glm::vec3(0.2f);
 		
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
@@ -173,6 +179,14 @@ int main(int argc, char* argv[]) {
 	float outerCutOff = 15.0f;
 
 	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &directionalLightActor, lightDirection);
+
+	Engine::Lighting::PointLight pointLight1(ambient, diffuse, specular, &pointLightActor1, attenuation);
+	//pointLight1.ShowMesh(true);
+	pointLight1.SetPosition(glm::vec3(-1.0f, 1.0f, 1.0f));
+
+	Engine::Lighting::PointLight pointLight2(ambient, diffuse, specular, &pointLightActor2, attenuation);
+	//pointLight2.ShowMesh(true);
+	pointLight2.SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
 	
 	//Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
 	
@@ -218,6 +232,22 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.directionalLight.lightData.diffuse = glm::vec4(directionalLight.diffuse, 1.0f);
 		dataPerFrame.directionalLight.lightData.specular = glm::vec4(directionalLight.specular, 1.0f);
 
+		dataPerFrame.pointLights[0].isActive = true;
+		dataPerFrame.pointLights[0].lightData.ambient = glm::vec4(pointLight1.ambient, 1.0f);
+		dataPerFrame.pointLights[0].lightData.diffuse = glm::vec4(pointLight1.diffuse, 1.0f);
+		dataPerFrame.pointLights[0].lightData.specular = glm::vec4(pointLight1.specular, 1.0f);
+		dataPerFrame.pointLights[0].linear = pointLight1.GetAttenuation().linear;
+		dataPerFrame.pointLights[0].quadratic = pointLight1.GetAttenuation().quadratic;
+		dataPerFrame.pointLights[0].position = glm::vec4(pointLight1.GetPosition(), 1.0f);
+
+		dataPerFrame.pointLights[1].isActive = true;
+		dataPerFrame.pointLights[1].lightData.ambient = glm::vec4(pointLight2.ambient, 1.0f);
+		dataPerFrame.pointLights[1].lightData.diffuse = glm::vec4(pointLight2.diffuse, 1.0f);
+		dataPerFrame.pointLights[1].lightData.specular = glm::vec4(pointLight2.specular, 1.0f);
+		dataPerFrame.pointLights[1].linear = pointLight2.GetAttenuation().linear;
+		dataPerFrame.pointLights[1].quadratic = pointLight2.GetAttenuation().quadratic;
+		dataPerFrame.pointLights[1].position = glm::vec4(pointLight2.GetPosition(), 1.0f);
+
 		//Spot light data
 		/*dataPerFrame.spotLight.isActive = 1.0f;
 		dataPerFrame.spotLight.direction = glm::vec4(spotLight.GetDirection(), 0.0f);
@@ -231,9 +261,10 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		model->Draw(cubeShader);				
+		model->Draw(modelShader);				
 		directionalLight.Draw(lightShader);
-		spotLightActor.Draw(lightShader);
+		pointLight1.Draw(lightShader);
+		pointLight2.Draw(lightShader);
 
 		//Call events and swap buffers
 		{
@@ -246,7 +277,7 @@ int main(int argc, char* argv[]) {
 	lightMeshes.clear();
 	Engine::Graphics::Mesh::DestroyMesh(cube);
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);	
-	Engine::Graphics::Shader::DestroyShader(cubeShader);
+	Engine::Graphics::Shader::DestroyShader(modelShader);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
 	delete model;
 
