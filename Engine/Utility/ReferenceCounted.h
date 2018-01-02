@@ -3,7 +3,9 @@
 
 #define REFERENCE_COUNT_FUNCTIONS \
 	uint16_t DecrementReferenceCount() { \
-		referenceCount--; \
+		if(referenceCount > 0){ \
+			referenceCount--; \
+		} \
 		return referenceCount; \
 	} \
 	\

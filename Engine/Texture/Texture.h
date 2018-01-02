@@ -19,9 +19,9 @@ namespace Engine {
 			void operator=(Texture& other);
 			~Texture();
 
-			static unsigned int GLOBAL_TEXTURE_COUNT;
+			static uint32_t GLOBAL_TEXTURE_COUNT;
 			unsigned int textureId;
-			unsigned int textureUnit : 4;
+			uint32_t textureUnit;
 			REFERENCE_COUNT_VARIABLES
 		};
 	}

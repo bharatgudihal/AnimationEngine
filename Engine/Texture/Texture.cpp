@@ -3,7 +3,7 @@
 #include <iostream>
 #include <Externals/stb_image/Includes.h>
 
-unsigned int Engine::Graphics::Texture::GLOBAL_TEXTURE_COUNT = 0;
+uint32_t Engine::Graphics::Texture::GLOBAL_TEXTURE_COUNT = 0;
 
 Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned int textureUnit) {
 
@@ -62,4 +62,5 @@ const unsigned int Engine::Graphics::Texture::GetTextureUnit() const {
 
 Engine::Graphics::Texture::~Texture()
 {
+	glDeleteTextures(1, &textureId);
 }
