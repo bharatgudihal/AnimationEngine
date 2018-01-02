@@ -173,6 +173,9 @@
     <ClInclude Include="Utility\ReferenceCounted.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Animation\BasicStructures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Game.props" />
