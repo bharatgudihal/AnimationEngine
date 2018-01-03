@@ -26,8 +26,13 @@ namespace Engine {
 		};
 
 		struct SkeletonPose {
+			//Skeleton
 			Skeleton* skeleton;
+			//Local joint poses
 			JointPose* jointPoses;
+			//Global joint poses
+			glm::mat4* globalPoses;
 		};
+
 	}
 }
