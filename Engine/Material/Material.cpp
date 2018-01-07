@@ -2,8 +2,8 @@
 #include <Engine/Texture/Texture.h>
 #include <Engine/Shader/Shader.h>
 
-Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_specularTexture, const float i_shininess):
-	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), shininess(i_shininess)
+Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_specularTexture, const float i_shininess, glm::vec3 i_diffuseColor, glm::vec3 i_specularColor):
+	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), diffuseColor(i_diffuseColor), specularColor(i_specularColor), shininess(i_shininess)
 {
 	if (diffuseTexture) {
 		diffuseTexture->IncrementReferenceCount();
@@ -14,9 +14,9 @@ Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_spe
 	}
 }
 
-Engine::Graphics::Material * Engine::Graphics::Material::CreateMaterial(Texture * diffuseTexture, Texture * specularTexture, const float shininess)
+Engine::Graphics::Material * Engine::Graphics::Material::CreateMaterial(Texture * diffuseTexture, Texture * specularTexture, glm::vec3 diffuseColor, glm::vec3 specularColor, const float shininess)
 {
-	return new Material(diffuseTexture, specularTexture, shininess);
+	return new Material(diffuseTexture, specularTexture, shininess, diffuseColor, specularColor);
 }
 
 void Engine::Graphics::Material::DestroyMaterial(Material * material)
@@ -36,17 +36,20 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 	}
 	else {
 		shader->SetBool("material.hasDiffuse", false);
+		shader->SetVector("material.diffuseColor", diffuseColor);
 	}
 
 	if (specularTexture) {
-		shader->SetInt("material.specular", specularTexture->GetTextureUnit());
-		shader->SetFloat("material.shininess", shininess);
+		shader->SetInt("material.specular", specularTexture->GetTextureUnit());		
 		shader->SetBool("material.hasSpecular", true);
 		specularTexture->Bind();
 	}
 	else {
 		shader->SetBool("material.hasSpecular", false);
+		shader->SetVector("material.specularColor", specularColor);
 	}
+
+	shader->SetFloat("material.shininess", shininess);
 }
 
 Engine::Graphics::Material::~Material()

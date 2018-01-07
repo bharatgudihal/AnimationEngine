@@ -195,8 +195,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
 	Engine::Actor* model = nullptr;
-	Engine::Utility::ImportModel("Assets/nanosuit/nanosuit.obj", model);
-	model->transform.scale = glm::vec3(0.2f);
+	Engine::Utility::ImportModel("Assets/xbot/xbot.fbx", model);
+	model->transform.scale = glm::vec3(0.02f);
 	model->transform.position.y = -1.0f;
 
 	// Render loop
@@ -261,7 +261,8 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		model->Draw(modelShader);				
+		model->Draw(modelShader);
+		//model->Draw(lightShader);
 		directionalLight.Draw(lightShader);
 		pointLight1.Draw(lightShader);
 		pointLight2.Draw(lightShader);

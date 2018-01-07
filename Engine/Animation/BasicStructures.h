@@ -34,5 +34,24 @@ namespace Engine {
 			glm::mat4* globalPoses;
 		};
 
+		struct AnimationSample {
+			JointPose* jointPoses;
+		};
+
+		struct AnimationClip {
+			Skeleton* skeleton;
+			float framesPerSecond;
+			uint32_t frameCount;
+			AnimationSample* samples;
+			bool isLooping;
+		};
+
+		struct SkinnedVertex {
+			glm::vec3 position;
+			glm::vec3 normal;
+			float u, v;
+			uint8_t jointIndex[4];
+			float jointWeight[3];
+		};
 	}
 }
