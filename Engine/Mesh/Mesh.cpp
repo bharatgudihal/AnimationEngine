@@ -69,6 +69,29 @@ Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube()
 	return GetCube(1.0f,1.0f,1.0f);
 }
 
+Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetPlane(const float r, const float g, const float b)
+{
+	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
+		// positions			// colors		// texture coords	//Normals
+		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f
+	};
+
+	//index data
+	uint32_t indices[] = {
+		0, 2, 1, 0, 3, 2
+	};
+	Mesh* mesh = CreateMesh(meshVertexData, sizeof(meshVertexData) / sizeof(Engine::Graphics::VertexFormat::Mesh), indices, sizeof(indices) / sizeof(uint32_t));
+	return mesh;
+}
+
+Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetPlane()
+{
+	return GetPlane(1.0f, 1.0f, 1.0f);
+}
+
 Engine::Graphics::Mesh::Mesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount)
 {
 	this->indexCount = indexCount;
