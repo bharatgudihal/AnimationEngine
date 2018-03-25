@@ -140,75 +140,47 @@ int main(int argc, char* argv[]) {
 	const unsigned int numberOfPointLights = 4;
 
 	//Initialize meshes	
-	Engine::Graphics::Mesh* cube = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
-	Engine::Graphics::Mesh* plane = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
+	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
+	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
-	std::vector<Engine::Graphics::Mesh*> defaultMeshes;
-	defaultMeshes.push_back(plane);
+	std::vector<Engine::Graphics::Mesh*> planeMeshes;
+	planeMeshes.push_back(planeMesh);
+	std::vector<Engine::Graphics::Mesh*> cubeMeshes;
+	cubeMeshes.push_back(cubeMesh);
+
+	//Initialize textures
+	Engine::Graphics::Texture* planeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/metal.png");
+	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/marble.jpg");
 	
 	//Initialize shaders
-	Engine::Graphics::Shader* modelShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
-	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/light.fs");	
+	Engine::Graphics::Shader* depthTestingShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/depth_testing.vs", "Assets/Shaders/Fragment/depth_testing.fs");	
 	
-	//Initialize lights
-	std::vector<Engine::Graphics::Mesh*> lightMeshes;
-	lightMeshes.push_back(lightingCube);
-	std::vector<Engine::Graphics::Material*> lightMaterials;
-
-	Engine::Actor directionalLightActor(lightMeshes, lightMaterials);
-	directionalLightActor.transform.scale = glm::vec3(0.2f);
-	directionalLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
-
-	Engine::Actor spotLightActor(lightMeshes, lightMaterials);
-	spotLightActor.transform.scale = glm::vec3(0.2f);
-	spotLightActor.transform.position = glm::vec3(1.2f, 1.0f, 2.0f);
-
-	Engine::Actor pointLightActor1(lightMeshes, lightMaterials);
-	pointLightActor1.transform.scale = glm::vec3(0.2f);
-
-	Engine::Actor pointLightActor2(lightMeshes, lightMaterials);
-	pointLightActor2.transform.scale = glm::vec3(0.2f);
-		
+	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
-	
-	glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
-	Engine::Lighting::Attenuation attenuation;
-	attenuation.linear = 0.09f;
-	attenuation.quadratic = 0.032f;
-	float innerCutOff = 12.5f;
-	float outerCutOff = 15.0f;
+	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
+	std::vector<Engine::Graphics::Material*> planeMaterials;
+	planeMaterials.push_back(planeMaterial);
 
-	Engine::Lighting::DirectionalLight directionalLight(ambient, diffuse, specular, &directionalLightActor, lightDirection);
-
-	Engine::Lighting::PointLight pointLight1(ambient, diffuse, specular, &pointLightActor1, attenuation);
-	//pointLight1.ShowMesh(true);
-	pointLight1.SetPosition(glm::vec3(-1.0f, 1.0f, 1.0f));
-
-	Engine::Lighting::PointLight pointLight2(ambient, diffuse, specular, &pointLightActor2, attenuation);
-	//pointLight2.ShowMesh(true);
-	pointLight2.SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
-	
-	//Engine::Lighting::SpotLight spotLight(ambient, diffuse, specular, &spotLightActor, lightDirection, glm::radians(12.5f), glm::radians(outerCutOff));
-
-	//Initialize materials
-	Engine::Graphics::Material* defaultMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
-	std::vector<Engine::Graphics::Material*> defaultMaterials;
-	defaultMaterials.push_back(defaultMaterial);
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr, diffuse, specular);
+	std::vector<Engine::Graphics::Material*> cubeMaterials;
+	cubeMaterials.push_back(cubeMaterial);
 	
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
-	Engine::Actor* model = nullptr;
-	//Engine::Utility::ImportModel("Assets/xbot/xbot.fbx", model);
-	model = new Engine::Actor(defaultMeshes, defaultMaterials);
-	//model->transform.scale = glm::vec3(0.02f);
-	model->transform.position.y = -1.0f;
+	//Initialize actors
+	Engine::Actor* plane = new Engine::Actor(planeMeshes, planeMaterials);
+	plane->transform.scale = glm::vec3(5.0f);
+	plane->transform.position.y = -1.0f;
+
+	Engine::Actor* cube = new Engine::Actor(cubeMeshes, cubeMaterials);	
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
+		
 		//Time calculations
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
@@ -218,10 +190,6 @@ int main(int argc, char* argv[]) {
 		{
 			processInput(window);
 		}
-
-		//Update spot light position direction
-		//spotLight.SetPosition(camera.transform.position);
-		//spotLight.SetDirection(camera.transform.forward);
 		
 		//Clear color
 		{
@@ -233,47 +201,16 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
 
-		//Direction light data
-		dataPerFrame.directionalLight.isActive = glm::vec4(1.0f);
-		dataPerFrame.directionalLight.direction = glm::vec4(directionalLight.GetLightDirection(), 0.0f);
-		dataPerFrame.directionalLight.lightData.ambient = glm::vec4(directionalLight.ambient, 1.0f);		
-		dataPerFrame.directionalLight.lightData.diffuse = glm::vec4(directionalLight.diffuse, 1.0f);
-		dataPerFrame.directionalLight.lightData.specular = glm::vec4(directionalLight.specular, 1.0f);
-
-		/*dataPerFrame.pointLights[0].isActive = true;
-		dataPerFrame.pointLights[0].lightData.ambient = glm::vec4(pointLight1.ambient, 1.0f);
-		dataPerFrame.pointLights[0].lightData.diffuse = glm::vec4(pointLight1.diffuse, 1.0f);
-		dataPerFrame.pointLights[0].lightData.specular = glm::vec4(pointLight1.specular, 1.0f);
-		dataPerFrame.pointLights[0].linear = pointLight1.GetAttenuation().linear;
-		dataPerFrame.pointLights[0].quadratic = pointLight1.GetAttenuation().quadratic;
-		dataPerFrame.pointLights[0].position = glm::vec4(pointLight1.GetPosition(), 1.0f);
-
-		dataPerFrame.pointLights[1].isActive = true;
-		dataPerFrame.pointLights[1].lightData.ambient = glm::vec4(pointLight2.ambient, 1.0f);
-		dataPerFrame.pointLights[1].lightData.diffuse = glm::vec4(pointLight2.diffuse, 1.0f);
-		dataPerFrame.pointLights[1].lightData.specular = glm::vec4(pointLight2.specular, 1.0f);
-		dataPerFrame.pointLights[1].linear = pointLight2.GetAttenuation().linear;
-		dataPerFrame.pointLights[1].quadratic = pointLight2.GetAttenuation().quadratic;
-		dataPerFrame.pointLights[1].position = glm::vec4(pointLight2.GetPosition(), 1.0f);*/
-		
-		//Spot light data
-		/*dataPerFrame.spotLight.isActive = 1.0f;
-		dataPerFrame.spotLight.direction = glm::vec4(spotLight.GetDirection(), 0.0f);
-		dataPerFrame.spotLight.position = glm::vec4(spotLight.GetPosition(), 1.0f);
-		dataPerFrame.spotLight.innerCutOff = glm::cos(spotLight.GetInnerCutOff());
-		dataPerFrame.spotLight.outerCutOff = glm::cos(spotLight.GetOuterCutOff());
-		dataPerFrame.spotLight.lightData.ambient = glm::vec4(spotLight.ambient, 1.0f);
-		dataPerFrame.spotLight.lightData.diffuse = glm::vec4(spotLight.diffuse, 1.0f);
-		dataPerFrame.spotLight.lightData.specular = glm::vec4(spotLight.specular, 1.0f);*/
-
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		//model->Draw(modelShader);
-		model->Draw(lightShader);
-		directionalLight.Draw(lightShader);
-		pointLight1.Draw(lightShader);
-		pointLight2.Draw(lightShader);
+		plane->Draw(depthTestingShader);
+
+		cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
+		cube->Draw(depthTestingShader);
+
+		cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+		cube->Draw(depthTestingShader);
 
 		//Call events and swap buffers
 		{
@@ -283,16 +220,16 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Cleanup
-	lightMeshes.clear();
-	defaultMaterials.clear();
-	defaultMeshes.clear();
-	Engine::Graphics::Mesh::DestroyMesh(cube);
-	Engine::Graphics::Mesh::DestroyMesh(plane);
+	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
+	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);	
-	Engine::Graphics::Shader::DestroyShader(modelShader);
-	Engine::Graphics::Shader::DestroyShader(lightShader);
-	Engine::Graphics::Material::DestroyMaterial(defaultMaterial);
-	delete model;
+	Engine::Graphics::Shader::DestroyShader(depthTestingShader);
+	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
+	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
+	Engine::Graphics::Texture::DestroyTexture(planeTexture);
+	Engine::Graphics::Texture::DestroyTexture(cubeTexture);
+	delete plane;
+	delete cube;
 
 	glfwTerminate();
 

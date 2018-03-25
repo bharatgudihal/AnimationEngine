@@ -73,10 +73,10 @@ Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetPlane(const float r, const f
 {
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
 		// positions			// colors		// texture coords	//Normals
-		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f
+		-0.5f,  0.0f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.0f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.0f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,
+		-0.5f,  0.0f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f
 	};
 
 	//index data
@@ -107,26 +107,26 @@ Engine::Graphics::Mesh::Mesh(const VertexFormat::Mesh* vertexArray, const uint32
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indexCount, indexArray, GL_STATIC_DRAW);
 
-	uint8_t stride = 11;
+	uint8_t stride = sizeof(VertexFormat::Mesh);
 
 	//position attribute (3 floats)
 	//offset = 0 floats
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//color attribute (3 floats)
 	//offset = 3 floats
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, color));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, color));
 	glEnableVertexAttribArray(1);	
 
 	//Normal attribute (3 floats)
 	//offset = 6 floats
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, normal));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, normal));
 	glEnableVertexAttribArray(2);
 
 	//UV attribute (2 floats)
 	//offset = 9 floats
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)offsetof(VertexFormat::Mesh, UV));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, UV));
 	glEnableVertexAttribArray(3);
 }
 

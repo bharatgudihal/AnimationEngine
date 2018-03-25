@@ -33,14 +33,14 @@ namespace Engine {
 				struct {
 					float r, g, b;
 				}color;
-				
-				struct {
-					float x, y, z;
-				}normal;
 
 				struct {
 					float u, v;
 				}UV;
+				
+				struct {
+					float x, y, z;
+				}normal;				
 
 			};
 
