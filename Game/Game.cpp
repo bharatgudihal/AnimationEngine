@@ -133,12 +133,16 @@ int main(int argc, char* argv[]) {
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+	//Set OpenGL properties
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	const unsigned int numberOfPointLights = 4;
+	
+	//Enable stencil test
+	{
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	}
 
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
@@ -154,7 +158,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/marble.jpg");
 	
 	//Initialize shaders
-	Engine::Graphics::Shader* depthTestingShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/depth_testing.vs", "Assets/Shaders/Fragment/depth_testing.fs");	
+	Engine::Graphics::Shader* simpleMeshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/simpleMesh.fs");
+	Engine::Graphics::Shader* outlineShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/outline.fs");
 	
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
@@ -190,12 +195,12 @@ int main(int argc, char* argv[]) {
 		//Input
 		{
 			processInput(window);
-		}
+		}		
 		
-		//Clear color
+		//Clear buffers
 		{
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		}		
 				
 		dataPerFrame.view = camera.GetViewMatrix();
@@ -205,13 +210,42 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
-		cube->Draw(depthTestingShader);
+		{
+			glStencilMask(0x00);
+			plane->Draw(simpleMeshShader);
+		}
 
-		cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
-		cube->Draw(depthTestingShader);
+		//Draw cubes, writing 1s stencil buffer
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
 
-		plane->Draw(depthTestingShader);
+			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
+			cube->Draw(simpleMeshShader);
+
+			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+			cube->Draw(simpleMeshShader);
+		}
+
+		//Scale up cubes and draw using the outline shader
+		{
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDisable(GL_DEPTH_TEST);
+
+			cube->transform.scale *= 1.1f;
+
+			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
+			cube->Draw(outlineShader);
+
+			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+			cube->Draw(outlineShader);
+
+			cube->transform.scale /= 1.1f;
+
+			glStencilMask(0xFF);
+			glEnable(GL_DEPTH_TEST);
+		}
 
 		//Call events and swap buffers
 		{
@@ -224,7 +258,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
 	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
 	Engine::Graphics::Mesh::DestroyMesh(lightingCube);	
-	Engine::Graphics::Shader::DestroyShader(depthTestingShader);
+	Engine::Graphics::Shader::DestroyShader(simpleMeshShader);
+	Engine::Graphics::Shader::DestroyShader(outlineShader);
 	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
 	Engine::Graphics::Texture::DestroyTexture(planeTexture);
