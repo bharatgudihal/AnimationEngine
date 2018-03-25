@@ -136,6 +136,7 @@ int main(int argc, char* argv[]) {
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	const unsigned int numberOfPointLights = 4;
 
@@ -174,7 +175,7 @@ int main(int argc, char* argv[]) {
 	//Initialize actors
 	Engine::Actor* plane = new Engine::Actor(planeMeshes, planeMaterials);
 	plane->transform.scale = glm::vec3(5.0f);
-	plane->transform.position.y = -1.0f;
+	plane->transform.position.y = -0.5f;
 
 	Engine::Actor* cube = new Engine::Actor(cubeMeshes, cubeMaterials);	
 
@@ -204,13 +205,13 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		//draw all actors
-		plane->Draw(depthTestingShader);
-
 		cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
 		cube->Draw(depthTestingShader);
 
 		cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
 		cube->Draw(depthTestingShader);
+
+		plane->Draw(depthTestingShader);
 
 		//Call events and swap buffers
 		{

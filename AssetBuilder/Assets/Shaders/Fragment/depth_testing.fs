@@ -73,7 +73,16 @@ in vec3 FragPos;
 
 uniform Material material;
 
+float nearPlane = 0.1;
+float farPlane = 100.0;
+
+float LinearizeDepth(float fragDepth){
+	float z = fragDepth * 2.0 - 1.0;
+	return (2.0 * nearPlane * farPlane) / (farPlane + nearPlane - z * (farPlane - nearPlane));
+}
+
 void main()
 {
-	FragColor = texture(material.diffuse, TexCoord);
+	float depth = LinearizeDepth(gl_FragCoord.z) / farPlane;
+	FragColor = vec4(vec3(depth),1.0);
 }
