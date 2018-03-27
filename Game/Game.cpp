@@ -136,13 +136,7 @@ int main(int argc, char* argv[]) {
 	//Set OpenGL properties
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	
-	//Enable stencil test
-	{
-		glEnable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	}
+	glEnable(GL_DEPTH_TEST);	
 
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
@@ -211,41 +205,17 @@ int main(int argc, char* argv[]) {
 
 		//draw all actors
 		{
-			glStencilMask(0x00);
 			plane->Draw(simpleMeshShader);
 		}
 
 		//Draw cubes, writing 1s stencil buffer
 		{
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-
 			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
 			cube->Draw(simpleMeshShader);
 
 			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
 			cube->Draw(simpleMeshShader);
-		}
-
-		//Scale up cubes and draw using the outline shader
-		{
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00);
-			glDisable(GL_DEPTH_TEST);
-
-			cube->transform.scale *= 1.1f;
-
-			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
-			cube->Draw(outlineShader);
-
-			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
-			cube->Draw(outlineShader);
-
-			cube->transform.scale /= 1.1f;
-
-			glStencilMask(0xFF);
-			glEnable(GL_DEPTH_TEST);
-		}
+		}		
 
 		//Call events and swap buffers
 		{
