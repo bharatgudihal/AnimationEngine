@@ -149,7 +149,11 @@ int main(int argc, char* argv[]) {
 
 	//Initialize textures
 	Engine::Graphics::Texture* planeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/metal.png");
+	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
 	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/marble.jpg");
+	cubeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	cubeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
 	
 	//Initialize shaders
 	Engine::Graphics::Shader* simpleMeshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/simpleMesh.fs");

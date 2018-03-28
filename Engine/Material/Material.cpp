@@ -30,9 +30,9 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 {
 	shader->Use();
 	if (diffuseTexture) {
-		shader->SetInt("material.diffuse", diffuseTexture->GetTextureUnit());
+		shader->SetInt("material.diffuse", 0);
 		shader->SetBool("material.hasDiffuse", true);
-		diffuseTexture->Bind();
+		diffuseTexture->Bind(0);
 	}
 	else {
 		shader->SetBool("material.hasDiffuse", false);
@@ -40,9 +40,9 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 	}
 
 	if (specularTexture) {
-		shader->SetInt("material.specular", specularTexture->GetTextureUnit());		
+		shader->SetInt("material.specular", 1);		
 		shader->SetBool("material.hasSpecular", true);
-		specularTexture->Bind();
+		specularTexture->Bind(1);
 	}
 	else {
 		shader->SetBool("material.hasSpecular", false);

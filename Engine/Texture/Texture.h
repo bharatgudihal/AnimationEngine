@@ -8,12 +8,13 @@ namespace Engine {
 		public:
 			static Texture* CreateTexture(const char* textureFileName);
 			static void DestroyTexture(Texture* texture);
-			void Bind();
-			const unsigned int GetTextureUnit() const;
+			void Bind(const unsigned int textureUnit = 0);
+			void SetTextureFilteringParams(unsigned int minFilterParam, unsigned int maxFilterParam);
+			void SetTextureWrappingParams(unsigned int sWrappingParam, unsigned int tWrappingParam);
 			REFERENCE_COUNT_FUNCTIONS
 
 		private:
-			Texture(const char* textureFileName, const unsigned int textureUnit);
+			Texture(const char* textureFileName);
 			Texture();
 			Texture(Texture& other);
 			void operator=(Texture& other);
@@ -21,7 +22,6 @@ namespace Engine {
 
 			static uint32_t GLOBAL_TEXTURE_COUNT;
 			unsigned int textureId;
-			uint32_t textureUnit;
 			REFERENCE_COUNT_VARIABLES
 		};
 	}
