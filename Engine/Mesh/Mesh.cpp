@@ -73,10 +73,10 @@ Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetPlane(const float r, const f
 {
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
 		// positions			// colors		// texture coords	//Normals
-		-0.5f,  0.0f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,
-		0.5f,  0.0f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,
-		0.5f,  0.0f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,
-		-0.5f,  0.0f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f
+		-0.5f,  0.0f, -0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.0f, -0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,
+		0.5f,  0.0f,  0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,
+		-0.5f,  0.0f,  0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f
 	};
 
 	//index data

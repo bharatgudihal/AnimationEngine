@@ -13,6 +13,7 @@ namespace Engine {
 	class Actor {
 	public:
 		Actor(std::vector<Graphics::Mesh*> meshes, std::vector<Graphics::Material*> materials);
+		Actor(Graphics::Mesh* mesh, Graphics::Material* material);
 		~Actor();
 		void Draw(Graphics::Shader* shader);
 		Math::Transform transform;

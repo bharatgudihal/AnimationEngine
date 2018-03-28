@@ -14,7 +14,7 @@ Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const u
 	texture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 
 	//Attach texture to the frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE, texture->GetTextureId(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetTextureId(), 0);
 
 	//Create render buffer
 	glGenRenderbuffers(1, &renderBufferId);
@@ -29,7 +29,7 @@ Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const u
 		std::cout << "ERROR:FRAMEBUFFER::Frame buffer is not complete" << std::endl;
 	}
 
-	//Unbind frame buffer
+	//Unbind frame buffer	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -53,9 +53,8 @@ void Engine::Graphics::RenderTexture::UnBind()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Engine::Graphics::RenderTexture::BindTexture(const unsigned int textureUnit)
-{
-	texture->Bind(textureUnit);
+Engine::Graphics::Texture* Engine::Graphics::RenderTexture::GetTexture() {
+	return texture;
 }
 
 Engine::Graphics::RenderTexture::~RenderTexture()

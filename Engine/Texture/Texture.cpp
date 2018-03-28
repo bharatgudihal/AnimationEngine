@@ -36,7 +36,7 @@ Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned 
 		}
 	}
 	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, NULL);
 	}	
 }
 

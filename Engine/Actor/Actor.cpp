@@ -16,6 +16,15 @@ Engine::Actor::Actor(std::vector<Graphics::Mesh*> i_meshes, std::vector<Graphics
 	}
 }
 
+Engine::Actor::Actor(Graphics::Mesh * mesh, Graphics::Material * material)
+{
+	mesh->IncrementReferenceCount();
+	meshes.push_back(mesh);
+
+	material->IncrementReferenceCount();
+	materials.push_back(material);
+}
+
 Engine::Actor::~Actor()
 {
 	for (unsigned int i = 0; i < meshes.size(); i++) {

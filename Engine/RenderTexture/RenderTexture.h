@@ -11,7 +11,7 @@ namespace Engine {
 			void SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam);
 			void Bind();
 			void UnBind();
-			void BindTexture(const unsigned int textureUnit = 0);
+			Texture* GetTexture();
 			~RenderTexture();
 		private:
 			RenderTexture();

@@ -1,6 +1,5 @@
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
-#include <iostream>
 #include <Engine/Shader/Shader.h>
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Texture/Texture.h>
@@ -15,21 +14,22 @@
 #include <Engine/UniformBuffer/UniformBuffers.h>
 #include <Engine/Lighting/Attenuation.h>
 #include <Engine/Utility/ModelImporter.h>
-#include <vector>
 #include <Engine/RenderTexture/RenderTexture.h>
+#include <vector>
+#include <iostream>
 
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>
 #include <crtdbg.h>
 
-float screenWidth = 800.0f;
-float screenHeight = 600.0f;
+int screenWidth = 800;
+int screenHeight = 600;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float lastX = 400.0f, lastY = 300.0f;
 float pitch = 0.0f, yaw = -90.0f;
 bool firstMouse = true;
-Engine::Graphics::Camera camera(45.0f, screenWidth / screenHeight, 0.1f, 100.0f);
+Engine::Graphics::Camera camera(45.0f, screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "OpenGL", NULL, NULL);
 
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -142,17 +142,13 @@ int main(int argc, char* argv[]) {
 	//Initialize meshes	
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);
 	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
-	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();
-	std::vector<Engine::Graphics::Mesh*> planeMeshes;
-	planeMeshes.push_back(planeMesh);
-	std::vector<Engine::Graphics::Mesh*> cubeMeshes;
-	cubeMeshes.push_back(cubeMesh);
+	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();	
 
 	//Initialize textures
 	Engine::Graphics::Texture* planeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/metal.png");
 	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
-	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/marble.jpg");
+	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg");
 	cubeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	cubeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
 	
@@ -164,27 +160,30 @@ int main(int argc, char* argv[]) {
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
-	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
-	std::vector<Engine::Graphics::Material*> planeMaterials;
-	planeMaterials.push_back(planeMaterial);
+	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);	
 
-	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr, diffuse, specular);
-	std::vector<Engine::Graphics::Material*> cubeMaterials;
-	cubeMaterials.push_back(cubeMaterial);
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr, diffuse, specular);	
 	
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
 	//Initialize actors
-	Engine::Actor* plane = new Engine::Actor(planeMeshes, planeMaterials);
-	plane->transform.scale = glm::vec3(5.0f);
-	plane->transform.position.y = -0.5f;
+	Engine::Actor plane(planeMesh, planeMaterial);
+	plane.transform.scale = glm::vec3(5.0f);
+	plane.transform.position.y = -0.5f;
 
-	Engine::Actor* cube = new Engine::Actor(cubeMeshes, cubeMaterials);
+	Engine::Actor cube(cubeMesh, cubeMaterial);
 
 	//Initialize render to texture
+	Engine::Graphics::RenderTexture renderTexture(screenWidth, screenHeight, GL_RGB);
 
+	//New plane
+	Engine::Graphics::Material* reflectionPlaneMaterial = Engine::Graphics::Material::CreateMaterial(renderTexture.GetTexture(), nullptr, diffuse, specular);
+	Engine::Actor reflectionPlane(planeMesh, reflectionPlaneMaterial);
+	reflectionPlane.transform.scale = glm::vec3(5.0f);	
+	reflectionPlane.transform.position.z = -5.0f;
+	reflectionPlane.transform.RotateDegrees(90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -198,33 +197,44 @@ int main(int argc, char* argv[]) {
 		{
 			processInput(window);
 		}		
-		
-		//Clear buffers
-		{
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		}		
-				
+						
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
 
 		cameraBuffer.Update(&dataPerFrame);
 			
+		renderTexture.Bind();
+
+		//Clear buffers
+		{
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
 
 		//Draw cubes
 		{
-			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
-			cube->Draw(simpleMeshShader);
+			cube.transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
+			cube.Draw(simpleMeshShader);
 
-			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
-			cube->Draw(simpleMeshShader);
+			cube.transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+			cube.Draw(simpleMeshShader);
 		}
 
 		//draw plane
 		{
-			plane->Draw(simpleMeshShader);
+			plane.Draw(simpleMeshShader);
 		}
+
+		renderTexture.UnBind();
+
+		//Clear buffers
+		{
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
+
+		reflectionPlane.Draw(simpleMeshShader);
 
 		//Call events and swap buffers
 		{
@@ -241,10 +251,9 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Shader::DestroyShader(outlineShader);
 	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
+	Engine::Graphics::Material::DestroyMaterial(reflectionPlaneMaterial);
 	Engine::Graphics::Texture::DestroyTexture(planeTexture);
 	Engine::Graphics::Texture::DestroyTexture(cubeTexture);
-	delete plane;
-	delete cube;
 
 	glfwTerminate();
 
