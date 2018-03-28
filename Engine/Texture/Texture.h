@@ -7,6 +7,7 @@ namespace Engine {
 		class Texture {
 		public:
 			static Texture* CreateTexture(const char* textureFileName);
+			static Texture* CreateTexture(unsigned int width, unsigned int height, const unsigned int pixelFormat);
 			static void DestroyTexture(Texture* texture);
 			void Bind(const unsigned int textureUnit = 0);
 			void SetTextureFilteringParams(unsigned int minFilterParam, unsigned int maxFilterParam);
@@ -14,7 +15,7 @@ namespace Engine {
 			REFERENCE_COUNT_FUNCTIONS
 
 		private:
-			Texture(const char* textureFileName);
+			Texture(const char* textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
 			Texture();
 			Texture(Texture& other);
 			void operator=(Texture& other);
