@@ -16,6 +16,7 @@
 #include <Engine/Lighting/Attenuation.h>
 #include <Engine/Utility/ModelImporter.h>
 #include <vector>
+#include <Engine/RenderTexture/RenderTexture.h>
 
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>
@@ -180,7 +181,10 @@ int main(int argc, char* argv[]) {
 	plane->transform.scale = glm::vec3(5.0f);
 	plane->transform.position.y = -0.5f;
 
-	Engine::Actor* cube = new Engine::Actor(cubeMeshes, cubeMaterials);	
+	Engine::Actor* cube = new Engine::Actor(cubeMeshes, cubeMaterials);
+
+	//Initialize render to texture
+
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -206,20 +210,21 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
 
 		cameraBuffer.Update(&dataPerFrame);
+			
 
-		//draw all actors
-		{
-			plane->Draw(simpleMeshShader);
-		}
-
-		//Draw cubes, writing 1s stencil buffer
+		//Draw cubes
 		{
 			cube->transform.position = glm::vec3(-1.0f, 0.0f, -1.0f);
 			cube->Draw(simpleMeshShader);
 
 			cube->transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
 			cube->Draw(simpleMeshShader);
-		}		
+		}
+
+		//draw plane
+		{
+			plane->Draw(simpleMeshShader);
+		}
 
 		//Call events and swap buffers
 		{
