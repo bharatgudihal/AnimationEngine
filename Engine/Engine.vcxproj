@@ -216,13 +216,16 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <CustomBuildStep>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Copying Assets</Message>
+      <Message>
+      </Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>ALWAYS_RUN</Outputs>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>
@@ -263,10 +266,12 @@
       </Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying Assets</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Externals\assimp</AdditionalLibraryDirectories>
