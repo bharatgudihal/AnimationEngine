@@ -79,7 +79,7 @@
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <IntDir>$(Configuration)\</IntDir>
+    <IntDir>$(OutDir)\Temp\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
