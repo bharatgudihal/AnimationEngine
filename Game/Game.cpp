@@ -145,10 +145,10 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* lightingCube = Engine::Graphics::Mesh::GetCube();	
 
 	//Initialize textures
-	Engine::Graphics::Texture* planeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/metal.png");
+	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/metal.png");
 	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
-	Engine::Graphics::Texture* cubeTexture = Engine::Graphics::Texture::CreateTexture("Assets/Textures/container.jpg");
+	Engine::Graphics::Texture2D* cubeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/container.jpg");
 	cubeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	cubeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT);
 	
@@ -252,8 +252,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
 	Engine::Graphics::Material::DestroyMaterial(reflectionPlaneMaterial);
-	Engine::Graphics::Texture::DestroyTexture(planeTexture);
-	Engine::Graphics::Texture::DestroyTexture(cubeTexture);
+	Engine::Graphics::Texture2D::DestroyTexture(planeTexture);
+	Engine::Graphics::Texture2D::DestroyTexture(cubeTexture);
 
 	glfwTerminate();
 

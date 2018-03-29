@@ -126,8 +126,8 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 	unsigned int diffuseCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
 	unsigned int specularCount = aiMaterial->GetTextureCount(aiTextureType_SPECULAR);
 	
-	Engine::Graphics::Texture* diffuseTexture = nullptr;
-	Engine::Graphics::Texture* specularTexture = nullptr;
+	Engine::Graphics::Texture2D* diffuseTexture = nullptr;
+	Engine::Graphics::Texture2D* specularTexture = nullptr;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
 
@@ -136,7 +136,7 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		std::string filePath = std::string(file.C_Str());
 		filePath = directory + filePath;
-		diffuseTexture = Engine::Graphics::Texture::CreateTexture(filePath.c_str());
+		diffuseTexture = Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
 	}
 	else {
 		aiColor3D aiDiffuse;
@@ -151,7 +151,7 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		std::string filePath = std::string(file.C_Str());
 		filePath = directory + filePath;
-		specularTexture = Engine::Graphics::Texture::CreateTexture(filePath.c_str());
+		specularTexture = Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
 	}
 	else {
 		aiColor3D aiSpecular;
@@ -165,10 +165,10 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 	o_materials.push_back(material);
 
 	if (diffuseTexture) {
-		Engine::Graphics::Texture::DestroyTexture(diffuseTexture);
+		Engine::Graphics::Texture2D::DestroyTexture(diffuseTexture);
 	}
 
 	if (specularTexture) {
-		Engine::Graphics::Texture::DestroyTexture(specularTexture);
+		Engine::Graphics::Texture2D::DestroyTexture(specularTexture);
 	}
 }

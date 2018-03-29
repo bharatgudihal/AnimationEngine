@@ -3,7 +3,7 @@
 #include <iostream>
 #include <Externals/stb_image/Includes.h>
 
-Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat) {
+Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat) {
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);	
@@ -40,49 +40,49 @@ Engine::Graphics::Texture::Texture(const char * textureFileName, const unsigned 
 	}	
 }
 
-Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const char * textureFileName)
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const char * textureFileName)
 {
-	return new Texture(textureFileName,0,0,0);
+	return new Texture2D(textureFileName,0,0,0);
 }
 
-Engine::Graphics::Texture * Engine::Graphics::Texture::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)
 {
-	return new Texture(nullptr, width, height, pixelFormat);
+	return new Texture2D(nullptr, width, height, pixelFormat);
 }
 
-void Engine::Graphics::Texture::DestroyTexture(Texture * texture)
+void Engine::Graphics::Texture2D::DestroyTexture(Texture2D * texture)
 {
 	if (!texture->DecrementReferenceCount()) {
 		delete texture;
 	}
 }
 
-void Engine::Graphics::Texture::Bind(const unsigned int textureUnit)
+void Engine::Graphics::Texture2D::Bind(const unsigned int textureUnit)
 {
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
-void Engine::Graphics::Texture::SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int maxFilterParam)
+void Engine::Graphics::Texture2D::SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int maxFilterParam)
 {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilterParam);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilterParam);
 }
 
-void Engine::Graphics::Texture::SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam)
+void Engine::Graphics::Texture2D::SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam)
 {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sWrappingParam);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tWrappingParam);
 }
 
-const unsigned int Engine::Graphics::Texture::GetTextureId() const
+const unsigned int Engine::Graphics::Texture2D::GetTextureId() const
 {
 	return textureId;
 }
 
-Engine::Graphics::Texture::~Texture()
+Engine::Graphics::Texture2D::~Texture2D()
 {
 	glDeleteTextures(1, &textureId);
 }

@@ -4,11 +4,11 @@
 
 namespace Engine {
 	namespace Graphics {
-		class Texture {
+		class Texture2D {
 		public:
-			static Texture* CreateTexture(const char* textureFileName);
-			static Texture* CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
-			static void DestroyTexture(Texture* texture);
+			static Texture2D* CreateTexture(const char* textureFileName);
+			static Texture2D* CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
+			static void DestroyTexture(Texture2D* texture);
 			void Bind(const unsigned int textureUnit = 0);
 			void SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int maxFilterParam);
 			void SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam);
@@ -16,11 +16,11 @@ namespace Engine {
 			REFERENCE_COUNT_FUNCTIONS
 
 		private:
-			Texture(const char* textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
-			Texture();
-			Texture(Texture& other);
-			void operator=(Texture& other);
-			~Texture();
+			Texture2D(const char* textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
+			Texture2D();
+			Texture2D(Texture2D& other);
+			void operator=(Texture2D& other);
+			~Texture2D();
 
 			static uint32_t GLOBAL_TEXTURE_COUNT;
 			unsigned int textureId;

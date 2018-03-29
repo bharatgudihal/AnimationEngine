@@ -3,7 +3,7 @@
 namespace Engine {
 	namespace Graphics {
 		
-		class Texture;
+		class Texture2D;
 		class RenderTexture {
 		public:
 			RenderTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
@@ -11,13 +11,13 @@ namespace Engine {
 			void SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam);
 			void Bind();
 			void UnBind();
-			Texture* GetTexture();
+			Texture2D* GetTexture();
 			~RenderTexture();
 		private:
 			RenderTexture();
 			RenderTexture(RenderTexture& other);
 			void operator=(RenderTexture& other);
-			Texture* texture;
+			Texture2D* texture;
 			unsigned int frameBufferId;
 			unsigned int renderBufferId;
 		};

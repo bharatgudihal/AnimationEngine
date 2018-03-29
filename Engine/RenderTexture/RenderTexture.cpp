@@ -10,7 +10,7 @@ Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const u
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
 
 	//Create texture
-	texture = Engine::Graphics::Texture::CreateTexture(width, height, pixelFormat);
+	texture = Engine::Graphics::Texture2D::CreateTexture(width, height, pixelFormat);
 	texture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 
 	//Attach texture to the frame buffer
@@ -53,13 +53,13 @@ void Engine::Graphics::RenderTexture::UnBind()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Engine::Graphics::Texture* Engine::Graphics::RenderTexture::GetTexture() {
+Engine::Graphics::Texture2D* Engine::Graphics::RenderTexture::GetTexture() {
 	return texture;
 }
 
 Engine::Graphics::RenderTexture::~RenderTexture()
 {
 	glDeleteRenderbuffers(1, &renderBufferId);
-	Engine::Graphics::Texture::DestroyTexture(texture);
+	Engine::Graphics::Texture2D::DestroyTexture(texture);
 	glDeleteFramebuffers(1, &frameBufferId);
 }
