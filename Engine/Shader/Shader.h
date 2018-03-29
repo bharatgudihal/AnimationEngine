@@ -22,6 +22,8 @@ namespace Engine {
 		private:
 			Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 			~Shader();
+			Shader(Shader& other);
+			Shader& operator=(Shader& other);
 			unsigned int shaderId;
 			REFERENCE_COUNT_VARIABLES
 		};

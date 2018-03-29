@@ -19,10 +19,8 @@ namespace Engine {
 			Texture2D(const char* textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat);
 			Texture2D();
 			Texture2D(Texture2D& other);
-			void operator=(Texture2D& other);
+			Texture2D& operator=(Texture2D& other);
 			~Texture2D();
-
-			static uint32_t GLOBAL_TEXTURE_COUNT;
 			unsigned int textureId;
 			REFERENCE_COUNT_VARIABLES
 		};

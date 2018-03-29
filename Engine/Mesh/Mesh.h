@@ -22,7 +22,7 @@ namespace Engine {
 			Mesh(const VertexFormat::Mesh* vertexArray, const uint32_t vertexCount, const uint32_t* indexArray, const uint32_t indexCount);
 			Mesh();
 			Mesh(Mesh& other);
-			void operator=(Mesh& other);
+			Mesh& operator=(Mesh& other);
 			~Mesh();
 
 			//Vertex Buffer Object, Vertex Array Object and Element Buffer Object

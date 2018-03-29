@@ -21,7 +21,9 @@ namespace Engine {
 			REFERENCE_COUNT_FUNCTIONS
 		private:
 			Material(Texture2D* diffuseTexture, Texture2D* specularTexture, const float shininess, glm::vec3 diffuseColor, glm::vec3 specularColor);
+			Material(Material& other);
 			~Material();
+			Material& operator=(Material& other);
 			Texture2D* diffuseTexture;
 			Texture2D* specularTexture;
 			glm::vec3 diffuseColor;

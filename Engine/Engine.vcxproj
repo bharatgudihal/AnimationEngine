@@ -32,6 +32,7 @@
     <ClCompile Include="Mesh\Mesh.cpp" />
     <ClCompile Include="RenderTexture\RenderTexture.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
+    <ClCompile Include="Texture\CubeMap.cpp" />
     <ClCompile Include="Texture\Texture.cpp" />
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp" />
     <ClCompile Include="Utility\ModelImporter.cpp" />
@@ -55,6 +56,7 @@
     <ClInclude Include="Mesh\Mesh.h" />
     <ClInclude Include="RenderTexture\RenderTexture.h" />
     <ClInclude Include="Shader\Shader.h" />
+    <ClInclude Include="Texture\CubeMap.h" />
     <ClInclude Include="Texture\Texture.h" />
     <ClInclude Include="UniformBuffer\UniformBuffer.h" />
     <ClInclude Include="UniformBuffer\UniformBuffers.h" />

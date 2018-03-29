@@ -16,7 +16,7 @@ namespace Engine {
 		private:
 			RenderTexture();
 			RenderTexture(RenderTexture& other);
-			void operator=(RenderTexture& other);
+			RenderTexture& operator=(RenderTexture& other);
 			Texture2D* texture;
 			unsigned int frameBufferId;
 			unsigned int renderBufferId;
