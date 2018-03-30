@@ -1,7 +1,7 @@
 #include "Texture2D.h"
 #include <glad/glad.h>
 #include <iostream>
-#include <Externals/stb_image/Includes.h>
+#include <Engine/Utility/TextureLoader.h>
 
 Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat) {
 
@@ -10,9 +10,8 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 	
 	if (textureFileName) {
 		//Load texture
-		int texureWidth, textureHeight, textureChannels;
-		stbi_set_flip_vertically_on_load(true);
-		unsigned char* data = stbi_load(textureFileName, &texureWidth, &textureHeight, &textureChannels, 0);
+		int textureWidth, textureHeight, textureChannels;		
+		unsigned char* data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, true);
 		if (data) {
 			unsigned int texurePixelFormat = GL_RGB;
 			switch (textureChannels) {
@@ -27,9 +26,9 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 				break;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texureWidth, textureHeight, 0, texurePixelFormat, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, texurePixelFormat, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
-			stbi_image_free(data);
+			Engine::Utility::FreeTexture(data);
 		}
 		else {
 			std::cout << "Failed to load texture in path" << textureFileName;
@@ -63,14 +62,14 @@ void Engine::Graphics::Texture2D::Bind(const unsigned int textureUnit)
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
-void Engine::Graphics::Texture2D::SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int maxFilterParam)
+void Engine::Graphics::Texture2D::SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int magFilterParam)
 {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilterParam);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilterParam);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilterParam);
 }
 
-void Engine::Graphics::Texture2D::SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam)
+void Engine::Graphics::Texture2D::SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam, const unsigned int rWrappingParam)
 {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sWrappingParam);

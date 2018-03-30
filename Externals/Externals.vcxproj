@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glm\Includes.h" />
-    <ClInclude Include="stb_image\Includes.h" />
+    <ClInclude Include="stb_image\Includes.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

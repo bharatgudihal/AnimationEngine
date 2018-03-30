@@ -40,7 +40,7 @@ void Engine::Graphics::RenderTexture::SetTextureFilteringParams(const unsigned i
 
 void Engine::Graphics::RenderTexture::SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam)
 {
-	texture->SetTextureWrappingParams(sWrappingParam, tWrappingParam);
+	texture->SetTextureWrappingParams(sWrappingParam, tWrappingParam, 0);
 }
 
 void Engine::Graphics::RenderTexture::Bind()

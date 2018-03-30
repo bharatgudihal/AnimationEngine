@@ -36,6 +36,7 @@
     <ClCompile Include="Texture\Texture2D.cpp" />
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp" />
     <ClCompile Include="Utility\ModelImporter.cpp" />
+    <ClCompile Include="Utility\TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
@@ -57,11 +58,13 @@
     <ClInclude Include="RenderTexture\RenderTexture.h" />
     <ClInclude Include="Shader\Shader.h" />
     <ClInclude Include="Texture\CubeMap.h" />
+    <ClInclude Include="Texture\Texture.h" />
     <ClInclude Include="Texture\Texture2D.h" />
     <ClInclude Include="UniformBuffer\UniformBuffer.h" />
     <ClInclude Include="UniformBuffer\UniformBuffers.h" />
     <ClInclude Include="Utility\ModelImporter.h" />
     <ClInclude Include="Utility\ReferenceCounted.h" />
+    <ClInclude Include="Utility\TextureLoader.h" />
     <ClInclude Include="VertexFormats.h" />
   </ItemGroup>
   <ItemGroup>

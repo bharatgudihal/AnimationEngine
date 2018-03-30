@@ -26,11 +26,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image\Includes.h">
-      <Filter>Header Files\stb_image</Filter>
-    </ClInclude>
     <ClInclude Include="glm\Includes.h">
       <Filter>Header Files\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image\Includes.cpp">
+      <Filter>Header Files\stb_image</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
