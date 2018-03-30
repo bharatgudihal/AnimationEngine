@@ -19,7 +19,6 @@ namespace Engine {
 			Texture2D(Texture2D& other);
 			Texture2D& operator=(Texture2D& other);
 			~Texture2D();
-			unsigned int textureId;
 		};
 	}
 }

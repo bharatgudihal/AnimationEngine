@@ -20,7 +20,6 @@ namespace Engine {
 			~CubeMap();
 			CubeMap(CubeMap& other);
 			CubeMap& operator=(CubeMap& other);
-			unsigned int textureId;
 		};
 	}
 }

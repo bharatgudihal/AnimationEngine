@@ -155,19 +155,19 @@ int main(int argc, char* argv[]) {
 	cubeMapTextures.push_back("Assets/Textures/skybox/bottom.jpg");
 	cubeMapTextures.push_back("Assets/Textures/skybox/front.jpg");
 	cubeMapTextures.push_back("Assets/Textures/skybox/back.jpg");
-	Engine::Graphics::CubeMap* cubeMap = Engine::Graphics::CubeMap::CreateCubeMap(cubeMapTextures);
+	Engine::Graphics::CubeMap* skyboxCubeMap = Engine::Graphics::CubeMap::CreateCubeMap(cubeMapTextures);
 	
 	//Initialize shaders
 	Engine::Graphics::Shader* simpleMeshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/simpleMesh.fs");	
-	Engine::Graphics::Shader* skyboxTexture = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Vertex/skybox.fs");
+	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
 	
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
 
-	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr, diffuse, specular);
-	//Engine::Graphics::Material* skyboxMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nu)
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr);
+	Engine::Graphics::Material* skyboxMaterial = Engine::Graphics::Material::CreateMaterial(skyboxCubeMap, nullptr);
 	
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
@@ -175,6 +175,7 @@ int main(int argc, char* argv[]) {
 	
 	//Initialize actors
 	Engine::Actor cube(cubeMesh, cubeMaterial);
+	Engine::Actor skybox(cubeMesh, skyboxMaterial);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -201,6 +202,12 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		skybox.Draw(skyboxShader);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+
 		//Draw cubes
 		{			
 			cube.Draw(simpleMeshShader);
@@ -216,11 +223,12 @@ int main(int argc, char* argv[]) {
 	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);	
 	Engine::Graphics::Shader::DestroyShader(simpleMeshShader);	
-	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);	
 	Engine::Graphics::Texture2D::DestroyTexture(cubeTexture);
+	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
 
-	Engine::Graphics::CubeMap::DestroyCubeMap(cubeMap);
-	Engine::Graphics::Shader::DestroyShader(skyboxTexture);
+	Engine::Graphics::CubeMap::DestroyCubeMap(skyboxCubeMap);
+	Engine::Graphics::Shader::DestroyShader(skyboxShader);
+	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
 
 	glfwTerminate();
 

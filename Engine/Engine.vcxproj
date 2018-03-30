@@ -33,6 +33,7 @@
     <ClCompile Include="RenderTexture\RenderTexture.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Texture\CubeMap.cpp" />
+    <ClCompile Include="Texture\Texture.cpp" />
     <ClCompile Include="Texture\Texture2D.cpp" />
     <ClCompile Include="UniformBuffer\UniformBuffer.cpp" />
     <ClCompile Include="Utility\ModelImporter.cpp" />
