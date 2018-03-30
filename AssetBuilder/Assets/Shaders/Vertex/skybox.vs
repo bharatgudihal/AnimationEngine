@@ -66,5 +66,5 @@ out vec3 texCoords;
 
 void main(){
 	texCoords = vertexPosition;
-	gl_Position = projection * mat4(mat3(view)) * vec4(vertexPosition, 1.0);
+	gl_Position = (projection * mat4(mat3(view)) * vec4(vertexPosition, 1.0)).xyww;
 }

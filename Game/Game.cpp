@@ -200,18 +200,21 @@ int main(int argc, char* argv[]) {
 		{
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}
-
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		skybox.Draw(skyboxShader);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-
+		}	
+		
 		//Draw cubes
 		{			
 			cube.Draw(simpleMeshShader);
-		}		
+		}
+
+		//Draw skybox
+		{
+			glDepthFunc(GL_LEQUAL);
+			glDisable(GL_CULL_FACE);
+			skybox.Draw(skyboxShader);
+			glEnable(GL_CULL_FACE);
+			glDepthFunc(GL_LESS);
+		}
 
 		//Call events and swap buffers
 		{
