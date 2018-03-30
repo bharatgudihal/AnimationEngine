@@ -1,7 +1,7 @@
 #include "Mesh.h"
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
-#include <Engine\Texture\Texture.h>
+#include <Engine\Texture\Texture2D.h>
 #include <Engine\Shader\Shader.h>
 #include <Engine\Math\Math.h>
 #include <Engine\Camera\Camera.h>

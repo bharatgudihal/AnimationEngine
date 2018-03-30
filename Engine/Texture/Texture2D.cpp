@@ -1,4 +1,4 @@
-#include "Texture.h"
+#include "Texture2D.h"
 #include <glad/glad.h>
 #include <iostream>
 #include <Externals/stb_image/Includes.h>

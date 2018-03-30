@@ -1,7 +1,7 @@
 #include "Actor.h"
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Shader/Shader.h>
-#include <Engine/Texture/Texture.h>
+#include <Engine/Texture/Texture2D.h>
 #include <Engine/Math/Math.h>
 #include <Engine/Material/Material.h>
 

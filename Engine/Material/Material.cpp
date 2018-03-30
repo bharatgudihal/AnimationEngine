@@ -1,5 +1,5 @@
 #include "Material.h"
-#include <Engine/Texture/Texture.h>
+#include <Engine/Texture/Texture2D.h>
 #include <Engine/Shader/Shader.h>
 
 Engine::Graphics::Material::Material(Texture2D * i_diffuseTexture, Texture2D * i_specularTexture, const float i_shininess, glm::vec3 i_diffuseColor, glm::vec3 i_specularColor):

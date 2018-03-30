@@ -2,7 +2,7 @@
 #include <GLFW\glfw3.h>
 #include <Engine/Shader/Shader.h>
 #include <Engine/Mesh/Mesh.h>
-#include <Engine/Texture/Texture.h>
+#include <Engine/Texture/Texture2D.h>
 #include <Engine/Camera/Camera.h>
 #include <Engine/Actor/Actor.h>
 #include <Engine/Math/Math.h>

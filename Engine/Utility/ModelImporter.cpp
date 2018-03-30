@@ -1,7 +1,7 @@
 #include "ModelImporter.h"
 #include <Engine/Mesh/Mesh.h>
 #include <Engine/Material/Material.h>
-#include <Engine/Texture/Texture.h>
+#include <Engine/Texture/Texture2D.h>
 #include <Externals/assimp/include/assimp/Importer.hpp>
 #include <Externals/assimp/include/assimp/scene.h>
 #include <Externals/assimp/include/assimp/postprocess.h>

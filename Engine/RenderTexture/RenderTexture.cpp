@@ -1,6 +1,6 @@
 #include "RenderTexture.h"
 #include <glad/glad.h>
-#include <Engine/Texture/Texture.h>
+#include <Engine/Texture/Texture2D.h>
 #include <iostream>
 
 Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)
