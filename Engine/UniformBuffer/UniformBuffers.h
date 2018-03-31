@@ -19,7 +19,7 @@ namespace Engine {
 				glm::vec4 isActive;
 			};
 
-			struct PointLight {
+			struct PointLight {				
 				glm::vec4 position;
 				
 				LightData lightData;

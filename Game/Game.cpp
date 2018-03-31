@@ -141,47 +141,41 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);	
 
 	//Initialize meshes	
-	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube(1.0f, 0.5f, 0.31f);	
+	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
+	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize textures	
-	Engine::Graphics::Texture2D* cubeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/container.jpg");
-	cubeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	cubeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
-
-	std::vector<std::string> cubeMapTextures;
-	cubeMapTextures.push_back("Assets/Textures/skybox/right.jpg");
-	cubeMapTextures.push_back("Assets/Textures/skybox/left.jpg");
-	cubeMapTextures.push_back("Assets/Textures/skybox/top.jpg");
-	cubeMapTextures.push_back("Assets/Textures/skybox/bottom.jpg");
-	cubeMapTextures.push_back("Assets/Textures/skybox/front.jpg");
-	cubeMapTextures.push_back("Assets/Textures/skybox/back.jpg");
-	Engine::Graphics::CubeMap* skyboxCubeMap = Engine::Graphics::CubeMap::CreateCubeMap(cubeMapTextures);
+	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png");
+	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);	
 	
 	//Initialize shaders
-	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/refraction.vs", "Assets/Shaders/Fragment/refraction.fs");	
-	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
+	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
 	
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
 	glm::vec3 specular(1.0f, 1.0f, 1.0f);
 
-	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(cubeTexture, nullptr);
-	Engine::Graphics::Material* skyboxMaterial = Engine::Graphics::Material::CreateMaterial(skyboxCubeMap, nullptr);
+	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
 	
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 	
 	//Initialize actors
+	Engine::Actor plane(planeMesh, planeMaterial);
+	plane.transform.scale = glm::vec3(5.0f);
+	plane.transform.position.y = -2.0f;
 	Engine::Actor cube(cubeMesh, cubeMaterial);
-	Engine::Actor skybox(cubeMesh, skyboxMaterial);
-	Engine::Actor* nanosuit = nullptr;
-	Engine::Utility::ImportModel("Assets/nanosuit/nanosuit.blend", nanosuit);
-	
-	assert(nanosuit);
 
-	nanosuit->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
+	//Initialize lights
+	Engine::Lighting::Attenuation attennuation;
+	attennuation.linear = 0.22f;
+	attennuation.quadratic = 0.2f;
+	Engine::Lighting::PointLight pointLight(ambient, diffuse, specular, &cube, attennuation);
+	pointLight.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -199,6 +193,13 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
+		dataPerFrame.pointLights[0].isActive = 1.0f;
+		dataPerFrame.pointLights[0].lightData.ambient = glm::vec4(pointLight.ambient,1.0f);
+		dataPerFrame.pointLights[0].lightData.diffuse = glm::vec4(pointLight.diffuse, 1.0f);
+		dataPerFrame.pointLights[0].lightData.specular = glm::vec4(pointLight.specular, 1.0f);
+		dataPerFrame.pointLights[0].linear = pointLight.GetAttenuation().linear;
+		dataPerFrame.pointLights[0].quadratic = pointLight.GetAttenuation().quadratic;
+		dataPerFrame.pointLights[0].position = glm::vec4(pointLight.GetPosition(), 1.0f);
 
 		cameraBuffer.Update(&dataPerFrame);
 		
@@ -208,22 +209,9 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}	
 		
-		//Draw nanosuit
+		//Draw plane
 		{
-			meshShader->Use();
-			meshShader->SetInt("skybox", 3);
-			skyboxCubeMap->Bind(3);
-			//cube.Draw(meshShader);
-			nanosuit->Draw(meshShader);
-		}
-
-		//Draw skybox
-		{
-			glDepthFunc(GL_LEQUAL);
-			glDisable(GL_CULL_FACE);
-			skybox.Draw(skyboxShader);
-			glEnable(GL_CULL_FACE);
-			glDepthFunc(GL_LESS);
+			plane.Draw(meshShader);
 		}
 
 		//Call events and swap buffers
@@ -236,14 +224,10 @@ int main(int argc, char* argv[]) {
 	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);	
 	Engine::Graphics::Shader::DestroyShader(meshShader);	
-	Engine::Graphics::Texture2D::DestroyTexture(cubeTexture);
+	Engine::Graphics::Texture2D::DestroyTexture(planeTexture);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
-
-	Engine::Graphics::CubeMap::DestroyCubeMap(skyboxCubeMap);
-	Engine::Graphics::Shader::DestroyShader(skyboxShader);
-	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
-
-	delete nanosuit;
+	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
+	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
 
 	glfwTerminate();
 

@@ -180,10 +180,6 @@ call $(ProjectDir)CopyAssets.bat "$(ProjectDir)*.dll" "$(SolutionDir)$(Configura
   <ItemGroup>
     <ClCompile Include="AssetBuilder.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Shaders\Fragment\skybox.fs" />
-    <None Include="Assets\Shaders\Vertex\skybox.vs" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
