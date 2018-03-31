@@ -135,6 +135,7 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 		aiString file;
 		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		std::string filePath = std::string(file.C_Str());
+		filePath = filePath.substr(filePath.find_last_of("\\") + 1);
 		filePath = directory + filePath;
 		diffuseTexture = Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
 	}

@@ -102,7 +102,8 @@
       <Message>Copying Assets</Message>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>call $(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"
+call $(ProjectDir)CopyAssets.bat "$(ProjectDir)*.dll" "$(SolutionDir)$(Configuration)\"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>ALWAYS_RUN</Outputs>
@@ -121,7 +122,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <CustomBuildStep>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>call $(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"
+call $(ProjectDir)CopyAssets.bat "$(ProjectDir)*.dll" "$(SolutionDir)$(Configuration)\"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>ALWAYS_RUN</Outputs>
@@ -144,7 +146,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <CustomBuildStep>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>call $(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"
+call $(ProjectDir)CopyAssets.bat "$(ProjectDir)*.dll" "$(SolutionDir)$(Configuration)\"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>ALWAYS_RUN</Outputs>
@@ -167,7 +170,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <CustomBuildStep>
-      <Command>$(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"</Command>
+      <Command>call $(ProjectDir)CopyAssets.bat "$(ProjectDir)Assets" "$(SolutionDir)$(Configuration)\Assets\"
+call $(ProjectDir)CopyAssets.bat "$(ProjectDir)*.dll" "$(SolutionDir)$(Configuration)\"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>ALWAYS_RUN</Outputs>

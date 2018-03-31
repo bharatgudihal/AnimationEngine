@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::CubeMap* skyboxCubeMap = Engine::Graphics::CubeMap::CreateCubeMap(cubeMapTextures);
 	
 	//Initialize shaders
-	Engine::Graphics::Shader* simpleMeshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/simpleMesh.fs");	
+	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/reflection.vs", "Assets/Shaders/Fragment/reflection.fs");	
 	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
 	
 	//Initialize materials
@@ -176,6 +176,12 @@ int main(int argc, char* argv[]) {
 	//Initialize actors
 	Engine::Actor cube(cubeMesh, cubeMaterial);
 	Engine::Actor skybox(cubeMesh, skyboxMaterial);
+	Engine::Actor* nanosuit = nullptr;
+	Engine::Utility::ImportModel("Assets/nanosuit/nanosuit.blend", nanosuit);
+	
+	assert(nanosuit);
+
+	nanosuit->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -202,9 +208,13 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}	
 		
-		//Draw cubes
-		{			
-			cube.Draw(simpleMeshShader);
+		//Draw nanosuit
+		{
+			meshShader->Use();
+			meshShader->SetInt("skybox", 3);
+			skyboxCubeMap->Bind(3);
+			//cube.Draw(meshShader);
+			nanosuit->Draw(meshShader);
 		}
 
 		//Draw skybox
@@ -225,13 +235,15 @@ int main(int argc, char* argv[]) {
 
 	//Cleanup
 	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);	
-	Engine::Graphics::Shader::DestroyShader(simpleMeshShader);	
+	Engine::Graphics::Shader::DestroyShader(meshShader);	
 	Engine::Graphics::Texture2D::DestroyTexture(cubeTexture);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
 
 	Engine::Graphics::CubeMap::DestroyCubeMap(skyboxCubeMap);
 	Engine::Graphics::Shader::DestroyShader(skyboxShader);
 	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
+
+	delete nanosuit;
 
 	glfwTerminate();
 

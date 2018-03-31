@@ -31,7 +31,7 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 			Engine::Utility::FreeTexture(data);
 		}
 		else {
-			std::cout << "Failed to load texture in path" << textureFileName;
+			std::cout << "Failed to load texture in path " << textureFileName << std::endl;
 		}
 	}
 	else {
