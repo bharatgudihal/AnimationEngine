@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::CubeMap* skyboxCubeMap = Engine::Graphics::CubeMap::CreateCubeMap(cubeMapTextures);
 	
 	//Initialize shaders
-	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/reflection.vs", "Assets/Shaders/Fragment/reflection.fs");	
+	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/refraction.vs", "Assets/Shaders/Fragment/refraction.fs");	
 	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
 	
 	//Initialize materials
