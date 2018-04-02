@@ -140,14 +140,20 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
+	const bool useGamma = false;
+
 	//Initialize meshes	
 	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize textures	
-	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png", true);
+	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/brickwall.jpg", useGamma);
 	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);	
+	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
+
+	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/brickwall_normal.jpg", useGamma);
+	planeNormalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	planeNormalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 	
 	//Initialize shaders
 	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
@@ -156,9 +162,10 @@ int main(int argc, char* argv[]) {
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
-	glm::vec3 specular(1.0f, 1.0f, 1.0f);
+	glm::vec3 specular(1.0f, 1.0f, 1.0f);	
 
 	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
+	planeMaterial->SetNormalMap(planeNormalMap);
 	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
 	
 	//Initialize uniform buffer
@@ -167,40 +174,21 @@ int main(int argc, char* argv[]) {
 	
 	//Initialize actors
 	Engine::Actor plane(planeMesh, planeMaterial);
-	plane.transform.scale = glm::vec3(10.0f);
-	plane.transform.position.y = -1.0f;
+	plane.transform.scale = glm::vec3(5.0f);
+	plane.transform.position.z = -3.0f;
+	plane.transform.RotateDegrees(90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	//Initialize lights
 	Engine::Lighting::Attenuation attennuation;
-	attennuation.linear = 1.0f;
-	attennuation.quadratic = 1.0f;
-	glm::vec3 lightPositions[] = {
-		glm::vec3(-3.0f, 0.0f, 0.0f),
-		glm::vec3(-1.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(3.0f, 0.0f, 0.0f)
-	};
-	glm::vec3 lightColors[] = {
-		glm::vec3(0.25),
-		glm::vec3(0.50),
-		glm::vec3(0.75),
-		glm::vec3(1.00)
-	};
+	attennuation.linear = 0.22f;
+	attennuation.quadratic = 0.2f;
 
-	Engine::Actor* lightCubes[]{
-		new Engine::Actor(cubeMesh, cubeMaterial),
-		new Engine::Actor(cubeMesh, cubeMaterial),
-		new Engine::Actor(cubeMesh, cubeMaterial),
-		new Engine::Actor(cubeMesh, cubeMaterial)
-	};
+	glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+	
+	Engine::Actor lightCube(cubeMesh, cubeMaterial);
 
-	Engine::Lighting::PointLight* pointLights[4];
-	for (int i = 0; i < 4; i++) {
-		lightCubes[i]->transform.scale = glm::vec3(0.2f);
-		pointLights[i] = new Engine::Lighting::PointLight(lightColors[i], lightColors[i], lightColors[i], lightCubes[i], attennuation);
-		pointLights[i]->SetPosition(lightPositions[i]);
-		pointLights[i]->ShowMesh(false);
-	}
+	Engine::Lighting::PointLight pointLight(lightColor, lightColor, lightColor, &lightCube, attennuation);
+	pointLight.SetPosition(glm::vec3(0.5f, 1.0f, 0.3f));
 
 	// Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -218,17 +206,15 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
-		dataPerFrame.gamma = 2.2f;
-
-		for (int i = 0; i < 4; i++) {
-			dataPerFrame.pointLights[i].isActive = 1.0f;
-			dataPerFrame.pointLights[i].lightData.ambient = glm::vec4(pointLights[i]->ambient, 1.0f);
-			dataPerFrame.pointLights[i].lightData.diffuse = glm::vec4(pointLights[i]->diffuse, 1.0f);
-			dataPerFrame.pointLights[i].lightData.specular = glm::vec4(pointLights[i]->specular, 1.0f);
-			dataPerFrame.pointLights[i].linear = pointLights[i]->GetAttenuation().linear;
-			dataPerFrame.pointLights[i].quadratic = pointLights[i]->GetAttenuation().quadratic;
-			dataPerFrame.pointLights[i].position = glm::vec4(pointLights[i]->GetPosition(), 1.0f);
-		}
+		dataPerFrame.gamma = useGamma ? 2.2f : 1.0f;
+		
+		dataPerFrame.pointLights[0].isActive = 1.0f;
+		dataPerFrame.pointLights[0].lightData.ambient = glm::vec4(pointLight.ambient, 1.0f);
+		dataPerFrame.pointLights[0].lightData.diffuse = glm::vec4(pointLight.diffuse, 1.0f);
+		dataPerFrame.pointLights[0].lightData.specular = glm::vec4(pointLight.specular, 1.0f);
+		dataPerFrame.pointLights[0].linear = pointLight.GetAttenuation().linear;
+		dataPerFrame.pointLights[0].quadratic = pointLight.GetAttenuation().quadratic;
+		dataPerFrame.pointLights[0].position = glm::vec4(pointLight.GetPosition(), 1.0f);
 
 		cameraBuffer.Update(&dataPerFrame);
 		
@@ -238,9 +224,7 @@ int main(int argc, char* argv[]) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}	
 		
-		for (int i = 0; i < 4; i++) {
-			pointLights[i]->Draw(lightShader);
-		}
+		pointLight.Draw(lightShader);
 
 		//Draw plane
 		{
@@ -261,13 +245,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
 	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
 	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
-
+	Engine::Graphics::Texture::DestroyTexture(planeNormalMap);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
-
-	for (int i = 0; i < 4; i++) {		
-		delete pointLights[i];
-		delete lightCubes[i];
-	}
 
 	glfwTerminate();
 

@@ -49,16 +49,63 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 		shader->SetVector("material.specularColor", specularColor);
 	}
 
+	if (normalMap) {
+		shader->SetInt("material.normalMap", 2);
+		shader->SetBool("material.hasNormalMap", true);
+		normalMap->Bind(2);
+	}
+
 	shader->SetFloat("material.shininess", shininess);
+}
+
+void Engine::Graphics::Material::SetDiffuseTexture(Texture * newTexture)
+{
+	if (diffuseTexture) {
+		Texture::DestroyTexture(diffuseTexture);
+	}
+	diffuseTexture = newTexture;
+	diffuseTexture->IncrementReferenceCount();
+}
+
+void Engine::Graphics::Material::SetSpecularTexture(Texture * newTexture)
+{
+	if (specularTexture) {
+		Texture::DestroyTexture(specularTexture);
+	}
+	specularTexture = newTexture;
+	specularTexture->IncrementReferenceCount();
+}
+
+void Engine::Graphics::Material::SetDiffuseColor(const glm::vec3 newColor)
+{
+	diffuseColor = newColor;
+}
+
+void Engine::Graphics::Material::SetSpecularColor(const glm::vec3 newColor)
+{
+	specularColor = newColor;
+}
+
+void Engine::Graphics::Material::SetNormalMap(Texture * newTexture)
+{
+	if (normalMap) {
+		Texture::DestroyTexture(normalMap);
+	}
+	normalMap = newTexture;
+	normalMap->IncrementReferenceCount();
 }
 
 Engine::Graphics::Material::~Material()
 {
-	if (diffuseTexture && !diffuseTexture->DecrementReferenceCount()) {
+	if (diffuseTexture) {
 		Texture::DestroyTexture(diffuseTexture);
 	}
 
-	if (specularTexture && !specularTexture->DecrementReferenceCount()) {
+	if (specularTexture) {
 		Texture::DestroyTexture(specularTexture);
+	}
+
+	if (normalMap) {
+		Texture::DestroyTexture(normalMap);
 	}
 }

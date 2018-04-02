@@ -41,12 +41,6 @@ struct SpotLight {
 	float padding;
 };
 
-struct Material {
-	sampler2D diffuse;
-	sampler2D specular;
-	float shininess;
-};
-
 #define NR_POINT_LIGHTS 4
 layout (std140, binding = 0) uniform dataPerFrame {
 	mat4 view;

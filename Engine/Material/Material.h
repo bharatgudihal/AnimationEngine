@@ -18,6 +18,7 @@ namespace Engine {
 			void SetSpecularTexture(Texture* newTexture);
 			void SetDiffuseColor(const glm::vec3 newColor);
 			void SetSpecularColor(const glm::vec3 newColor);
+			void SetNormalMap(Texture* newTexture);
 			REFERENCE_COUNT_FUNCTIONS
 		private:
 			Material(Texture* diffuseTexture, Texture* specularTexture, const float shininess, glm::vec3 diffuseColor, glm::vec3 specularColor);
@@ -26,6 +27,7 @@ namespace Engine {
 			Material& operator=(Material& other);
 			Texture* diffuseTexture;
 			Texture* specularTexture;
+			Texture* normalMap;
 			glm::vec3 diffuseColor;
 			glm::vec3 specularColor;
 			float shininess;

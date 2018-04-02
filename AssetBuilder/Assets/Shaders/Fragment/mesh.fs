@@ -44,11 +44,13 @@ struct SpotLight {
 struct Material {
 	sampler2D diffuse;
 	sampler2D specular;
+	sampler2D normalMap;
 	vec3 diffuseColor;
 	vec3 specularColor;
 	float shininess;
 	bool hasDiffuse;
 	bool hasSpecular;
+	bool hasNormalMap;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -83,7 +85,17 @@ vec3 CalcSpotLight(SpotLight light, vec3 fragPos, vec3 normal, vec3 viewDir);
 void main()
 {
 	// properties
-    vec3 norm = normalize(Normal);
+    vec3 norm;
+	if(material.hasNormalMap){
+		//sample normal map
+		norm = texture(material.normalMap, TexCoord).rgb;
+		
+		//change normal range from [0,1] to [-1,1]
+		norm = normalize(norm * 2.0 - 1.0);
+	}else{
+		norm = normalize(Normal);
+	}
+
     vec3 viewDir = normalize(vec3(viewPos) - FragPos);
 
 	//Calculate directional lighting
