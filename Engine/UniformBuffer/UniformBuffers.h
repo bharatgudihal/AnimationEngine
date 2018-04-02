@@ -58,6 +58,9 @@ namespace Engine {
 				PointLight pointLights[NR_POINT_LIGHTS];
 
 				SpotLight spotLight;
+
+				float gamma = 1.0f;
+				float padding[3];
 			};
 		}
 	}

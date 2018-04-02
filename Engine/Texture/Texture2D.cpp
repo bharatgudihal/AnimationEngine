@@ -3,7 +3,7 @@
 #include <iostream>
 #include <Engine/Utility/TextureLoader.h>
 
-Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat) {
+Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat, const bool useGammaCorrection) {
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);	
@@ -13,20 +13,28 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 		int textureWidth, textureHeight, textureChannels;		
 		unsigned char* data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, true);
 		if (data) {
-			unsigned int texurePixelFormat = GL_RGB;
+			unsigned int texturePixelFormat = GL_RGB;
+			unsigned int internalTextureFormat = useGammaCorrection ? GL_SRGB : GL_RGB;
 			switch (textureChannels) {
+			case 1:
+				texturePixelFormat = GL_RED;
+				internalTextureFormat = GL_RED;
+				break;
 			case 2:
-				texurePixelFormat = GL_RG;
+				texturePixelFormat = GL_RG;
+				internalTextureFormat = GL_RG;
 				break;
 			case 3:
-				texurePixelFormat = GL_RGB;
+				texturePixelFormat = GL_RGB;
+				internalTextureFormat = useGammaCorrection ? GL_SRGB : GL_RGB;
 				break;
 			case 4:
-				texurePixelFormat = GL_RGBA;
+				texturePixelFormat = GL_RGBA;
+				internalTextureFormat = useGammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
 				break;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, texurePixelFormat, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalTextureFormat, textureWidth, textureHeight, 0, texturePixelFormat, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			Engine::Utility::FreeTexture(data);
 		}
@@ -39,9 +47,9 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 	}	
 }
 
-Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const char * textureFileName)
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const char * textureFileName, const bool useGammaCorrection)
 {
-	return new Texture2D(textureFileName,0,0,0);
+	return new Texture2D(textureFileName,0,0,0, useGammaCorrection);
 }
 
 Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)

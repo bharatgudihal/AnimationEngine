@@ -58,6 +58,9 @@ layout (std140, binding = 0) uniform dataPerFrame {
 	PointLight pointLights[NR_POINT_LIGHTS];
 
 	SpotLight spotLight;
+
+	float gamma;
+	vec3 padding;
 };
 
 layout (location = 0) in vec3 aPos;

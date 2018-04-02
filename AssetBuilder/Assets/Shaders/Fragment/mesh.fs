@@ -62,6 +62,9 @@ layout (std140, binding = 0) uniform dataPerFrame {
 	PointLight pointLights[NR_POINT_LIGHTS];
 
 	SpotLight spotLight;
+
+	float gamma;
+	vec3 padding;
 };
 
 out vec4 FragColor;
@@ -93,6 +96,8 @@ void main()
 
 	//Calculate spot lightin
 	result += CalcSpotLight(spotLight, FragPos, norm, viewDir);
+
+	result = pow(result, vec3(1.0/gamma));
 
 	FragColor = vec4(result, 1.0);
 }
@@ -149,7 +154,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     
 		// attenuation
 		float distance = length(lightPos - fragPos);
-		float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));    
+		float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
     
 		// combine results
 		vec3 ambient = vec3(light.lightData.ambient);
@@ -168,12 +173,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 		}else{
 			specular = specular * spec * material.specularColor;
 		}
-
-		ambient *= attenuation;
-		diffuse *= attenuation;
-		specular *= attenuation;
     
-		return (ambient + diffuse + specular);
+		return (ambient + diffuse + specular) * attenuation;
 	}else{
 		return vec3(0.0);
 	}
