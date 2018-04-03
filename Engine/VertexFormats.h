@@ -40,8 +40,15 @@ namespace Engine {
 				
 				struct {
 					float x, y, z;
-				}normal;				
+				}normal;
 
+				struct {
+					float x, y, z;
+				}tangent;
+
+				struct {
+					float x, y, z;
+				}bitangent;
 			};
 
 		}
