@@ -11,7 +11,7 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 	if (textureFileName) {
 		//Load texture
 		int textureWidth, textureHeight, textureChannels;		
-		unsigned char* data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, true);
+		unsigned char* data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, false);
 		if (data) {
 			unsigned int texturePixelFormat = GL_RGB;
 			unsigned int internalTextureFormat = useGammaCorrection ? GL_SRGB : GL_RGB;

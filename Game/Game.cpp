@@ -185,11 +185,17 @@ int main(int argc, char* argv[]) {
 	glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 	
 	Engine::Actor lightCube(cubeMesh, cubeMaterial);
-
+	
 	Engine::Lighting::PointLight pointLight(lightColor, lightColor, lightColor, &lightCube, attennuation);
 	pointLight.SetPosition(glm::vec3(0.5f, 1.0f, 0.3f));
 
-	// Render loop
+	//Load model
+	Engine::Actor* cyborg = nullptr;
+	Engine::Utility::ImportModel("Assets/Models/cyborg/cyborg.obj", cyborg);
+	assert(cyborg);
+	cyborg->transform.scale = glm::vec3(0.5f);
+
+	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 		
 		//Time calculations
@@ -200,7 +206,7 @@ int main(int argc, char* argv[]) {
 		//Input
 		{
 			processInput(window);
-		}		
+		}
 						
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
@@ -227,7 +233,11 @@ int main(int argc, char* argv[]) {
 
 		//Draw plane
 		{
-			plane.Draw(meshShader);
+			//plane.Draw(meshShader);
+		}
+
+		{
+			cyborg->Draw(meshShader);
 		}
 
 		//Call events and swap buffers
@@ -246,6 +256,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
 	Engine::Graphics::Texture::DestroyTexture(planeNormalMap);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
+
+	delete cyborg;
 
 	glfwTerminate();
 

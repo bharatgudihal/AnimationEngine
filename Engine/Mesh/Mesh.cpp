@@ -133,6 +133,16 @@ Engine::Graphics::Mesh::Mesh(const VertexFormat::Mesh* vertexArray, const uint32
 	//offset = 9 floats
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, UV));
 	glEnableVertexAttribArray(3);
+
+	//Tangent attribute (3 floats)
+	//offset = 11 floats
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, tangent));
+	glEnableVertexAttribArray(4);
+
+	//Bitangent attribute (3 floats)
+	//offset = 14 floats
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(VertexFormat::Mesh, bitangent));
+	glEnableVertexAttribArray(5);
 }
 
 Engine::Graphics::Mesh::~Mesh()

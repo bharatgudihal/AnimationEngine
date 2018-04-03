@@ -75,6 +75,7 @@ in vec3 ObjectColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
+in mat3 TBN;
 
 uniform Material material;
 
@@ -92,6 +93,9 @@ void main()
 		
 		//change normal range from [0,1] to [-1,1]
 		norm = normalize(norm * 2.0 - 1.0);
+
+		//Transform normal from tangent space
+		norm = normalize(TBN * norm);
 	}else{
 		norm = normalize(Normal);
 	}

@@ -64,7 +64,10 @@ void Engine::Graphics::Material::SetDiffuseTexture(Texture * newTexture)
 		Texture::DestroyTexture(diffuseTexture);
 	}
 	diffuseTexture = newTexture;
-	diffuseTexture->IncrementReferenceCount();
+	
+	if (diffuseTexture) {
+		diffuseTexture->IncrementReferenceCount();
+	}
 }
 
 void Engine::Graphics::Material::SetSpecularTexture(Texture * newTexture)
@@ -73,7 +76,9 @@ void Engine::Graphics::Material::SetSpecularTexture(Texture * newTexture)
 		Texture::DestroyTexture(specularTexture);
 	}
 	specularTexture = newTexture;
-	specularTexture->IncrementReferenceCount();
+	if (specularTexture) {
+		specularTexture->IncrementReferenceCount();
+	}
 }
 
 void Engine::Graphics::Material::SetDiffuseColor(const glm::vec3 newColor)
@@ -92,7 +97,9 @@ void Engine::Graphics::Material::SetNormalMap(Texture * newTexture)
 		Texture::DestroyTexture(normalMap);
 	}
 	normalMap = newTexture;
-	normalMap->IncrementReferenceCount();
+	if (normalMap) {
+		normalMap->IncrementReferenceCount();
+	}
 }
 
 Engine::Graphics::Material::~Material()

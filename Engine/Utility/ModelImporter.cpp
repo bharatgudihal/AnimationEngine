@@ -17,7 +17,7 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 void Engine::Utility::ImportModel(const std::string path, Actor*& o_actor)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 		return;
@@ -105,6 +105,16 @@ void ExtractVertexData(aiMesh * aiMesh, std::vector<Engine::Graphics::Mesh *> &o
 		vertexData[i].normal.x = aiMesh->mNormals[i].x;
 		vertexData[i].normal.y = aiMesh->mNormals[i].y;
 		vertexData[i].normal.z = aiMesh->mNormals[i].z;
+
+		if (aiMesh->HasTangentsAndBitangents()) {
+			vertexData[i].tangent.x = aiMesh->mTangents[i].x;
+			vertexData[i].tangent.y = aiMesh->mTangents[i].y;
+			vertexData[i].tangent.z = aiMesh->mTangents[i].z;
+
+			vertexData[i].bitangent.x = aiMesh->mBitangents[i].x;
+			vertexData[i].bitangent.y = aiMesh->mBitangents[i].y;
+			vertexData[i].bitangent.z = aiMesh->mBitangents[i].z;
+		}
 	}
 
 	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++) {
@@ -120,24 +130,30 @@ void ExtractVertexData(aiMesh * aiMesh, std::vector<Engine::Graphics::Mesh *> &o
 	delete[] indices;
 }
 
+Engine::Graphics::Texture2D* GetTextureFromMaterial(aiMaterial* material, const aiTextureType textureType, const std::string& directory){
+	aiString file;
+	material->GetTexture(textureType, 0, &file);
+	std::string filePath = std::string(file.C_Str());
+	filePath = filePath.substr(filePath.find_last_of("\\") + 1);
+	filePath = directory + filePath;
+	return Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
+}
+
 void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::string& directory, std::vector<Engine::Graphics::Material *> &o_materials)
 {
 	aiMaterial* aiMaterial = scene->mMaterials[aiMesh->mMaterialIndex];
 	unsigned int diffuseCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
 	unsigned int specularCount = aiMaterial->GetTextureCount(aiTextureType_SPECULAR);
+	unsigned int normalCount = aiMaterial->GetTextureCount(aiTextureType_HEIGHT);
 	
 	Engine::Graphics::Texture2D* diffuseTexture = nullptr;
 	Engine::Graphics::Texture2D* specularTexture = nullptr;
+	Engine::Graphics::Texture2D* normalMap = nullptr;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
 
 	if (diffuseCount > 0) {
-		aiString file;
-		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
-		std::string filePath = std::string(file.C_Str());
-		filePath = filePath.substr(filePath.find_last_of("\\") + 1);
-		filePath = directory + filePath;
-		diffuseTexture = Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
+		diffuseTexture = GetTextureFromMaterial(aiMaterial, aiTextureType_DIFFUSE, directory);
 	}
 	else {
 		aiColor3D aiDiffuse;
@@ -147,12 +163,8 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 		diffuseColor.b = aiDiffuse.b;
 	}
 
-	if (specularCount > 0) {
-		aiString file;
-		aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
-		std::string filePath = std::string(file.C_Str());
-		filePath = directory + filePath;
-		specularTexture = Engine::Graphics::Texture2D::CreateTexture(filePath.c_str());
+	if (specularCount > 0) {		
+		specularTexture = GetTextureFromMaterial(aiMaterial, aiTextureType_SPECULAR, directory);
 	}
 	else {
 		aiColor3D aiSpecular;
@@ -162,7 +174,12 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 		specularColor.b = aiSpecular.b;
 	}
 
+	if (normalCount > 0) {
+		normalMap = GetTextureFromMaterial(aiMaterial, aiTextureType_HEIGHT, directory);
+	}
+
 	Engine::Graphics::Material* material = Engine::Graphics::Material::CreateMaterial(diffuseTexture, specularTexture, diffuseColor, specularColor);
+	material->SetNormalMap(normalMap);
 	o_materials.push_back(material);
 
 	if (diffuseTexture) {
@@ -171,5 +188,9 @@ void ExtractMaterialData(const aiScene * scene, aiMesh * aiMesh, const std::stri
 
 	if (specularTexture) {
 		Engine::Graphics::Texture2D::DestroyTexture(specularTexture);
+	}
+
+	if (normalMap) {
+		Engine::Graphics::Texture2D::DestroyTexture(normalMap);
 	}
 }
