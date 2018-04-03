@@ -79,9 +79,14 @@ void main()
 	TexCoord = aTexCoord;
 	mat3 normalMatrix = mat3(transpose(inverse(model)));
 	Normal = normalMatrix * aNormal;	
-	vec3 T = normalize(normalMatrix * aTangent);
-	vec3 B = normalize(normalMatrix * aBitangent);
+	vec3 T = normalize(normalMatrix * aTangent);	
 	vec3 N = normalize(Normal);
+
+	//re-orthogonalize T wrt N
+	T = normalize(T - dot(T,N) * N);
+	
+	//Recalculate B
+	vec3 B = cross(N, T);
 	TBN = mat3(T,B,N);
 	FragPos = vec3(model * vec4(aPos, 1.0));
 }
