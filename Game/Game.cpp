@@ -176,7 +176,6 @@ int main(int argc, char* argv[]) {
 	Engine::Actor plane(planeMesh, planeMaterial);
 	plane.transform.scale = glm::vec3(5.0f);
 	plane.transform.position.z = -3.0f;
-	plane.transform.RotateDegrees(90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	//Initialize lights
 	Engine::Lighting::Attenuation attennuation;

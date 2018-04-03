@@ -13,42 +13,42 @@ Engine::Graphics::Mesh* Engine::Graphics::Mesh::CreateMesh(const VertexFormat::M
 
 Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube(const float r, const float g, const float b) {
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
-		// positions			// colors		// texture coords	//Normals			//Tangent			//Bitangent
+		//positions				//colors	//UVs			//Normals			//Tangent			//Bitangent
 		//Back face
-		-0.5f, -0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,	0.0f, 0.0f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,	1.0f, 0.0f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		r, g, b,	1.0f, 1.0f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f,		r, g, b,	0.0f, 1.0f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
 
 		//Front face
-		-0.5f, -0.5f,  0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		r, g, b,	0.0f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		r, g, b,	1.0f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		r, g, b,	1.0f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		r, g, b,	0.0f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
 
 		//Left face
-		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 0.0f,			-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,	r, g, b,		1.0f, 0.0f,			-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,	r, g, b,		1.0f, 1.0f,			-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		r, g, b,	0.0f, 0.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f,		r, g, b,	1.0f, 0.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,	1.0f, 1.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		r, g, b,	0.0f, 1.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
 
 		//Right face
-		0.5f,  0.5f,  0.5f,		r, g, b,		0.0f, 0.0f,			1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		r, g, b,		1.0f, 1.0f,			1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		r, g, b,		0.0f, 1.0f,			1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		r, g, b,	0.0f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		r, g, b,	1.0f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,	1.0f, 1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		r, g, b,	0.0f, 1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
 
 		//Bottom face
-		-0.5f, -0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	r, g, b,	0.0f, 0.0f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		r, g, b,	1.0f, 0.0f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		r, g, b,	1.0f, 1.0f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		r, g, b,	0.0f, 1.0f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
 
 		//Top face
-		-0.5f,  0.5f, -0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f
+		-0.5f, 0.5f, -0.5f,		r, g, b,	0.0f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		r, g, b,	1.0f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		r, g, b,	1.0f, 1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		r, g, b,	0.0f, 1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f
 	};
 
 	//index data
@@ -72,16 +72,16 @@ Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetCube()
 Engine::Graphics::Mesh * Engine::Graphics::Mesh::GetPlane(const float r, const float g, const float b)
 {
 	Engine::Graphics::VertexFormat::Mesh meshVertexData[] = {
-		// positions			// colors		// texture coords	//Normals			//Tangent			//Bitangent
-		-0.5f,  0.0f, -0.5f,	r, g, b,		0.0f, 1.0f,			0.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f, -1.0f,
-		0.5f,  0.0f, -0.5f,		r, g, b,		1.0f, 1.0f,			0.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f, -1.0f,
-		0.5f,  0.0f,  0.5f,		r, g, b,		1.0f, 0.0f,			0.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f, -1.0f,
-		-0.5f,  0.0f,  0.5f,	r, g, b,		0.0f, 0.0f,			0.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f, -1.0f
+		//positions			//colors	//UVs			//Normals			//Tangent			//Bitangent
+		-0.5f, 0.5f, 0.0f,	r, g, b,	0.0f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,	r, g, b,	0.0f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.0f,	r, g, b,	1.0f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f,	r, g, b,	1.0f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f
 	};
 
 	//index data
 	uint32_t indices[] = {
-		0, 2, 1, 0, 3, 2
+		0, 1, 2, 0, 2, 3
 	};
 
 	size_t indexCount = sizeof(indices) / sizeof(uint32_t);
