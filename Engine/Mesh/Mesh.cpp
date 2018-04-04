@@ -184,7 +184,7 @@ static void CalculateTangentsAndBitangentsForSingleVertex(Engine::Graphics::Vert
 
 void Engine::Graphics::Mesh::CalculateTangentsAndBitangents(VertexFormat::Mesh * vertexArray, const uint32_t * indexArray, const uint32_t indexCount)
 {
-	for (int i = 0; i < indexCount; i+=3) {
+	for (uint32_t i = 0; i < indexCount; i+=3) {
 		uint32_t index1, index2, index3;
 		index1 = indexArray[i];
 		index2 = indexArray[i + 1];
