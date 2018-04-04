@@ -54,6 +54,18 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 		shader->SetBool("material.hasNormalMap", true);
 		normalMap->Bind(2);
 	}
+	else {
+		shader->SetBool("material.hasNormalMap", false);
+	}
+
+	if (depthMap) {
+		shader->SetInt("material.depthMap", 3);
+		shader->SetBool("material.hasDepthMap", true);
+		depthMap->Bind(3);
+	}
+	else {
+		shader->SetBool("material.hasDepthMap", false);
+	}
 
 	shader->SetFloat("material.shininess", shininess);
 }
@@ -99,6 +111,18 @@ void Engine::Graphics::Material::SetNormalMap(Texture * newTexture)
 	normalMap = newTexture;
 	if (normalMap) {
 		normalMap->IncrementReferenceCount();
+	}
+}
+
+void Engine::Graphics::Material::SetDepthMap(Texture * newTexture)
+{
+	if (depthMap) {
+		Texture::DestroyTexture(depthMap);
+	}
+	depthMap = newTexture;
+
+	if (depthMap) {
+		depthMap->IncrementReferenceCount();
 	}
 }
 
