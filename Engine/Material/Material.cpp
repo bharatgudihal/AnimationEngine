@@ -3,7 +3,7 @@
 #include <Engine/Shader/Shader.h>
 
 Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_specularTexture, const float i_shininess, glm::vec3 i_diffuseColor, glm::vec3 i_specularColor):
-	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), diffuseColor(i_diffuseColor), specularColor(i_specularColor), shininess(i_shininess)
+	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), diffuseColor(i_diffuseColor), specularColor(i_specularColor), shininess(i_shininess), heightScale(0.0f)
 {
 	if (diffuseTexture) {
 		diffuseTexture->IncrementReferenceCount();
@@ -62,6 +62,7 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 		shader->SetInt("material.depthMap", 3);
 		shader->SetBool("material.hasDepthMap", true);
 		depthMap->Bind(3);
+		shader->SetFloat("material.heightScale", heightScale);
 	}
 	else {
 		shader->SetBool("material.hasDepthMap", false);
@@ -114,7 +115,7 @@ void Engine::Graphics::Material::SetNormalMap(Texture * newTexture)
 	}
 }
 
-void Engine::Graphics::Material::SetDepthMap(Texture * newTexture)
+void Engine::Graphics::Material::SetDepthMap(Texture * newTexture, const float newHeightScale)
 {
 	if (depthMap) {
 		Texture::DestroyTexture(depthMap);
@@ -124,6 +125,8 @@ void Engine::Graphics::Material::SetDepthMap(Texture * newTexture)
 	if (depthMap) {
 		depthMap->IncrementReferenceCount();
 	}
+
+	heightScale = newHeightScale;
 }
 
 Engine::Graphics::Material::~Material()

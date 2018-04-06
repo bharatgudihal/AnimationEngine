@@ -45,12 +45,15 @@ struct Material {
 	sampler2D diffuse;
 	sampler2D specular;
 	sampler2D normalMap;
+	sampler2D depthMap;
 	vec3 diffuseColor;
 	vec3 specularColor;
 	float shininess;
+	float heightScale;
 	bool hasDiffuse;
 	bool hasSpecular;
 	bool hasNormalMap;
+	bool hasDepthMap;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -84,14 +87,29 @@ uniform Material material;
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 fragPos, vec3 normal, vec3 viewDir);
+vec2 CalculateNewUVs(vec2 UV, vec3 tangentSpaceViewDir);
+
+vec2 correctedTexCoord;
 
 void main()
 {
+	//Get tangent space viewDirection
+	vec3 tangentSpaceViewDir = normalize(TangentViewPos - TangentFragPos);
+	
+	if(material.hasDepthMap){
+		correctedTexCoord = CalculateNewUVs(TexCoord, tangentSpaceViewDir);
+		if(correctedTexCoord.x > 1.0 || correctedTexCoord.x < 0.0 || correctedTexCoord.y > 1.0 || correctedTexCoord.y < 0.0){
+			discard;
+		}
+	}else{
+		correctedTexCoord = TexCoord;
+	}
+
 	// properties
     vec3 norm;
 	if(material.hasNormalMap){
 		//sample normal map
-		norm = texture(material.normalMap, TexCoord).rgb;
+		norm = texture(material.normalMap, correctedTexCoord).rgb;
 		
 		//change normal range from [0,1] to [-1,1]
 		norm = normalize(norm * 2.0 - 1.0);
@@ -120,6 +138,12 @@ void main()
 	FragColor = vec4(result, 1.0);
 }
 
+vec2 CalculateNewUVs(vec2 UV, vec3 tangentSpaceViewDir){
+	float height = texture(material.depthMap, UV).r;
+	vec2 offset = tangentSpaceViewDir.xy / tangentSpaceViewDir.z * (height * material.heightScale);
+	return UV - offset;
+}
+
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
 	if(light.isActive.x == 1.0){
@@ -136,8 +160,8 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 		vec3 ambient = vec3(light.lightData.ambient);
 		vec3 diffuse = vec3(light.lightData.diffuse);
 		if(material.hasDiffuse){
-			ambient = ambient  * vec3(texture(material.diffuse, TexCoord));
-			diffuse = diffuse  * diff * vec3(texture(material.diffuse, TexCoord));
+			ambient = ambient  * vec3(texture(material.diffuse, correctedTexCoord));
+			diffuse = diffuse  * diff * vec3(texture(material.diffuse, correctedTexCoord));
 		}else{
 			ambient = ambient * material.diffuseColor;
 			diffuse = diffuse * diff * material.diffuseColor;
@@ -145,7 +169,7 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 
 		vec3 specular = vec3(light.lightData.specular);
 		if(material.hasSpecular){
-			specular = specular * spec * vec3(texture(material.specular, TexCoord));
+			specular = specular * spec * vec3(texture(material.specular, correctedTexCoord));
 		}else{
 			specular = specular * spec * material.specularColor;
 		}
@@ -178,8 +202,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 		vec3 ambient = vec3(light.lightData.ambient);
 		vec3 diffuse = vec3(light.lightData.diffuse);
 		if(material.hasDiffuse){
-			ambient = ambient  * vec3(texture(material.diffuse, TexCoord));
-			diffuse = diffuse  * diff * vec3(texture(material.diffuse, TexCoord));
+			ambient = ambient  * vec3(texture(material.diffuse, correctedTexCoord));
+			diffuse = diffuse  * diff * vec3(texture(material.diffuse, correctedTexCoord));
 		}else{
 			ambient = ambient * material.diffuseColor;
 			diffuse = diffuse * diff * material.diffuseColor;
@@ -187,7 +211,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 		vec3 specular = vec3(light.lightData.specular);
 		if(material.hasSpecular){
-			specular = specular * spec * vec3(texture(material.specular, TexCoord));
+			specular = specular * spec * vec3(texture(material.specular, correctedTexCoord));
 		}else{
 			specular = specular * spec * material.specularColor;
 		}
@@ -219,8 +243,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 fragPos, vec3 normal, vec3 viewDir){
 		vec3 ambient = vec3(light.lightData.ambient);
 		vec3 diffuse = vec3(light.lightData.diffuse);
 		if(material.hasDiffuse){
-			ambient = ambient  * vec3(texture(material.diffuse, TexCoord));
-			diffuse = diffuse  * diff * vec3(texture(material.diffuse, TexCoord));
+			ambient = ambient  * vec3(texture(material.diffuse, correctedTexCoord));
+			diffuse = diffuse  * diff * vec3(texture(material.diffuse, correctedTexCoord));
 		}else{
 			ambient = ambient * material.diffuseColor;
 			diffuse = diffuse * diff * material.diffuseColor;
@@ -228,7 +252,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 fragPos, vec3 normal, vec3 viewDir){
 
 		vec3 specular = vec3(light.lightData.specular);
 		if(material.hasSpecular){
-			specular = specular * spec * vec3(texture(material.specular, TexCoord));
+			specular = specular * spec * vec3(texture(material.specular, correctedTexCoord));
 		}else{
 			specular = specular * spec * material.specularColor;
 		}

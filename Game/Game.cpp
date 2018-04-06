@@ -30,6 +30,7 @@ float lastFrame = 0.0f;
 float lastX = 400.0f, lastY = 300.0f;
 float pitch = 0.0f, yaw = -90.0f;
 bool firstMouse = true;
+bool useParallax = false;
 Engine::Graphics::Camera camera(45.0f, screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -57,6 +58,14 @@ void processInput(GLFWwindow* window) {
 		
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.transform.position += glm::vec3(glm::cross(camera.transform.forward, camera.transform.up)) * cameraSpeed;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		useParallax = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+		useParallax = false;
 	}
 		
 }
@@ -147,17 +156,22 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize textures	
-	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/brickwall.jpg", useGamma);
+	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2.jpg", useGamma);
 	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 
-	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/brickwall_normal.jpg", useGamma);
+	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2_normal.jpg", false);
 	planeNormalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeNormalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
+
+	Engine::Graphics::Texture2D* planeDepthMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2_disp.jpg", false);
+	planeDepthMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	planeDepthMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 	
 	//Initialize shaders
 	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
+	Engine::Graphics::Shader* parallaxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/parallax_mapping.vs", "Assets/Shaders/Fragment/parallax_mapping.fs");
 	
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
@@ -166,6 +180,7 @@ int main(int argc, char* argv[]) {
 
 	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
 	planeMaterial->SetNormalMap(planeNormalMap);
+	planeMaterial->SetDepthMap(planeDepthMap, 0.1f);
 	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
 	
 	//Initialize uniform buffer
@@ -188,12 +203,6 @@ int main(int argc, char* argv[]) {
 	
 	Engine::Lighting::PointLight pointLight(lightColor, lightColor, lightColor, &lightCube, attennuation);
 	pointLight.SetPosition(glm::vec3(0.5f, 1.0f, 0.3f));
-
-	//Load model
-	Engine::Actor* cyborg = nullptr;
-	Engine::Utility::ImportModel("Assets/Models/cyborg/cyborg.obj", cyborg);
-	assert(cyborg);
-	cyborg->transform.scale = glm::vec3(0.5f);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -233,11 +242,12 @@ int main(int argc, char* argv[]) {
 
 		//Draw plane
 		{
-			//plane.Draw(meshShader);
-		}
-
-		{
-			cyborg->Draw(meshShader);
+			if (useParallax) {
+				plane.Draw(parallaxShader);
+			}
+			else {
+				plane.Draw(meshShader);
+			}
 		}
 
 		//Call events and swap buffers
@@ -256,8 +266,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
 	Engine::Graphics::Texture::DestroyTexture(planeNormalMap);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
-
-	delete cyborg;
+	Engine::Graphics::Texture::DestroyTexture(planeDepthMap);
+	Engine::Graphics::Shader::DestroyShader(parallaxShader);
 
 	glfwTerminate();
 
