@@ -139,4 +139,8 @@ Engine::Graphics::Material::~Material()
 	if (normalMap) {
 		Texture::DestroyTexture(normalMap);
 	}
+
+	if (depthMap) {
+		Texture::DestroyTexture(depthMap);
+	}
 }
