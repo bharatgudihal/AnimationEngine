@@ -156,15 +156,15 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize textures	
-	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2.jpg", useGamma);
+	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png", useGamma);
 	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 
-	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2_normal.jpg", false);
+	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/toy_box_normal.png", false);
 	planeNormalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeNormalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 
-	Engine::Graphics::Texture2D* planeDepthMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/bricks2_disp.jpg", false);
+	Engine::Graphics::Texture2D* planeDepthMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/toy_box_disp.png", false);
 	planeDepthMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	planeDepthMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 	

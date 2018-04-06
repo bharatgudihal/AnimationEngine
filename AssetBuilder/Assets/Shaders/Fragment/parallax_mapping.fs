@@ -139,9 +139,23 @@ void main()
 }
 
 vec2 CalculateNewUVs(vec2 UV, vec3 tangentSpaceViewDir){
-	float height = texture(material.depthMap, UV).r;
-	vec2 offset = tangentSpaceViewDir.xy / tangentSpaceViewDir.z * (height * material.heightScale);
-	return UV - offset;
+	const float minLayers = 8.0;
+	const float maxLayers = 32.0;
+	float numberOfLayers = mix(minLayers, maxLayers, abs(dot(vec3(0.0,0.0,1.0), tangentSpaceViewDir)));
+	float depthPerLayer = 1.0 / numberOfLayers;
+	vec2 offset = tangentSpaceViewDir.xy * material.heightScale;
+	vec2 offsetPerLayer = offset / numberOfLayers;
+	float currentDepth = 0.0;
+	vec2 currentUV = UV;
+	float currentDepthMapValue = texture(material.depthMap, currentUV).r;
+
+	while(currentDepth < currentDepthMapValue){
+		currentUV -= offsetPerLayer;
+		currentDepthMapValue = texture(material.depthMap, currentUV).r;
+		currentDepth += depthPerLayer;
+	}
+
+	return currentUV;
 }
 
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
