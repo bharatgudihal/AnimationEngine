@@ -145,68 +145,83 @@ int main(int argc, char* argv[]) {
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
 	//Set OpenGL properties
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	const bool useGamma = false;
+	const bool useGamma = true;
 
-	//Initialize meshes	
-	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane(1.0f, 0.5f, 0.31f);
+	//Initialize meshes
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
+	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane();
 
 	//Initialize textures	
-	Engine::Graphics::Texture2D* planeTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png", useGamma);
-	planeTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	planeTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
+	Engine::Graphics::Texture2D* woodTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png", useGamma);
+	woodTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	woodTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
 
-	Engine::Graphics::Texture2D* planeNormalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/toy_box_normal.png", false);
-	planeNormalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	planeNormalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
-
-	Engine::Graphics::Texture2D* planeDepthMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/toy_box_disp.png", false);
-	planeDepthMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	planeDepthMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
-	
 	//Initialize shaders
 	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
-	Engine::Graphics::Shader* parallaxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/parallax_mapping.vs", "Assets/Shaders/Fragment/parallax_mapping.fs");
-	
+	Engine::Graphics::Shader* hdrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/hdr.vs", "Assets/Shaders/Fragment/hdr.fs");
+
 	//Initialize materials
 	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
 	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
-	glm::vec3 specular(1.0f, 1.0f, 1.0f);	
+	glm::vec3 specular(1.0f, 1.0f, 1.0f);
 
-	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(planeTexture, nullptr, diffuse, specular);
-	planeMaterial->SetNormalMap(planeNormalMap);
-	planeMaterial->SetDepthMap(planeDepthMap, 0.1f);
-	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
-	
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(woodTexture, nullptr, diffuse, specular);
+	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
+
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
-	
+
 	//Initialize actors
+	Engine::Actor cube(cubeMesh, cubeMaterial);
+	cube.transform.scale = glm::vec3(2.5f, 2.5f, 27.5f);
+	cube.transform.position.z = 10.0f;
+
 	Engine::Actor plane(planeMesh, planeMaterial);
-	plane.transform.scale = glm::vec3(5.0f);
-	plane.transform.position.z = -3.0f;
+	plane.transform.scale = glm::vec3(2.0f);
 
 	//Initialize lights
 	Engine::Lighting::Attenuation attennuation;
-	attennuation.linear = 0.22f;
-	attennuation.quadratic = 0.2f;
+	attennuation.linear = 1.0f;
+	attennuation.quadratic = 1.0f;
 
-	glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+	std::vector<glm::vec3> lightPositions;
+	lightPositions.push_back(glm::vec3(0.0f, 0.0f, 27.0f)); // back light
+	lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+	lightPositions.push_back(glm::vec3(0.0f, -1.8f, 4.0f));
+	lightPositions.push_back(glm::vec3(0.8f, -1.7f, 6.0f));
+	// colors
+	std::vector<glm::vec3> lightColors;
+	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+	lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+	lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+
+	std::vector<Engine::Actor*> lightActors;
+	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
+	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
+	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
+	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
+
+	std::vector<Engine::Lighting::PointLight*> pointLights;
+	for (int i = 0; i < 4; i++) {
+		pointLights.push_back(new Engine::Lighting::PointLight(lightColors[i], lightColors[i], lightColors[i], lightActors[i], attennuation));
+		pointLights[i]->SetPosition(lightPositions[i]);
+		pointLights[i]->ShowMesh(false);
+	}
+
+	//Setup render texture
+	Engine::Graphics::RenderTexture frameBuffer(screenWidth, screenHeight, GL_RGB16F, GL_RGBA);
 	
-	Engine::Actor lightCube(cubeMesh, cubeMaterial);
-	
-	Engine::Lighting::PointLight pointLight(lightColor, lightColor, lightColor, &lightCube, attennuation);
-	pointLight.SetPosition(glm::vec3(0.5f, 1.0f, 0.3f));
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
-		
+
 		//Time calculations
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
@@ -216,38 +231,53 @@ int main(int argc, char* argv[]) {
 		{
 			processInput(window);
 		}
-						
+
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
-		dataPerFrame.gamma = useGamma ? 2.2f : 1.0f;
-		
-		dataPerFrame.pointLights[0].isActive = 1.0f;
-		dataPerFrame.pointLights[0].lightData.ambient = glm::vec4(pointLight.ambient, 1.0f);
-		dataPerFrame.pointLights[0].lightData.diffuse = glm::vec4(pointLight.diffuse, 1.0f);
-		dataPerFrame.pointLights[0].lightData.specular = glm::vec4(pointLight.specular, 1.0f);
-		dataPerFrame.pointLights[0].linear = pointLight.GetAttenuation().linear;
-		dataPerFrame.pointLights[0].quadratic = pointLight.GetAttenuation().quadratic;
-		dataPerFrame.pointLights[0].position = glm::vec4(pointLight.GetPosition(), 1.0f);
+		dataPerFrame.gamma = useGamma ? 2.2f: 1.0f;
+
+		for (int i = 0; i < 4; i++) {
+			dataPerFrame.pointLights[i].isActive = 1.0f;
+			dataPerFrame.pointLights[i].lightData.ambient = glm::vec4(pointLights[i]->ambient, 1.0f);
+			dataPerFrame.pointLights[i].lightData.diffuse = glm::vec4(pointLights[i]->diffuse, 1.0f);
+			dataPerFrame.pointLights[i].lightData.specular = glm::vec4(pointLights[i]->specular, 1.0f);
+			dataPerFrame.pointLights[i].linear = pointLights[i]->GetAttenuation().linear;
+			dataPerFrame.pointLights[i].quadratic = pointLights[i]->GetAttenuation().quadratic;
+			dataPerFrame.pointLights[i].position = glm::vec4(pointLights[i]->GetPosition(), 1.0f);
+		}		
 
 		cameraBuffer.Update(&dataPerFrame);
-		
-		//Clear buffers
-		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}	
-		
-		pointLight.Draw(lightShader);
 
-		//Draw plane
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+		//Draw to frame buffer
 		{
-			if (useParallax) {
-				plane.Draw(parallaxShader);
-			}
-			else {
-				plane.Draw(meshShader);
-			}
+			frameBuffer.Bind();
+
+			//Clear buffers			
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			cube.Draw(meshShader);
+
+			frameBuffer.UnBind();
+		}
+
+		//Draw frame buffer on plane
+		{
+			//Clear buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			hdrShader->Use();
+			hdrShader->SetInt("hdrRender", 0);
+			hdrShader->SetFloat("exposure", 1.0f);
+			frameBuffer.GetTexture()->Bind(0);
+			plane.Draw(hdrShader);
+		}
+
+
+		for (int i = 0; i < 4; i++) {
+			pointLights[i]->Draw(lightShader);
 		}
 
 		//Call events and swap buffers
@@ -258,16 +288,21 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Cleanup
-	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);	
-	Engine::Graphics::Shader::DestroyShader(meshShader);	
-	Engine::Graphics::Texture2D::DestroyTexture(planeTexture);
+	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
+	Engine::Graphics::Shader::DestroyShader(meshShader);
 	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
-	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
-	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
-	Engine::Graphics::Texture::DestroyTexture(planeNormalMap);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
-	Engine::Graphics::Texture::DestroyTexture(planeDepthMap);
-	Engine::Graphics::Shader::DestroyShader(parallaxShader);
+	Engine::Graphics::Texture::DestroyTexture(woodTexture);
+	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
+	Engine::Graphics::Shader::DestroyShader(hdrShader);
+	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
+
+	for (int i = 0; i < 4; i++) {
+		delete lightActors[i];
+		delete pointLights[i];
+	}
+	lightActors.clear();
+	pointLights.clear();
 
 	glfwTerminate();
 
