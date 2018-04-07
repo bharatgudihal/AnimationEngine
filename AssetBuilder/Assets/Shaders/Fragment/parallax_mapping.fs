@@ -87,7 +87,7 @@ uniform Material material;
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 fragPos, vec3 normal, vec3 viewDir);
-vec2 CalculateNewUVs(vec2 UV, vec3 tangentSpaceViewDir);
+vec2 DoParallaxMapping(vec2 UV, vec3 tangentSpaceViewDir);
 
 vec2 correctedTexCoord;
 
@@ -97,7 +97,7 @@ void main()
 	vec3 tangentSpaceViewDir = normalize(TangentViewPos - TangentFragPos);
 	
 	if(material.hasDepthMap){
-		correctedTexCoord = CalculateNewUVs(TexCoord, tangentSpaceViewDir);
+		correctedTexCoord = DoParallaxMapping(TexCoord, tangentSpaceViewDir);
 		if(correctedTexCoord.x > 1.0 || correctedTexCoord.x < 0.0 || correctedTexCoord.y > 1.0 || correctedTexCoord.y < 0.0){
 			discard;
 		}
@@ -138,24 +138,32 @@ void main()
 	FragColor = vec4(result, 1.0);
 }
 
-vec2 CalculateNewUVs(vec2 UV, vec3 tangentSpaceViewDir){
+vec2 DoParallaxMapping(vec2 UV, vec3 tangentSpaceViewDir){
+	//Steep parallax mapping
 	const float minLayers = 8.0;
 	const float maxLayers = 32.0;
 	float numberOfLayers = mix(minLayers, maxLayers, abs(dot(vec3(0.0,0.0,1.0), tangentSpaceViewDir)));
 	float depthPerLayer = 1.0 / numberOfLayers;
-	vec2 offset = tangentSpaceViewDir.xy * material.heightScale;
-	vec2 offsetPerLayer = offset / numberOfLayers;
+	vec2 uvOffset = tangentSpaceViewDir.xy / tangentSpaceViewDir.z * material.heightScale;
+	vec2 uvOffsetPerLayer = uvOffset / numberOfLayers;
 	float currentDepth = 0.0;
 	vec2 currentUV = UV;
 	float currentDepthMapValue = texture(material.depthMap, currentUV).r;
 
 	while(currentDepth < currentDepthMapValue){
-		currentUV -= offsetPerLayer;
+		currentUV -= uvOffsetPerLayer;
 		currentDepthMapValue = texture(material.depthMap, currentUV).r;
 		currentDepth += depthPerLayer;
 	}
 
-	return currentUV;
+	//Parallax occlusion
+	vec2 previousUV = currentUV + uvOffsetPerLayer;
+	float currentDepthDiff = currentDepthMapValue - currentDepth;
+	float previousDepthDifference = texture(material.depthMap, previousUV).r - currentDepth + depthPerLayer;
+	float weight = currentDepthDiff / (currentDepthDiff - previousDepthDifference);
+	vec2 finalUV = previousUV * weight + currentUV * (1 - weight);
+
+	return finalUV;
 }
 
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
