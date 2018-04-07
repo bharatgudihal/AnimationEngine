@@ -3,14 +3,14 @@
 #include <Engine/Texture/Texture2D.h>
 #include <iostream>
 
-Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)
+Engine::Graphics::RenderTexture::RenderTexture(const unsigned int width, const unsigned int height, const unsigned int internalFormat, const unsigned int pixelFormat)
 {
 	//Create frame buffer
 	glGenFramebuffers(1, &frameBufferId);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
 
 	//Create texture
-	texture = Engine::Graphics::Texture2D::CreateTexture(width, height, pixelFormat);
+	texture = Engine::Graphics::Texture2D::CreateTexture(width, height, internalFormat, pixelFormat);
 	texture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 
 	//Attach texture to the frame buffer

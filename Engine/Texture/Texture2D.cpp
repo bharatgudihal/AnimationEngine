@@ -3,7 +3,8 @@
 #include <iostream>
 #include <Engine/Utility/TextureLoader.h>
 
-Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height, const unsigned int pixelFormat, const bool useGammaCorrection) {
+Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height,
+	const unsigned int internalFormat, const unsigned int pixelFormat, const bool useGammaCorrection) {
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);	
@@ -43,18 +44,18 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 		}
 	}
 	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, NULL);
 	}	
 }
 
 Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const char * textureFileName, const bool useGammaCorrection)
 {
-	return new Texture2D(textureFileName,0,0,0, useGammaCorrection);
+	return new Texture2D(textureFileName, 0, 0, GL_RGB,0, useGammaCorrection);
 }
 
-Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int pixelFormat)
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int internalFormat, const unsigned int pixelFormat)
 {
-	return new Texture2D(nullptr, width, height, pixelFormat);
+	return new Texture2D(nullptr, width, height, internalFormat, pixelFormat);
 }
 
 void Engine::Graphics::Texture2D::DestroyTexture(Texture2D * texture)

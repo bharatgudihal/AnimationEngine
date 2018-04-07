@@ -170,7 +170,14 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     
 		// attenuation
 		float distance = length(lightPos - fragPos);
-		float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
+		float attenuation = 1.0;
+
+		if(gamma == 1.0){
+			attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
+		}else{
+			//If using gamma correction, use only quafratic attennuation
+			attenuation = 1.0 / (1.0 + light.quadratic * (distance * distance));
+		}
     
 		// combine results
 		vec3 ambient = vec3(light.lightData.ambient);
