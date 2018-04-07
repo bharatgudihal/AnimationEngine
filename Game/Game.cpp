@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
 
 	std::vector<Engine::Lighting::PointLight*> pointLights;
 	for (int i = 0; i < 4; i++) {
-		pointLights.push_back(new Engine::Lighting::PointLight(lightColors[i], lightColors[i], lightColors[i], lightActors[i], attennuation));
+		pointLights.push_back(new Engine::Lighting::PointLight(lightColors[i] * 0.05f, lightColors[i], lightColors[i], lightActors[i], attennuation));
 		pointLights[i]->SetPosition(lightPositions[i]);
 		pointLights[i]->ShowMesh(false);
 	}
