@@ -169,10 +169,20 @@ int main(int argc, char* argv[]) {
 
 	//Initialize textures
 	Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
+	albedoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 	Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/ao.png");
+	aoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 	Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/metallic.png");
+	metallicMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 	Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/normal.png");
+	normalMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 	Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
+	roughnessMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 	//Initialize materials
 	Engine::Graphics::Material* sphereMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
@@ -202,26 +212,19 @@ int main(int argc, char* argv[]) {
 	attennuation.quadratic = 1.0f;
 
 	glm::vec3 lightPositions[] = {
-		glm::vec3(-10.0f,  10.0f, 10.0f),
-		glm::vec3(10.0f,  10.0f, 10.0f),
-		glm::vec3(-10.0f, -10.0f, 10.0f),
-		glm::vec3(10.0f, -10.0f, 10.0f),
-	};
-	glm::vec3 lightColors[] = {
-		glm::vec3(300.0f, 300.0f, 300.0f),
-		glm::vec3(300.0f, 300.0f, 300.0f),
-		glm::vec3(300.0f, 300.0f, 300.0f),
-		glm::vec3(300.0f, 300.0f, 300.0f)
-	};
+        glm::vec3(0.0f, 0.0f, 10.0f),
+    };
+    glm::vec3 lightColors[] = {
+        glm::vec3(150.0f, 150.0f, 150.0f),
+    };
 
 	std::vector<Engine::Actor*> lightActors;
-	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
-	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
-	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
-	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
+	for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
+		lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
+	}	
 
 	std::vector<Engine::Lighting::PointLight*> pointLights;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 		pointLights.push_back(new Engine::Lighting::PointLight(lightColors[i] * 0.05f, lightColors[i], lightColors[i], lightActors[i], attennuation));
 		pointLights[i]->SetPosition(lightPositions[i]);
 		pointLights[i]->ShowMesh(false);
@@ -245,7 +248,7 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
 		dataPerFrame.gamma = 1.0f;
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			dataPerFrame.pointLights[i].isActive = 1.0f;
 			dataPerFrame.pointLights[i].lightData.ambient = glm::vec4(pointLights[i]->ambient, 1.0f);
 			dataPerFrame.pointLights[i].lightData.diffuse = glm::vec4(pointLights[i]->diffuse, 1.0f);
@@ -266,7 +269,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			pointLights[i]->Draw(lightShader);
 		}
 
@@ -284,7 +287,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 		delete lightActors[i];
 		delete pointLights[i];
 	}

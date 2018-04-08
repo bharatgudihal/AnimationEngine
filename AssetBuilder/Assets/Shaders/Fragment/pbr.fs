@@ -94,34 +94,36 @@ void main()
 	
 	const vec3 N = normalize(norm);
 	const vec3 V = normalize(vec3(viewPos) - FragPos);
-	vec3 F0 = vec3(0.4);
+	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
 
 	//Getting irradiance based on the reflectance equation. Reference:https://learnopengl.com/PBR/Lighting
 	vec3 Lo = vec3(0.0);
 	for(int i = 0; i < NR_POINT_LIGHTS; i++){
-		//Calculate radiance
-		const vec3 L = normalize(vec3(pointLights[i].position) - FragPos);
-		const vec3 H = normalize(L + V);
-		float distance = length(vec3(pointLights[i].position) - FragPos);
-		float attenuation = 1.0 / (distance * distance);
-		vec3 radiance = vec3(pointLights[i].lightData.diffuse) * attenuation;		
+		if(pointLights[i].isActive == 1.0){
+			//Calculate radiance
+			const vec3 L = normalize(vec3(pointLights[i].position) - FragPos);
+			const vec3 H = normalize(L + V);
+			float distance = length(vec3(pointLights[i].position) - FragPos);
+			float attenuation = 1.0 / (distance * distance);
+			vec3 radiance = vec3(pointLights[i].lightData.diffuse) * attenuation;		
 
-		//Calculate Cook-Torrence BRDF. ReferenceL https://learnopengl.com/PBR/Theory
-		float NDF = NormalDistribution(N, H, roughness);
-		float G = GeometryFunction(N, V, L, roughness);
-		vec3 F = Fresnel(clamp(dot(H, V), 0.0, 1.0), F0);
+			//Calculate Cook-Torrence BRDF. ReferenceL https://learnopengl.com/PBR/Theory
+			float NDF = NormalDistribution(N, H, roughness);
+			float G = GeometryFunction(N, V, L, roughness);
+			vec3 F = Fresnel(clamp(dot(H, V), 0.0, 1.0), F0);
 		
-		vec3 numerator = NDF * G * F;
-		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-		vec3 specular = numerator / max(denominator, 0.001);
+			vec3 numerator = NDF * G * F;
+			float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+			vec3 specular = numerator / max(denominator, 0.001);
 
-		vec3 kS = F;
-		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - metallic;
+			vec3 kS = F;
+			vec3 kD = vec3(1.0) - kS;
+			kD *= 1.0 - metallic;
 
-		float NdotL = max(dot(N, L), 0.0);
-		Lo += (kD * albedo / PI + specular) * radiance * NdotL;		
+			float NdotL = max(dot(N, L), 0.0);
+			Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+		}
 	}
 
 	vec3 ambientColor = vec3(0.03) * albedo * ao;
