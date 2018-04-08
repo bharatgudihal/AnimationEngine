@@ -16,6 +16,8 @@ namespace Engine {
 		Actor(Graphics::Mesh* mesh, Graphics::Material* material);
 		~Actor();
 		void Draw(Graphics::Shader* shader);
+		Graphics::Material* GetMaterial(const unsigned int index);
+		Graphics::Mesh* GetMesh(const unsigned int index);
 		Math::Transform transform;
 	private:
 		std::vector<Graphics::Mesh*> meshes;

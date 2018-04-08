@@ -200,6 +200,9 @@
     <ClInclude Include="RenderTexture\RenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material\Material_Inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Game.props" />

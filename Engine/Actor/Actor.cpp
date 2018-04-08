@@ -49,3 +49,31 @@ void Engine::Actor::Draw(Graphics::Shader* shader)
 		meshes[i]->Draw();
 	}
 }
+
+Engine::Graphics::Material * Engine::Actor::GetMaterial(const unsigned int index)
+{
+	Engine::Graphics::Material* material = nullptr;
+	if (index < materials.size()) {
+		material = materials[index];
+	}
+
+	if (material) {
+		material->IncrementReferenceCount();
+	}
+
+	return material;
+}
+
+Engine::Graphics::Mesh * Engine::Actor::GetMesh(const unsigned int index)
+{
+	Engine::Graphics::Mesh* mesh = nullptr;
+	if (index < materials.size()) {
+		mesh = meshes[index];
+	}
+
+	if (mesh) {
+		mesh->IncrementReferenceCount();
+	}
+
+	return mesh;
+}

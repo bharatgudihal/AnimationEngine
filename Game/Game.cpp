@@ -23,14 +23,13 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-int screenWidth = 800;
-int screenHeight = 600;
+const unsigned int screenWidth = 1280;
+const unsigned int screenHeight = 720;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-float lastX = 400.0f, lastY = 300.0f;
+float lastX = screenWidth / 2.0f, lastY = screenHeight / 2.0f;
 float pitch = 0.0f, yaw = -90.0f;
 bool firstMouse = true;
-bool useParallax = false;
 Engine::Graphics::Camera camera(45.0f, screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -43,7 +42,7 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	float cameraSpeed = 2.5f * deltaTime;
+	float cameraSpeed = 5.0f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.transform.position += camera.transform.forward * cameraSpeed;
 	}
@@ -61,11 +60,11 @@ void processInput(GLFWwindow* window) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		useParallax = true;
+		
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
-		useParallax = false;
+		
 	}
 		
 }
@@ -141,7 +140,7 @@ int main(int argc, char* argv[]) {
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
 	//Set OpenGL properties
@@ -149,64 +148,77 @@ int main(int argc, char* argv[]) {
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	const bool useGamma = true;
+	const unsigned int nrRows = 7;
+	const unsigned int nrColumns = 7;
+	const float spacing = 2.5;
 
-	//Initialize meshes
-	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
-	Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane();
-
-	//Initialize textures	
-	Engine::Graphics::Texture2D* woodTexture = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/wood.png", useGamma);
-	woodTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
-	woodTexture->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, 0);
-
-	//Initialize shaders
-	Engine::Graphics::Shader* meshShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/mesh.fs");
+	//Initialize shaders	
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
-	Engine::Graphics::Shader* hdrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/hdr.vs", "Assets/Shaders/Fragment/hdr.fs");
-
-	//Initialize materials
-	glm::vec3 ambient(0.2f, 0.2f, 0.2f);
-	glm::vec3 diffuse(0.5f, 0.5f, 0.5f);
-	glm::vec3 specular(1.0f, 1.0f, 1.0f);
-
-	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(woodTexture, nullptr, diffuse, specular);
-	Engine::Graphics::Material* planeMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr, diffuse, specular);
+	Engine::Graphics::Shader* pbrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/pbr.fs");
 
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
 	Engine::Graphics::UniformBuffer cameraBuffer(Engine::Graphics::UniformBufferType::DataPerFrame, GL_DYNAMIC_DRAW);
 
-	//Initialize actors
-	Engine::Actor cube(cubeMesh, cubeMaterial);
-	cube.transform.scale = glm::vec3(2.5f, 2.5f, 27.5f);
-	cube.transform.position.z = 10.0f;
+	//Initialize mesh
+	Engine::Actor* sphere;
+	Engine::Utility::ImportModel("Assets/Models/sphere/sphere.fbx", sphere);
+	assert(sphere);
+	Engine::Graphics::Mesh* sphereMesh = sphere->GetMesh(0);
+	delete sphere;
 
-	Engine::Actor plane(planeMesh, planeMaterial);
-	plane.transform.scale = glm::vec3(2.0f);
+	//Initialize textures
+	Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
+	Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/ao.png");
+	Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/metallic.png");
+	Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/normal.png");
+	Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
+
+	//Initialize materials
+	Engine::Graphics::Material* sphereMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
+	sphereMaterial->SetAlbedoMap(albedoMap);
+	sphereMaterial->SetAmbientOcclusionMap(aoMap);
+	sphereMaterial->SetMetallicMap(metallicMap);
+	sphereMaterial->SetNormalMap(normalMap);
+	sphereMaterial->SetRoughnessMap(roughnessMap);
+
+	Engine::Graphics::Material* lightMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
+
+	//Initialize actors
+	Engine::Actor* spheres[nrRows][nrColumns];
+	for (unsigned int i = 0; i < nrRows; i++) {
+		for (unsigned int j = 0; j < nrColumns; j++) {
+			spheres[i][j] = new Engine::Actor(sphereMesh, sphereMaterial);
+			spheres[i][j]->transform.position = 
+				glm::vec3((float)(j - (nrColumns / 2.0f)) * spacing,
+				(float)(i - (nrRows / 2.0f)) * spacing,
+				0.0f);
+		}
+	}
 
 	//Initialize lights
 	Engine::Lighting::Attenuation attennuation;
 	attennuation.linear = 1.0f;
 	attennuation.quadratic = 1.0f;
 
-	std::vector<glm::vec3> lightPositions;
-	lightPositions.push_back(glm::vec3(0.0f, 0.0f, 27.0f)); // back light
-	lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
-	lightPositions.push_back(glm::vec3(0.0f, -1.8f, 4.0f));
-	lightPositions.push_back(glm::vec3(0.8f, -1.7f, 6.0f));
-	// colors
-	std::vector<glm::vec3> lightColors;
-	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-	lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-	lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+	glm::vec3 lightPositions[] = {
+		glm::vec3(-10.0f,  10.0f, 10.0f),
+		glm::vec3(10.0f,  10.0f, 10.0f),
+		glm::vec3(-10.0f, -10.0f, 10.0f),
+		glm::vec3(10.0f, -10.0f, 10.0f),
+	};
+	glm::vec3 lightColors[] = {
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f)
+	};
 
 	std::vector<Engine::Actor*> lightActors;
-	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
-	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
-	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
-	lightActors.push_back(new Engine::Actor(cubeMesh, cubeMaterial));
+	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
+	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
+	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
+	lightActors.push_back(new Engine::Actor(sphereMesh, lightMaterial));
 
 	std::vector<Engine::Lighting::PointLight*> pointLights;
 	for (int i = 0; i < 4; i++) {
@@ -214,10 +226,6 @@ int main(int argc, char* argv[]) {
 		pointLights[i]->SetPosition(lightPositions[i]);
 		pointLights[i]->ShowMesh(false);
 	}
-
-	//Setup render texture
-	Engine::Graphics::RenderTexture frameBuffer(screenWidth, screenHeight, GL_RGB16F, GL_RGBA);
-	
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -235,7 +243,7 @@ int main(int argc, char* argv[]) {
 		dataPerFrame.view = camera.GetViewMatrix();
 		dataPerFrame.projection = camera.GetProjectionMatrix();
 		dataPerFrame.viewPos = glm::vec4(camera.transform.position, 1.0f);
-		dataPerFrame.gamma = useGamma ? 2.2f: 1.0f;
+		dataPerFrame.gamma = 1.0f;
 
 		for (int i = 0; i < 4; i++) {
 			dataPerFrame.pointLights[i].isActive = 1.0f;
@@ -250,31 +258,13 @@ int main(int argc, char* argv[]) {
 		cameraBuffer.Update(&dataPerFrame);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-		//Draw to frame buffer
-		{
-			frameBuffer.Bind();
-
-			//Clear buffers			
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			cube.Draw(meshShader);
-
-			frameBuffer.UnBind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		for (unsigned int i = 0; i < nrRows; i++) {
+			for (unsigned int j = 0; j < nrColumns; j++) {
+				spheres[i][j]->Draw(pbrShader);
+			}
 		}
-
-		//Draw frame buffer on plane
-		{
-			//Clear buffers
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			hdrShader->Use();
-			hdrShader->SetInt("hdrRender", 0);
-			hdrShader->SetFloat("exposure", 1.0f);
-			frameBuffer.GetTexture()->Bind(0);
-			plane.Draw(hdrShader);
-		}
-
 
 		for (int i = 0; i < 4; i++) {
 			pointLights[i]->Draw(lightShader);
@@ -288,14 +278,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Cleanup
-	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
-	Engine::Graphics::Shader::DestroyShader(meshShader);
-	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
-	Engine::Graphics::Shader::DestroyShader(lightShader);
-	Engine::Graphics::Texture::DestroyTexture(woodTexture);
-	Engine::Graphics::Mesh::DestroyMesh(planeMesh);
-	Engine::Graphics::Shader::DestroyShader(hdrShader);
-	Engine::Graphics::Material::DestroyMaterial(planeMaterial);
+	for (unsigned int i = 0; i < nrRows; i++) {
+		for (unsigned int j = 0; j < nrColumns; j++) {
+			delete spheres[i][j];
+		}
+	}
 
 	for (int i = 0; i < 4; i++) {
 		delete lightActors[i];
@@ -303,6 +290,17 @@ int main(int argc, char* argv[]) {
 	}
 	lightActors.clear();
 	pointLights.clear();
+
+	Engine::Graphics::Material::DestroyMaterial(lightMaterial);
+	Engine::Graphics::Shader::DestroyShader(lightShader);
+	Engine::Graphics::Shader::DestroyShader(pbrShader);
+	Engine::Graphics::Mesh::DestroyMesh(sphereMesh);
+	Engine::Graphics::Material::DestroyMaterial(sphereMaterial);
+	Engine::Graphics::Texture::DestroyTexture(albedoMap);
+	Engine::Graphics::Texture::DestroyTexture(aoMap);
+	Engine::Graphics::Texture::DestroyTexture(metallicMap);
+	Engine::Graphics::Texture::DestroyTexture(normalMap);
+	Engine::Graphics::Texture::DestroyTexture(roughnessMap);	
 
 	glfwTerminate();
 

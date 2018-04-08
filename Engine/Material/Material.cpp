@@ -3,7 +3,8 @@
 #include <Engine/Shader/Shader.h>
 
 Engine::Graphics::Material::Material(Texture * i_diffuseTexture, Texture * i_specularTexture, const float i_shininess, glm::vec3 i_diffuseColor, glm::vec3 i_specularColor):
-	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), diffuseColor(i_diffuseColor), specularColor(i_specularColor), shininess(i_shininess), heightScale(0.0f)
+	diffuseTexture(i_diffuseTexture), specularTexture(i_specularTexture), diffuseColor(i_diffuseColor), specularColor(i_specularColor),
+	shininess(i_shininess), heightScale(0.0f)
 {
 	if (diffuseTexture) {
 		diffuseTexture->IncrementReferenceCount();
@@ -69,64 +70,84 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 	}
 
 	shader->SetFloat("material.shininess", shininess);
+
+	//PBR properties
+	shader->SetVector("material.albedoColor", albedoColor);
+	shader->SetFloat("material.metalness", metalness);
+	shader->SetFloat("material.roughness", roughness);
+	shader->SetFloat("material.ao", ao);
+
+	if (albedoMap) {
+		shader->SetInt("material.albedoMap", 4);
+		albedoMap->Bind(4);
+	}
+
+	if (metallicMap) {
+		shader->SetInt("material.metallicMap", 5);
+		metallicMap->Bind(5);
+	}
+
+	if (roughnessMap) {
+		shader->SetInt("material.roughnessMap", 6);
+		roughnessMap->Bind(6);
+	}
+
+	if (ambientOcclusionMap) {
+		shader->SetInt("material.ambientOcclusionMap", 7);
+		ambientOcclusionMap->Bind(7);
+	}
+}
+
+void SetTexture(Engine::Graphics::Texture*& oldTexture, Engine::Graphics::Texture* newTexture) {
+	if (oldTexture) {
+		Engine::Graphics::Texture::DestroyTexture(oldTexture);
+	}
+	oldTexture = newTexture;
+
+	if (oldTexture) {
+		oldTexture->IncrementReferenceCount();
+	}
 }
 
 void Engine::Graphics::Material::SetDiffuseTexture(Texture * newTexture)
 {
-	if (diffuseTexture) {
-		Texture::DestroyTexture(diffuseTexture);
-	}
-	diffuseTexture = newTexture;
-	
-	if (diffuseTexture) {
-		diffuseTexture->IncrementReferenceCount();
-	}
+	SetTexture(diffuseTexture, newTexture);
 }
 
 void Engine::Graphics::Material::SetSpecularTexture(Texture * newTexture)
 {
-	if (specularTexture) {
-		Texture::DestroyTexture(specularTexture);
-	}
-	specularTexture = newTexture;
-	if (specularTexture) {
-		specularTexture->IncrementReferenceCount();
-	}
-}
-
-void Engine::Graphics::Material::SetDiffuseColor(const glm::vec3 newColor)
-{
-	diffuseColor = newColor;
-}
-
-void Engine::Graphics::Material::SetSpecularColor(const glm::vec3 newColor)
-{
-	specularColor = newColor;
+	SetTexture(specularTexture, newTexture);
 }
 
 void Engine::Graphics::Material::SetNormalMap(Texture * newTexture)
 {
-	if (normalMap) {
-		Texture::DestroyTexture(normalMap);
-	}
-	normalMap = newTexture;
-	if (normalMap) {
-		normalMap->IncrementReferenceCount();
-	}
+	SetTexture(normalMap, newTexture);
 }
 
 void Engine::Graphics::Material::SetDepthMap(Texture * newTexture, const float newHeightScale)
 {
-	if (depthMap) {
-		Texture::DestroyTexture(depthMap);
-	}
-	depthMap = newTexture;
-
-	if (depthMap) {
-		depthMap->IncrementReferenceCount();
-	}
-
+	SetTexture(depthMap, newTexture);
 	heightScale = newHeightScale;
+}
+
+void Engine::Graphics::Material::SetAlbedoMap(Texture * newTexture)
+{
+	SetTexture(albedoMap, newTexture);
+}
+
+void Engine::Graphics::Material::SetMetallicMap(Texture * newTexture)
+{
+	SetTexture(metallicMap, newTexture);
+}
+
+void Engine::Graphics::Material::SetRoughnessMap(Texture * newTexture)
+{
+	SetTexture(roughnessMap, newTexture);
+}
+
+void Engine::Graphics::Material::SetAmbientOcclusionMap(Texture * newTexture)
+{
+	SetTexture(ambientOcclusionMap, newTexture);
 }
 
 Engine::Graphics::Material::~Material()
@@ -145,5 +166,21 @@ Engine::Graphics::Material::~Material()
 
 	if (depthMap) {
 		Texture::DestroyTexture(depthMap);
+	}
+
+	if (albedoMap) {
+		Texture::DestroyTexture(albedoMap);
+	}
+
+	if (metallicMap) {
+		Texture::DestroyTexture(metallicMap);
+	}
+
+	if (roughnessMap) {
+		Texture::DestroyTexture(roughnessMap);
+	}
+
+	if (ambientOcclusionMap) {
+		Texture::DestroyTexture(ambientOcclusionMap);
 	}
 }

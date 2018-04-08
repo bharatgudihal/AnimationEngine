@@ -24,9 +24,7 @@ namespace Engine {
 			Mesh(Mesh& other);
 			Mesh& operator=(Mesh& other);
 			~Mesh();
-			static void CalculateTangentsAndBitangents(VertexFormat::Mesh* vertexArray, const uint32_t* indexArray, const uint32_t indexCount);
-
-			
+			static void CalculateTangentsAndBitangents(VertexFormat::Mesh* vertexArray, const uint32_t* indexArray, const uint32_t indexCount);		
 
 			//Vertex Buffer Object, Vertex Array Object and Element Buffer Object
 			unsigned int VBO, VAO, EBO;

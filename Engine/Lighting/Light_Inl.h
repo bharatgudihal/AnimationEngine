@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine/Actor/Actor.h>
-#include "Light.h"
 
 inline void Engine::Lighting::Light::ShowMesh(const bool i_showMesh) {
 	showMesh = i_showMesh;
