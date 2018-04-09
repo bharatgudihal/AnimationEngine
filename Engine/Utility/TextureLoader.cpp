@@ -14,7 +14,7 @@ float * Engine::Utility::LoadHDRTexture(const char * fileName, int & width, int 
 	return stbi_loadf(fileName, &width, &height, &channels, 0);
 }
 
-void Engine::Utility::FreeTexture(unsigned char * data)
+void Engine::Utility::FreeTexture(void * data)
 {
 	stbi_image_free(data);
 }
