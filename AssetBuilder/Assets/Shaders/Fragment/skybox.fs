@@ -11,5 +11,11 @@ struct Material{
 uniform Material material;
 
 void main(){
-	FragColor = texture(material.diffuse, texCoords);
+	vec3 color = texture(material.diffuse, texCoords).rgb;
+
+	//HDR tonemap and gamma correct
+	color = color / (color + vec3(1.0));
+	color = pow(color, vec3(1.0 / 2.2));
+
+	FragColor = vec4(color, 1.0);
 }

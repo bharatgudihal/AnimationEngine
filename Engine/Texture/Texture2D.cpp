@@ -4,18 +4,24 @@
 #include <Engine/Utility/TextureLoader.h>
 
 Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsigned int width, const unsigned int height,
-	const unsigned int internalFormat, const unsigned int pixelFormat, const bool useGammaCorrection) {
+	const unsigned int internalFormat, const unsigned int pixelFormat, const unsigned int dataType, const bool useGammaCorrection, const bool isHDR) {
 
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);	
 	
 	if (textureFileName) {
 		//Load texture
-		int textureWidth, textureHeight, textureChannels;		
-		unsigned char* data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, false);
+		int textureWidth, textureHeight, textureChannels;
+		void* data;
+		if (isHDR) {
+			data = Utility::LoadHDRTexture(textureFileName, textureWidth, textureHeight, textureChannels, true);
+		}
+		else {
+			data = Engine::Utility::LoadTexture(textureFileName, textureWidth, textureHeight, textureChannels, false);
+		}
 		if (data) {
 			unsigned int texturePixelFormat = GL_RGB;
-			unsigned int internalTextureFormat = useGammaCorrection ? GL_SRGB : GL_RGB;
+			unsigned int internalTextureFormat = isHDR ? GL_RGB16F : useGammaCorrection ? GL_SRGB : GL_RGB;
 			switch (textureChannels) {
 			case 1:
 				texturePixelFormat = GL_RED;
@@ -23,20 +29,21 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 				break;
 			case 2:
 				texturePixelFormat = GL_RG;
-				internalTextureFormat = GL_RG;
+				internalTextureFormat = isHDR ? GL_RG16F : GL_RG;
 				break;
 			case 3:
 				texturePixelFormat = GL_RGB;
-				internalTextureFormat = useGammaCorrection ? GL_SRGB : GL_RGB;
+				internalTextureFormat = isHDR ? GL_RGB16F : useGammaCorrection ? GL_SRGB : GL_RGB;
 				break;
 			case 4:
 				texturePixelFormat = GL_RGBA;
-				internalTextureFormat = useGammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+				internalTextureFormat = isHDR ? GL_RGBA16F : useGammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
 				break;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, internalTextureFormat, textureWidth, textureHeight, 0, texturePixelFormat, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			unsigned int dataType = isHDR ? GL_FLOAT : GL_UNSIGNED_BYTE;
+			glTexImage2D(GL_TEXTURE_2D, 0, internalTextureFormat, textureWidth, textureHeight, 0, texturePixelFormat, dataType, data);
+
 			Engine::Utility::FreeTexture(data);
 		}
 		else {
@@ -44,18 +51,24 @@ Engine::Graphics::Texture2D::Texture2D(const char * textureFileName, const unsig
 		}
 	}
 	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, pixelFormat, dataType, NULL);
 	}	
 }
 
 Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const char * textureFileName, const bool useGammaCorrection)
 {
-	return new Texture2D(textureFileName, 0, 0, GL_RGB,0, useGammaCorrection);
+	return new Texture2D(textureFileName, 0, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, useGammaCorrection, false);
 }
 
-Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height, const unsigned int internalFormat, const unsigned int pixelFormat)
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateHDRTexture(const char * textureFileName, const bool useGammaCorrection)
 {
-	return new Texture2D(nullptr, width, height, internalFormat, pixelFormat);
+	return new Texture2D(textureFileName, 0, 0, GL_RGB, GL_RGB, GL_FLOAT, useGammaCorrection, true);
+}
+
+Engine::Graphics::Texture2D * Engine::Graphics::Texture2D::CreateTexture(const unsigned int width, const unsigned int height,
+	const unsigned int internalFormat, const unsigned int pixelFormat, const unsigned int dataType)
+{
+	return new Texture2D(nullptr, width, height, internalFormat, pixelFormat, dataType, false, false);
 }
 
 void Engine::Graphics::Texture2D::DestroyTexture(Texture2D * texture)
@@ -85,9 +98,10 @@ void Engine::Graphics::Texture2D::SetTextureWrappingParams(const unsigned int sW
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tWrappingParam);
 }
 
-const unsigned int Engine::Graphics::Texture2D::GetTextureId() const
+void Engine::Graphics::Texture2D::GenerateMipMaps()
 {
-	return textureId;
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 Engine::Graphics::Texture2D::~Texture2D()

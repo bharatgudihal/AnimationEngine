@@ -6,7 +6,14 @@
 
 Engine::Graphics::CubeMap * Engine::Graphics::CubeMap::CreateCubeMap(const std::vector<std::string>& textureFiles)
 {
-	return new CubeMap(textureFiles);
+	return new CubeMap(textureFiles, 0, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+}
+
+Engine::Graphics::CubeMap* Engine::Graphics::CubeMap::CreateCubeMap(const unsigned int width, const unsigned int height, 
+	const unsigned int internalFormat, const unsigned int pixelFormat, const unsigned int dataType)
+{
+	std::vector<std::string> textureFiles;
+	return new CubeMap(textureFiles, width, height, internalFormat, pixelFormat, dataType);
 }
 
 void Engine::Graphics::CubeMap::DestroyCubeMap(CubeMap * cubeMap)
@@ -37,38 +44,50 @@ void Engine::Graphics::CubeMap::SetTextureWrappingParams(const unsigned int sWra
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, rWrappingParam);
 }
 
-Engine::Graphics::CubeMap::CubeMap(const std::vector<std::string>& textureFiles)
+void Engine::Graphics::CubeMap::GenerateMipMaps()
+{
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+Engine::Graphics::CubeMap::CubeMap(const std::vector<std::string>& textureFiles, const unsigned int width, const unsigned int height,
+	const unsigned int internalFormat, const unsigned int pixelFormat, const unsigned int dataType)
 {
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
 
-	assert(textureFiles.size() == 6);
+	assert(textureFiles.size() == 6 || (textureFiles.size() == 0 && width != 0 && height != 0));
 
 	int texWidth, texHeight, texChannels;
 	unsigned int texPixelFormat;
 	unsigned char* data;
 	bool loadingSuccess = true;
 	for (int i = 0; i < 6; i++) {
-		data = Engine::Utility::LoadTexture(textureFiles[i].c_str(), texWidth, texHeight, texChannels, 0);
-		if (data) {
-			switch (texChannels) {
-			case 2:
-				texPixelFormat = GL_RG;
-				break;
-			case 3:
-				texPixelFormat = GL_RGB;
-				break;
-			case 4:
-				texPixelFormat = GL_RGBA;
+		if (textureFiles.size() != 0) {
+			data = Engine::Utility::LoadTexture(textureFiles[i].c_str(), texWidth, texHeight, texChannels, 0);
+			if (data) {
+				switch (texChannels) {
+				case 2:
+					texPixelFormat = GL_RG;
+					break;
+				case 3:
+					texPixelFormat = GL_RGB;
+					break;
+				case 4:
+					texPixelFormat = GL_RGBA;
+					break;
+				}
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, texWidth, texHeight, 0, texPixelFormat, GL_UNSIGNED_BYTE, data);
+				Engine::Utility::FreeTexture(data);
+			}
+			else {
+				std::cout << "Failed to load image from path " << textureFiles[i] << std::endl;
+				loadingSuccess = false;
 				break;
 			}
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, texWidth, texHeight, 0, texPixelFormat, GL_UNSIGNED_BYTE, data);
-			Engine::Utility::FreeTexture(data);
 		}
 		else {
-			std::cout << "Failed to load image from path " << textureFiles[i] << std::endl;
-			loadingSuccess = false;
-			break;
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, pixelFormat, dataType, nullptr);
 		}
 	}
 

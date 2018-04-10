@@ -7,8 +7,10 @@ namespace Engine {
 		public:
 			virtual void SetTextureFilteringParams(const unsigned int minFilterParam, const unsigned int magFilterParam) = 0;
 			virtual void SetTextureWrappingParams(const unsigned int sWrappingParam, const unsigned int tWrappingParam, const unsigned int rWrappingParam) = 0;
+			virtual void GenerateMipMaps() = 0;
 			virtual void Bind(unsigned int textureUnit = 0) = 0;
 			static void DestroyTexture(Texture* texture);
+			const unsigned int GetTextureId() const;
 			REFERENCE_COUNT_FUNCTIONS
 		protected:
 			Texture() {};

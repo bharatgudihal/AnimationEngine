@@ -114,10 +114,7 @@
     <ClCompile Include="Texture\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTexture\RenderTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture\EquirectangularMap.cpp">
+    <ClCompile Include="Framebuffer\FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -200,13 +197,10 @@
     <ClInclude Include="Utility\TextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTexture\RenderTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Material\Material_Inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture\EquirectangularMap.h">
+    <ClInclude Include="Framebuffer\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

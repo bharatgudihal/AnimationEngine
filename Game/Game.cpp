@@ -14,7 +14,7 @@
 #include <Engine/UniformBuffer/UniformBuffers.h>
 #include <Engine/Lighting/Attenuation.h>
 #include <Engine/Utility/ModelImporter.h>
-#include <Engine/RenderTexture/RenderTexture.h>
+#include <Engine/Framebuffer/Framebuffer.h>
 #include <Engine/Texture/CubeMap.h>
 #include <vector>
 #include <iostream>
@@ -114,6 +114,37 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 	}
 }
 
+void ConvertEquirectangularToCubeMap(Engine::Graphics::UniformBuffers::DataPerFrame &dataPerFrame, Engine::Graphics::UniformBuffer &cameraBuffer, Engine::Graphics::CubeMap* cubeMap, Engine::Actor &cubeActor, Engine::Graphics::Shader* equiShader)
+{
+	//Convert equirectangular map to cube map
+	{
+		//Initialize framebuffer
+		Engine::Graphics::Framebuffer cubeMapFrameBuffer(512, 512, nullptr);
+		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		glm::mat4 views[] =
+		{
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		};
+		dataPerFrame.projection = projection;
+		glViewport(0, 0, 512, 512);
+		cubeMapFrameBuffer.Bind();
+		for (unsigned int i = 0; i < 6; i++) {
+			dataPerFrame.view = views[i];
+			cameraBuffer.Update(&dataPerFrame);
+			cubeMapFrameBuffer.AttachTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			cubeActor.Draw(equiShader);
+		}
+		cubeMapFrameBuffer.UnBind();
+		glViewport(0, 0, screenWidth, screenHeight);
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -147,6 +178,8 @@ int main(int argc, char* argv[]) {
 	//glCullFace(GL_BACK);
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	const unsigned int nrRows = 7;
 	const unsigned int nrColumns = 7;
@@ -155,6 +188,8 @@ int main(int argc, char* argv[]) {
 	//Initialize shaders	
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
 	Engine::Graphics::Shader* pbrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/pbr.fs");
+	Engine::Graphics::Shader* equiShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/equirectangular_to_cubemap.vs", "Assets/Shaders/Fragment/equirectangular_to_cubemap.fs");
+	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
 
 	//Initialize uniform buffer
 	Engine::Graphics::UniformBuffers::DataPerFrame dataPerFrame;
@@ -166,6 +201,8 @@ int main(int argc, char* argv[]) {
 	assert(sphere);
 	Engine::Graphics::Mesh* sphereMesh = sphere->GetMesh(0);
 	delete sphere;
+
+	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
 
 	//Initialize textures
 	Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
@@ -183,7 +220,11 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
 	roughnessMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 	roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
+	Engine::Graphics::Texture2D* equirectangularMap = Engine::Graphics::Texture2D::CreateHDRTexture("Assets/Textures/hdr/newport_loft.hdr");
+	equirectangularMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	equirectangularMap->SetTextureWrappingParams(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+	Engine::Graphics::CubeMap* cubeMap = Engine::Graphics::CubeMap::CreateCubeMap(512, 512, GL_RGB16F, GL_RGB, GL_FLOAT);
+	
 	//Initialize materials
 	const glm::vec3 albedo(0.5f, 0.0f, 0.0f);
 	const float ao = 1.0f;
@@ -198,8 +239,10 @@ int main(int argc, char* argv[]) {
 			sphereMaterials[i][j]->SetRoughness(glm::clamp((float)j / (float)nrColumns, 0.05f, 1.0f));
 		}
 	}
-
+	
 	Engine::Graphics::Material* lightMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
+	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(equirectangularMap, nullptr);
+	Engine::Graphics::Material* skyboxMaterial = Engine::Graphics::Material::CreateMaterial(cubeMap, nullptr);
 
 	//Initialize actors
 	Engine::Actor* spheres[nrRows][nrColumns];
@@ -212,6 +255,9 @@ int main(int argc, char* argv[]) {
 				0.0f);
 		}
 	}
+
+	Engine::Actor cubeActor(cubeMesh, cubeMaterial);
+	Engine::Actor skybox(cubeMesh, skyboxMaterial);
 
 	//Initialize lights
 	Engine::Lighting::Attenuation attennuation;
@@ -243,6 +289,9 @@ int main(int argc, char* argv[]) {
 		pointLights[i]->ShowMesh(false);
 	}
 
+	ConvertEquirectangularToCubeMap(dataPerFrame, cameraBuffer, cubeMap, cubeActor, equiShader);
+
+
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 
@@ -273,7 +322,6 @@ int main(int argc, char* argv[]) {
 
 		cameraBuffer.Update(&dataPerFrame);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		for (unsigned int i = 0; i < nrRows; i++) {
@@ -285,6 +333,8 @@ int main(int argc, char* argv[]) {
 		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			pointLights[i]->Draw(lightShader);
 		}
+				
+		skybox.Draw(skyboxShader);
 
 		//Call events and swap buffers
 		{
@@ -307,22 +357,28 @@ int main(int argc, char* argv[]) {
 	lightActors.clear();
 	pointLights.clear();
 
-	Engine::Graphics::Material::DestroyMaterial(lightMaterial);
-	Engine::Graphics::Shader::DestroyShader(lightShader);
-	Engine::Graphics::Shader::DestroyShader(pbrShader);
-	Engine::Graphics::Mesh::DestroyMesh(sphereMesh);
-	
 	for (int i = 0; i < nrRows; i++) {
 		for (int j = 0; j < nrColumns; j++) {
 			Engine::Graphics::Material::DestroyMaterial(sphereMaterials[i][j]);
 		}
 	}
-	
+
+	Engine::Graphics::Material::DestroyMaterial(lightMaterial);
+	Engine::Graphics::Shader::DestroyShader(lightShader);
+	Engine::Graphics::Shader::DestroyShader(pbrShader);
+	Engine::Graphics::Mesh::DestroyMesh(sphereMesh);
 	Engine::Graphics::Texture::DestroyTexture(albedoMap);
 	Engine::Graphics::Texture::DestroyTexture(aoMap);
 	Engine::Graphics::Texture::DestroyTexture(metallicMap);
 	Engine::Graphics::Texture::DestroyTexture(normalMap);
-	Engine::Graphics::Texture::DestroyTexture(roughnessMap);	
+	Engine::Graphics::Texture::DestroyTexture(roughnessMap);
+	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
+	Engine::Graphics::Texture2D::DestroyTexture(equirectangularMap);
+	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
+	Engine::Graphics::Shader::DestroyShader(equiShader);
+	Engine::Graphics::Texture::DestroyTexture(cubeMap);
+	Engine::Graphics::Shader::DestroyShader(skyboxShader);
+	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
 
 	glfwTerminate();
 

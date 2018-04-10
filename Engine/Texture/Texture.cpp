@@ -6,3 +6,8 @@ void Engine::Graphics::Texture::DestroyTexture(Texture * texture)
 		delete texture;
 	}
 }
+
+const unsigned int Engine::Graphics::Texture::GetTextureId() const
+{
+	return textureId;
+}
