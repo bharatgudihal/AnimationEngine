@@ -41,7 +41,8 @@ struct SpotLight {
 	float padding;
 };
 
-struct Material {	
+struct Material {
+	samplerCube diffuse;
 	sampler2D albedoMap;
 	sampler2D normalMap;
 	sampler2D metallicMap;
@@ -51,6 +52,7 @@ struct Material {
 	float metalness;
 	float roughness;
 	float ao;
+	bool hasDiffuse;
 	bool hasAlbedoMap;
 	bool hasNormalMap;
 	bool hasMetallicMap;
@@ -155,7 +157,19 @@ void main()
 		}
 	}
 
-	vec3 ambientColor = vec3(0.03) * albedo * ao;
+	vec3 ambientColor = vec3(0.03);
+	if(material.hasDiffuse){
+		//Use IBL for ambient lighting
+		vec3 kS = Fresnel(max(dot(N, V), 0.0), F0);
+		vec3 kD = 1.0 - kS;
+		kD *= 1.0 - metallic;
+		vec3 irradiance = texture(material.diffuse, N).rgb;
+		vec3 diffuse = irradiance * albedo;
+		ambientColor = kD * diffuse * ao;
+	}else{
+		ambientColor = ambientColor * albedo * ao;
+	}
+
 	vec3 outColor = ambientColor + Lo;
 
 	//HDR tone mapping

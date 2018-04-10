@@ -114,12 +114,12 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 	}
 }
 
-void ConvertEquirectangularToCubeMap(Engine::Graphics::UniformBuffers::DataPerFrame &dataPerFrame, Engine::Graphics::UniformBuffer &cameraBuffer, Engine::Graphics::CubeMap* cubeMap, Engine::Actor &cubeActor, Engine::Graphics::Shader* equiShader)
+void DrawSceneOntoCubeMap(Engine::Graphics::UniformBuffers::DataPerFrame &dataPerFrame, Engine::Graphics::UniformBuffer &cameraBuffer, Engine::Graphics::CubeMap* cubeMap, Engine::Actor &cubeActor, Engine::Graphics::Shader* equiShader, const unsigned int viewPortWidth, const unsigned int viewPortHeight)
 {
 	//Convert equirectangular map to cube map
 	{
 		//Initialize framebuffer
-		Engine::Graphics::Framebuffer cubeMapFrameBuffer(512, 512, nullptr);
+		Engine::Graphics::Framebuffer cubeMapFrameBuffer(viewPortWidth, viewPortHeight, nullptr);
 		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 		glm::mat4 views[] =
 		{
@@ -131,7 +131,7 @@ void ConvertEquirectangularToCubeMap(Engine::Graphics::UniformBuffers::DataPerFr
 			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 		};
 		dataPerFrame.projection = projection;
-		glViewport(0, 0, 512, 512);
+		glViewport(0, 0, viewPortWidth, viewPortHeight);
 		cubeMapFrameBuffer.Bind();
 		for (unsigned int i = 0; i < 6; i++) {
 			dataPerFrame.view = views[i];
@@ -189,6 +189,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
 	Engine::Graphics::Shader* pbrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/pbr.fs");
 	Engine::Graphics::Shader* equiShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/equirectangular_to_cubemap.vs", "Assets/Shaders/Fragment/equirectangular_to_cubemap.fs");
+	Engine::Graphics::Shader* cubeMapConvolutionShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/equirectangular_to_cubemap.vs", "Assets/Shaders/Fragment/cubemap_convolution.fs");
 	Engine::Graphics::Shader* skyboxShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/skybox.vs", "Assets/Shaders/Fragment/skybox.fs");
 
 	//Initialize uniform buffer
@@ -224,6 +225,7 @@ int main(int argc, char* argv[]) {
 	equirectangularMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	equirectangularMap->SetTextureWrappingParams(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	Engine::Graphics::CubeMap* cubeMap = Engine::Graphics::CubeMap::CreateCubeMap(512, 512, GL_RGB16F, GL_RGB, GL_FLOAT);
+	Engine::Graphics::CubeMap* convolutionCubeMap = Engine::Graphics::CubeMap::CreateCubeMap(32, 32, GL_RGB16F, GL_RGB, GL_FLOAT);
 	
 	//Initialize materials
 	const glm::vec3 albedo(0.5f, 0.0f, 0.0f);
@@ -289,8 +291,32 @@ int main(int argc, char* argv[]) {
 		pointLights[i]->ShowMesh(false);
 	}
 
-	ConvertEquirectangularToCubeMap(dataPerFrame, cameraBuffer, cubeMap, cubeActor, equiShader);
+	//Equirectangular to cubemap conversion
+	{
+		DrawSceneOntoCubeMap(dataPerFrame, cameraBuffer, cubeMap, cubeActor, equiShader, 512, 512);
+	}
 
+	//Cubemap convolution
+	{
+		cubeMaterial->SetDiffuseTexture(cubeMap);
+		DrawSceneOntoCubeMap(dataPerFrame, cameraBuffer, convolutionCubeMap, cubeActor, cubeMapConvolutionShader, 32, 32);
+	}
+
+	//Cleaning up resources that will no longer be used
+	{
+		Engine::Graphics::Shader::DestroyShader(equiShader);
+		Engine::Graphics::Shader::DestroyShader(cubeMapConvolutionShader);
+		Engine::Graphics::Texture2D::DestroyTexture(equirectangularMap);
+		Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
+	}
+		
+	//Set new irradiance map in sphere materials
+	for (int i = 0; i < nrRows; i++) {
+		float metalness = (float)i / (float)nrRows;
+		for (int j = 0; j < nrColumns; j++) {
+			sphereMaterials[i][j]->SetDiffuseTexture(convolutionCubeMap);
+		}
+	}
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -372,13 +398,11 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture::DestroyTexture(metallicMap);
 	Engine::Graphics::Texture::DestroyTexture(normalMap);
 	Engine::Graphics::Texture::DestroyTexture(roughnessMap);
-	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);
-	Engine::Graphics::Texture2D::DestroyTexture(equirectangularMap);
-	Engine::Graphics::Material::DestroyMaterial(cubeMaterial);
-	Engine::Graphics::Shader::DestroyShader(equiShader);
+	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);		
 	Engine::Graphics::Texture::DestroyTexture(cubeMap);
 	Engine::Graphics::Shader::DestroyShader(skyboxShader);
 	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
+	Engine::Graphics::Texture::DestroyTexture(convolutionCubeMap);
 
 	glfwTerminate();
 
