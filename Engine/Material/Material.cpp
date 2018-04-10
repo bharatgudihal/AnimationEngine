@@ -79,21 +79,25 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 
 	if (albedoMap) {
 		shader->SetInt("material.albedoMap", 4);
+		shader->SetBool("material.hasAlbedoMap", true);
 		albedoMap->Bind(4);
 	}
 
 	if (metallicMap) {
 		shader->SetInt("material.metallicMap", 5);
+		shader->SetBool("material.hasMetallicMap", true);
 		metallicMap->Bind(5);
 	}
 
 	if (roughnessMap) {
 		shader->SetInt("material.roughnessMap", 6);
+		shader->SetBool("material.hasRoughnessMap", true);
 		roughnessMap->Bind(6);
 	}
 
 	if (ambientOcclusionMap) {
-		shader->SetInt("material.ambientOcclusionMap", 7);
+		shader->SetInt("material.aoMap", 7);
+		shader->SetBool("material.hasAoMap", true);
 		ambientOcclusionMap->Bind(7);
 	}
 }

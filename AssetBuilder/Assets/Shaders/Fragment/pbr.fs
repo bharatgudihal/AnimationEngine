@@ -46,7 +46,16 @@ struct Material {
 	sampler2D normalMap;
 	sampler2D metallicMap;
 	sampler2D roughnessMap;
-	sampler2D ambientOcclusionMap;
+	sampler2D aoMap;
+	vec3 albedoColor;
+	float metalness;
+	float roughness;
+	float ao;
+	bool hasAlbedoMap;
+	bool hasNormalMap;
+	bool hasMetallicMap;
+	bool hasRoughnessMap;
+	bool hasAoMap;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -84,13 +93,33 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 
 void main()
 {
-	vec3 albedo	= pow(texture(material.albedoMap, TexCoord).rgb, vec3(2.2));
-	vec3 norm = texture(material.normalMap, TexCoord).rgb;
-	norm = normalize(norm * 2.0 - 1.0);
-	norm = normalize(TBN * norm);
-	float metallic  = texture(material.metallicMap, TexCoord).r;
-	float roughness = texture(material.roughnessMap, TexCoord).r;
-	float ao = texture(material.ambientOcclusionMap, TexCoord).r;
+	vec3 albedo = material.albedoColor;
+	vec3 norm = Normal;
+	float metallic = material.metalness;
+	float roughness = material.roughness;
+	float ao = material.ao;
+	
+	if(material.hasAlbedoMap){
+		albedo	= pow(texture(material.albedoMap, TexCoord).rgb, vec3(2.2));
+	}
+
+	if(material.hasNormalMap){
+		norm = texture(material.normalMap, TexCoord).rgb;
+		norm = normalize(norm * 2.0 - 1.0);
+		norm = normalize(TBN * norm);
+	}
+
+	if(material.hasMetallicMap){
+		metallic  = texture(material.metallicMap, TexCoord).r;
+	}
+
+	if(material.hasRoughnessMap){
+		roughness = texture(material.roughnessMap, TexCoord).r;
+	}
+
+	if(material.hasAoMap){
+		ao = texture(material.aoMap, TexCoord).r;
+	}
 	
 	const vec3 N = normalize(norm);
 	const vec3 V = normalize(vec3(viewPos) - FragPos);

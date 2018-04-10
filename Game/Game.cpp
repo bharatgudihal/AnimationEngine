@@ -185,12 +185,19 @@ int main(int argc, char* argv[]) {
 	roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 	//Initialize materials
-	Engine::Graphics::Material* sphereMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
-	sphereMaterial->SetAlbedoMap(albedoMap);
-	sphereMaterial->SetAmbientOcclusionMap(aoMap);
-	sphereMaterial->SetMetallicMap(metallicMap);
-	sphereMaterial->SetNormalMap(normalMap);
-	sphereMaterial->SetRoughnessMap(roughnessMap);
+	const glm::vec3 albedo(0.5f, 0.0f, 0.0f);
+	const float ao = 1.0f;
+	Engine::Graphics::Material* sphereMaterials[nrRows][nrColumns];
+	for (int i = 0; i < nrRows; i++) {
+		float metalness = (float)i / (float)nrRows;
+		for (int j = 0; j < nrColumns; j++) {
+			sphereMaterials[i][j] = Engine::Graphics::Material::CreateMaterial();
+			sphereMaterials[i][j]->SetAlbedoColor(albedo);
+			sphereMaterials[i][j]->SetAmbientOcclusion(ao);
+			sphereMaterials[i][j]->SetMetalness(metalness);
+			sphereMaterials[i][j]->SetRoughness(glm::clamp((float)j / (float)nrColumns, 0.05f, 1.0f));
+		}
+	}
 
 	Engine::Graphics::Material* lightMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
 
@@ -198,7 +205,7 @@ int main(int argc, char* argv[]) {
 	Engine::Actor* spheres[nrRows][nrColumns];
 	for (unsigned int i = 0; i < nrRows; i++) {
 		for (unsigned int j = 0; j < nrColumns; j++) {
-			spheres[i][j] = new Engine::Actor(sphereMesh, sphereMaterial);
+			spheres[i][j] = new Engine::Actor(sphereMesh, sphereMaterials[i][j]);
 			spheres[i][j]->transform.position = 
 				glm::vec3((float)(j - (nrColumns / 2.0f)) * spacing,
 				(float)(i - (nrRows / 2.0f)) * spacing,
@@ -212,11 +219,17 @@ int main(int argc, char* argv[]) {
 	attennuation.quadratic = 1.0f;
 
 	glm::vec3 lightPositions[] = {
-        glm::vec3(0.0f, 0.0f, 10.0f),
-    };
-    glm::vec3 lightColors[] = {
-        glm::vec3(150.0f, 150.0f, 150.0f),
-    };
+		glm::vec3(-10.0f,  10.0f, 10.0f),
+		glm::vec3(10.0f,  10.0f, 10.0f),
+		glm::vec3(-10.0f, -10.0f, 10.0f),
+		glm::vec3(10.0f, -10.0f, 10.0f),
+	};
+	glm::vec3 lightColors[] = {
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f)
+	};
 
 	std::vector<Engine::Actor*> lightActors;
 	for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
@@ -298,7 +311,13 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Shader::DestroyShader(lightShader);
 	Engine::Graphics::Shader::DestroyShader(pbrShader);
 	Engine::Graphics::Mesh::DestroyMesh(sphereMesh);
-	Engine::Graphics::Material::DestroyMaterial(sphereMaterial);
+	
+	for (int i = 0; i < nrRows; i++) {
+		for (int j = 0; j < nrColumns; j++) {
+			Engine::Graphics::Material::DestroyMaterial(sphereMaterials[i][j]);
+		}
+	}
+	
 	Engine::Graphics::Texture::DestroyTexture(albedoMap);
 	Engine::Graphics::Texture::DestroyTexture(aoMap);
 	Engine::Graphics::Texture::DestroyTexture(metallicMap);

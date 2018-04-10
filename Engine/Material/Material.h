@@ -11,7 +11,7 @@ namespace Engine {
 
 		class Material {
 		public:
-			static Material* CreateMaterial(Texture* diffuseTexture, Texture* specularTexture, glm::vec3 diffuseColor = glm::vec3(0.0f), glm::vec3 specularColor = glm::vec3(0.0f), const float shininess = 32.0f);
+			static Material* CreateMaterial(Texture* diffuseTexture = nullptr, Texture* specularTexture = nullptr, glm::vec3 diffuseColor = glm::vec3(0.0f), glm::vec3 specularColor = glm::vec3(0.0f), const float shininess = 32.0f);
 			static void DestroyMaterial(Material* material);
 			void Bind(Shader* shader);
 			void SetDiffuseTexture(Texture* newTexture);
