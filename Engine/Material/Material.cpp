@@ -82,11 +82,17 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 		shader->SetBool("material.hasAlbedoMap", true);
 		albedoMap->Bind(4);
 	}
+	else {
+		shader->SetBool("material.hasAlbedoMap", false);
+	}
 
 	if (metallicMap) {
 		shader->SetInt("material.metallicMap", 5);
 		shader->SetBool("material.hasMetallicMap", true);
 		metallicMap->Bind(5);
+	}
+	else {
+		shader->SetBool("material.hasMetallicMap", false);
 	}
 
 	if (roughnessMap) {
@@ -94,11 +100,36 @@ void Engine::Graphics::Material::Bind(Shader* shader)
 		shader->SetBool("material.hasRoughnessMap", true);
 		roughnessMap->Bind(6);
 	}
+	else {
+		shader->SetBool("material.hasRoughnessMap", false);
+	}
 
 	if (ambientOcclusionMap) {
 		shader->SetInt("material.aoMap", 7);
 		shader->SetBool("material.hasAoMap", true);
 		ambientOcclusionMap->Bind(7);
+	}
+	else {
+		shader->SetBool("material.hasAoMap", false);
+	}
+
+	if (irradianceMap) {
+		shader->SetInt("material.irradianceMap", 8);
+		shader->SetBool("material.hasIrradianceMap", true);
+		irradianceMap->Bind(8);
+	}
+	else {
+		shader->SetBool("material.hasIrradianceMap", false);
+	}
+
+	if (prefilterMap) {
+		shader->SetInt("material.prefilterMap", 9);		
+		prefilterMap->Bind(9);
+	}
+
+	if (BRDFLUT) {
+		shader->SetInt("material.BRDFLUT", 10);
+		BRDFLUT->Bind(10);
 	}
 }
 
@@ -154,6 +185,21 @@ void Engine::Graphics::Material::SetAmbientOcclusionMap(Texture * newTexture)
 	SetTexture(ambientOcclusionMap, newTexture);
 }
 
+void Engine::Graphics::Material::SetIrradianceMap(Texture * texture)
+{
+	SetTexture(irradianceMap, texture);
+}
+
+void Engine::Graphics::Material::SetPrefilterMap(Texture * texture)
+{
+	SetTexture(prefilterMap, texture);
+}
+
+void Engine::Graphics::Material::SetBRDFLUT(Texture * texture)
+{
+	SetTexture(BRDFLUT, texture);
+}
+
 Engine::Graphics::Material::~Material()
 {
 	if (diffuseTexture) {
@@ -186,5 +232,17 @@ Engine::Graphics::Material::~Material()
 
 	if (ambientOcclusionMap) {
 		Texture::DestroyTexture(ambientOcclusionMap);
+	}
+	
+	if (irradianceMap) {
+		Texture::DestroyTexture(irradianceMap);
+	}
+
+	if (prefilterMap) {
+		Texture::DestroyTexture(prefilterMap);
+	}
+
+	if (BRDFLUT) {
+		Texture::DestroyTexture(BRDFLUT);
 	}
 }

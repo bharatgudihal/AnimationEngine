@@ -41,23 +41,25 @@ struct SpotLight {
 	float padding;
 };
 
-struct Material {
-	samplerCube diffuse;
+struct Material {	
 	sampler2D albedoMap;
 	sampler2D normalMap;
 	sampler2D metallicMap;
 	sampler2D roughnessMap;
 	sampler2D aoMap;
+	samplerCube irradianceMap;
+	samplerCube prefilterMap;
+	sampler2D BRDFLUT;
 	vec3 albedoColor;
 	float metalness;
 	float roughness;
 	float ao;
-	bool hasDiffuse;
 	bool hasAlbedoMap;
 	bool hasNormalMap;
 	bool hasMetallicMap;
 	bool hasRoughnessMap;
 	bool hasAoMap;
+	bool hasIrradianceMap;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -89,6 +91,7 @@ uniform Material material;
 const float PI = 22.0 / 7.0;
 
 vec3 Fresnel(float cosTheta, vec3 F0);
+vec3 FresnelWithRoughness(float cosTheta, vec3 F0, float roughness);
 float NormalDistribution(vec3 N, vec3 H, float roughness);
 float GeometryFunction(vec3 N, vec3 V, vec3 L, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
@@ -125,6 +128,7 @@ void main()
 	
 	const vec3 N = normalize(norm);
 	const vec3 V = normalize(vec3(viewPos) - FragPos);
+	const vec3 R = reflect(-V, N);
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
 
@@ -158,14 +162,21 @@ void main()
 	}
 
 	vec3 ambientColor = vec3(0.03);
-	if(material.hasDiffuse){
+	if(material.hasIrradianceMap){
 		//Use IBL for ambient lighting
-		vec3 kS = Fresnel(max(dot(N, V), 0.0), F0);
+		vec3 F = FresnelWithRoughness(max(dot(N, V), 0.0), F0, roughness);
+		vec3 kS = F;
 		vec3 kD = 1.0 - kS;
 		kD *= 1.0 - metallic;
-		vec3 irradiance = texture(material.diffuse, N).rgb;
+		vec3 irradiance = texture(material.irradianceMap, N).rgb;
 		vec3 diffuse = irradiance * albedo;
-		ambientColor = kD * diffuse * ao;
+
+		const float MAX_REFLECTION_LOD = 4.0;
+		vec3 prefilterdColor = textureLod(material.prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
+		vec2 brdf = texture(material.BRDFLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+		vec3 specular = prefilterdColor * (F * brdf.x + brdf.y);
+
+		ambientColor = (kD * diffuse + specular) * ao;
 	}else{
 		ambientColor = ambientColor * albedo * ao;
 	}
@@ -185,6 +196,10 @@ void main()
 //F0 - base reflectivity
 vec3 Fresnel(float cosTheta, vec3 F0){
 	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+vec3 FresnelWithRoughness(float cosTheta, vec3 F0, float roughness){
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 //Normal distribution function using Trowbridge-Reitz GGX. Reference: https://learnopengl.com/PBR/Theory

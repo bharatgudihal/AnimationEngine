@@ -206,7 +206,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* sphereMesh = sphere->GetMesh(0);
 	delete sphere;
 
-	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();
+	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();	
 
 	//Initialize textures
 	Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
@@ -241,6 +241,10 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::CubeMap* prefilterEnvironmentMap = Engine::Graphics::CubeMap::CreateCubeMap(128, 128, GL_RGB16F, GL_RGB, GL_FLOAT);
 	prefilterEnvironmentMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 	prefilterEnvironmentMap->GenerateMipMaps();
+
+	Engine::Graphics::Texture2D* brdfLookupTexture = Engine::Graphics::Texture2D::CreateTexture(512, 512, GL_RGB16F, GL_RG, GL_FLOAT);
+	brdfLookupTexture->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+	brdfLookupTexture->SetTextureWrappingParams(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	
 	//Initialize materials
 	const glm::vec3 albedo(0.5f, 0.0f, 0.0f);
@@ -310,17 +314,17 @@ int main(int argc, char* argv[]) {
 	{
 		DrawSceneOntoCubeMap(dataPerFrame, cameraBuffer, cubeMap, cubeActor, equiShader, 512, 512);
 	}
+	
 	cubeMap->GenerateMipMaps();
+	cubeMaterial->SetDiffuseTexture(cubeMap);
 
 	//Cubemap convolution
-	{
-		cubeMaterial->SetDiffuseTexture(cubeMap);
+	{		
 		DrawSceneOntoCubeMap(dataPerFrame, cameraBuffer, convolutionCubeMap, cubeActor, cubeMapConvolutionShader, 32, 32);
 	}	
 
 	//Prefiltering the environment map
 	{
-		cubeMaterial->SetDiffuseTexture(cubeMap);
 		Engine::Graphics::Framebuffer prefilterFrameBuffer(128, 128, nullptr);
 		unsigned int maxMipmapLevels = 5;		
 		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
@@ -359,6 +363,25 @@ int main(int argc, char* argv[]) {
 		prefilterFrameBuffer.UnBind();
 	}
 
+	//Create brdf convolution look up texture
+	{
+		Engine::Graphics::Framebuffer brdfFrameBuffer(512, 512, brdfLookupTexture);
+		Engine::Graphics::Mesh* planeMesh = Engine::Graphics::Mesh::GetPlane();
+		Engine::Graphics::Shader* brdfConvolutionShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/brdf_convolution.vs", "Assets/Shaders/Fragment/brdf_convolution.fs");
+
+		brdfFrameBuffer.Bind();
+		glViewport(0, 0, 512, 512);
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			brdfConvolutionShader->Use();
+			planeMesh->Draw();
+		}
+		brdfFrameBuffer.UnBind();
+
+		Engine::Graphics::Mesh::DestroyMesh(planeMesh);
+		Engine::Graphics::Shader::DestroyShader(brdfConvolutionShader);
+	}
+
 	//Cleaning up resources that will no longer be used
 	{
 		Engine::Graphics::Shader::DestroyShader(equiShader);
@@ -368,11 +391,13 @@ int main(int argc, char* argv[]) {
 		Engine::Graphics::Shader::DestroyShader(prefilterShader);
 	}
 		
-	//Set new irradiance map in sphere materials
+	//Set IBL textures in sphere materials
 	for (int i = 0; i < nrRows; i++) {
 		float metalness = (float)i / (float)nrRows;
 		for (int j = 0; j < nrColumns; j++) {
-			sphereMaterials[i][j]->SetDiffuseTexture(convolutionCubeMap);
+			sphereMaterials[i][j]->SetIrradianceMap(convolutionCubeMap);			
+			sphereMaterials[i][j]->SetPrefilterMap(prefilterEnvironmentMap);
+			sphereMaterials[i][j]->SetBRDFLUT(brdfLookupTexture);
 		}
 	}
 
@@ -467,6 +492,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material::DestroyMaterial(skyboxMaterial);
 	Engine::Graphics::Texture::DestroyTexture(convolutionCubeMap);
 	Engine::Graphics::Texture::DestroyTexture(prefilterEnvironmentMap);
+	Engine::Graphics::Texture::DestroyTexture(brdfLookupTexture);
 
 	glfwTerminate();
 

@@ -1,3 +1,4 @@
+#include "Material.h"
 #pragma once
 
 inline void Engine::Graphics::Material::SetAlbedoColor(const glm::vec3 albedoColor) {

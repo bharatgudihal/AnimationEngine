@@ -22,6 +22,9 @@ namespace Engine {
 			void SetMetallicMap(Texture* newTexture);
 			void SetRoughnessMap(Texture* newTexture);
 			void SetAmbientOcclusionMap(Texture* newTexture);
+			void SetIrradianceMap(Texture* texture);
+			void SetPrefilterMap(Texture* texture);
+			void SetBRDFLUT(Texture* texture);
 			void SetDiffuseColor(const glm::vec3 newColor);
 			void SetSpecularColor(const glm::vec3 newColor);
 			void SetAlbedoColor(const glm::vec3 albedoColor);
@@ -42,6 +45,9 @@ namespace Engine {
 			Texture* metallicMap;
 			Texture* roughnessMap;
 			Texture* ambientOcclusionMap;
+			Texture* irradianceMap;
+			Texture* prefilterMap;
+			Texture* BRDFLUT;
 			glm::vec3 diffuseColor;
 			glm::vec3 specularColor;
 			glm::vec3 albedoColor;
