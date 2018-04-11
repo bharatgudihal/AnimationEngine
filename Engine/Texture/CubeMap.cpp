@@ -46,8 +46,8 @@ void Engine::Graphics::CubeMap::SetTextureWrappingParams(const unsigned int sWra
 
 void Engine::Graphics::CubeMap::GenerateMipMaps()
 {
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }
 
 Engine::Graphics::CubeMap::CubeMap(const std::vector<std::string>& textureFiles, const unsigned int width, const unsigned int height,

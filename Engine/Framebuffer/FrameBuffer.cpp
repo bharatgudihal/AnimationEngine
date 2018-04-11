@@ -18,7 +18,7 @@ Engine::Graphics::Framebuffer::Framebuffer(const unsigned int width, const unsig
 	//Create render buffer
 	glGenRenderbuffers(1, &renderBufferId);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferId);
-	unsigned int storageType = createStencilBuffer ? GL_DEPTH24_STENCIL8 : GL_DEPTH_COMPONENT24;
+	storageType = createStencilBuffer ? GL_DEPTH24_STENCIL8 : GL_DEPTH_COMPONENT24;
 	glRenderbufferStorage(GL_RENDERBUFFER, storageType, width, height);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -34,9 +34,15 @@ Engine::Graphics::Framebuffer::Framebuffer(const unsigned int width, const unsig
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Engine::Graphics::Framebuffer::AttachTexture(const unsigned int textureTarget, const Texture * texture)
+void Engine::Graphics::Framebuffer::AttachTexture(const unsigned int textureTarget, const Texture * texture, const unsigned int mipLevel)
 {	
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTarget, texture->GetTextureId(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTarget, texture->GetTextureId(), mipLevel);
+}
+
+void Engine::Graphics::Framebuffer::Resize(const unsigned int newWidth, const unsigned int newHeight)
+{
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferId);
+	glRenderbufferStorage(GL_RENDERBUFFER, storageType, newWidth, newHeight);
 }
 
 void Engine::Graphics::Framebuffer::Bind()
