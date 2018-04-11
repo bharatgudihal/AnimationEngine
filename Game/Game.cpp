@@ -228,23 +228,23 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material* rustedIronMaterial = Engine::Graphics::Material::CreateMaterial();
 	{
 		Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
-		albedoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		albedoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 		albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 		Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/ao.png");
-		aoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		aoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 		aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 		Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/metallic.png");
-		metallicMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		metallicMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 		metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 		Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/normal.png");
-		normalMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		normalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 		normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 		Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
-		roughnessMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		roughnessMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 		roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
 
 		rustedIronMaterial->SetAlbedoMap(albedoMap);
@@ -259,6 +259,101 @@ int main(int argc, char* argv[]) {
 		Engine::Graphics::Texture::DestroyTexture(normalMap);
 		Engine::Graphics::Texture::DestroyTexture(roughnessMap);
 	}
+
+	Engine::Graphics::Material* bathroomTileMaterial = Engine::Graphics::Material::CreateMaterial();
+	{
+		Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/bathroom_tile/albedo.png");
+		albedoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/bathroom_tile/ao.png");
+		aoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/bathroom_tile/metallic.psd");
+		metallicMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/bathroom_tile/normal.png");
+		normalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		bathroomTileMaterial->SetAlbedoMap(albedoMap);
+		bathroomTileMaterial->SetAmbientOcclusionMap(aoMap);
+		bathroomTileMaterial->SetMetallicMap(metallicMap);
+		bathroomTileMaterial->SetNormalMap(normalMap);
+		bathroomTileMaterial->SetRoughness(0.001f);
+
+		Engine::Graphics::Texture::DestroyTexture(albedoMap);
+		Engine::Graphics::Texture::DestroyTexture(aoMap);
+		Engine::Graphics::Texture::DestroyTexture(metallicMap);
+		Engine::Graphics::Texture::DestroyTexture(normalMap);
+	}
+
+	Engine::Graphics::Material* goldMaterial = Engine::Graphics::Material::CreateMaterial();
+	{
+		Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/gold/albedo.png");
+		albedoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/gold/ao.png");
+		aoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/gold/metallic.png");
+		metallicMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/gold/normal.png");
+		normalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/gold/roughness.png");
+		roughnessMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		goldMaterial->SetAlbedoMap(albedoMap);
+		goldMaterial->SetAmbientOcclusionMap(aoMap);
+		goldMaterial->SetMetallicMap(metallicMap);
+		goldMaterial->SetNormalMap(normalMap);
+		goldMaterial->SetRoughnessMap(roughnessMap);
+
+		Engine::Graphics::Texture::DestroyTexture(albedoMap);
+		Engine::Graphics::Texture::DestroyTexture(aoMap);
+		Engine::Graphics::Texture::DestroyTexture(metallicMap);
+		Engine::Graphics::Texture::DestroyTexture(normalMap);
+		Engine::Graphics::Texture::DestroyTexture(roughnessMap);
+	}
+
+	Engine::Graphics::Material* grassMaterial = Engine::Graphics::Material::CreateMaterial();
+	{
+		Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/grass/albedo.png");
+		albedoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/grass/ao.png");
+		aoMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/grass/normal.png");
+		normalMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/grass/roughness.png");
+		roughnessMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		grassMaterial->SetAlbedoMap(albedoMap);
+		grassMaterial->SetAmbientOcclusionMap(aoMap);
+		grassMaterial->SetNormalMap(normalMap);
+		grassMaterial->SetRoughnessMap(roughnessMap);
+		grassMaterial->SetMetalness(0.0f);
+
+		Engine::Graphics::Texture::DestroyTexture(albedoMap);
+		Engine::Graphics::Texture::DestroyTexture(aoMap);
+		Engine::Graphics::Texture::DestroyTexture(normalMap);
+		Engine::Graphics::Texture::DestroyTexture(roughnessMap);
+	}
 	
 	Engine::Graphics::Material* lightMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
 	Engine::Graphics::Material* cubeMaterial = Engine::Graphics::Material::CreateMaterial(equirectangularMap, nullptr);
@@ -266,6 +361,13 @@ int main(int argc, char* argv[]) {
 
 	//Initialize actors
 	Engine::Actor rustedIron(sphereMesh, rustedIronMaterial);
+	rustedIron.transform.position.x = -3.0f;
+	Engine::Actor gold(sphereMesh, goldMaterial);
+	gold.transform.position.x = -1.0f;
+	Engine::Actor bathroomTile(sphereMesh, bathroomTileMaterial);
+	bathroomTile.transform.position.x = 1.0f;
+	Engine::Actor grass(sphereMesh, grassMaterial);
+	grass.transform.position.x = 3.0f;
 
 	Engine::Actor cubeActor(cubeMesh, cubeMaterial);
 	Engine::Actor skybox(cubeMesh, skyboxMaterial);
@@ -382,9 +484,23 @@ int main(int argc, char* argv[]) {
 	}
 		
 	//Set IBL textures in sphere materials
-	rustedIronMaterial->SetIrradianceMap(convolutionCubeMap);			
-	rustedIronMaterial->SetPrefilterMap(prefilterEnvironmentMap);
-	rustedIronMaterial->SetBRDFLUT(brdfLookupTexture);
+	{
+		rustedIronMaterial->SetIrradianceMap(convolutionCubeMap);
+		rustedIronMaterial->SetPrefilterMap(prefilterEnvironmentMap);
+		rustedIronMaterial->SetBRDFLUT(brdfLookupTexture);
+
+		bathroomTileMaterial->SetIrradianceMap(convolutionCubeMap);
+		bathroomTileMaterial->SetPrefilterMap(prefilterEnvironmentMap);
+		bathroomTileMaterial->SetBRDFLUT(brdfLookupTexture);
+
+		goldMaterial->SetIrradianceMap(convolutionCubeMap);
+		goldMaterial->SetPrefilterMap(prefilterEnvironmentMap);
+		goldMaterial->SetBRDFLUT(brdfLookupTexture);
+
+		grassMaterial->SetIrradianceMap(convolutionCubeMap);
+		grassMaterial->SetPrefilterMap(prefilterEnvironmentMap);
+		grassMaterial->SetBRDFLUT(brdfLookupTexture);
+	}
 
 	glViewport(0, 0, screenWidth, screenHeight);
 	//Render loop
@@ -420,6 +536,9 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		rustedIron.Draw(pbrShader);
+		bathroomTile.Draw(pbrShader);
+		gold.Draw(pbrShader);
+		grass.Draw(pbrShader);
 
 		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			pointLights[i]->Draw(lightShader);
@@ -446,7 +565,6 @@ int main(int argc, char* argv[]) {
 	lightActors.clear();
 	pointLights.clear();
 		
-	Engine::Graphics::Material::DestroyMaterial(rustedIronMaterial);
 	Engine::Graphics::Material::DestroyMaterial(lightMaterial);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
 	Engine::Graphics::Shader::DestroyShader(pbrShader);
@@ -458,6 +576,10 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Texture::DestroyTexture(convolutionCubeMap);
 	Engine::Graphics::Texture::DestroyTexture(prefilterEnvironmentMap);
 	Engine::Graphics::Texture::DestroyTexture(brdfLookupTexture);
+	Engine::Graphics::Material::DestroyMaterial(rustedIronMaterial);
+	Engine::Graphics::Material::DestroyMaterial(bathroomTileMaterial);
+	Engine::Graphics::Material::DestroyMaterial(goldMaterial);
+	Engine::Graphics::Material::DestroyMaterial(grassMaterial);
 
 	glfwTerminate();
 
