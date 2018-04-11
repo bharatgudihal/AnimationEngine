@@ -42,8 +42,8 @@ struct SpotLight {
 };
 
 struct Material {	
-	sampler2D albedoMap;
 	sampler2D normalMap;
+	sampler2D albedoMap;	
 	sampler2D metallicMap;
 	sampler2D roughnessMap;
 	sampler2D aoMap;

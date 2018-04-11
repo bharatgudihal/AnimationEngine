@@ -183,10 +183,6 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);	
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	const unsigned int nrRows = 7;
-	const unsigned int nrColumns = 7;
-	const float spacing = 2.5;
-
 	//Initialize shaders	
 	Engine::Graphics::Shader* lightShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/simpleMesh.vs", "Assets/Shaders/Fragment/light.fs");
 	Engine::Graphics::Shader* pbrShader = Engine::Graphics::Shader::CreateShader("Assets/Shaders/Vertex/mesh.vs", "Assets/Shaders/Fragment/pbr.fs");
@@ -209,26 +205,6 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();	
 
 	//Initialize textures
-	Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
-	albedoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-	albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
-	Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/ao.png");
-	aoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-	aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
-	Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/metallic.png");
-	metallicMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-	metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
-	Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/normal.png");
-	normalMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-	normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
-	Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
-	roughnessMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-	roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
-
 	Engine::Graphics::Texture2D* equirectangularMap = Engine::Graphics::Texture2D::CreateHDRTexture("Assets/Textures/hdr/newport_loft.hdr");
 	equirectangularMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	equirectangularMap->SetTextureWrappingParams(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -249,16 +225,39 @@ int main(int argc, char* argv[]) {
 	//Initialize materials
 	const glm::vec3 albedo(0.5f, 0.0f, 0.0f);
 	const float ao = 1.0f;
-	Engine::Graphics::Material* sphereMaterials[nrRows][nrColumns];
-	for (int i = 0; i < nrRows; i++) {
-		float metalness = (float)i / (float)nrRows;
-		for (int j = 0; j < nrColumns; j++) {
-			sphereMaterials[i][j] = Engine::Graphics::Material::CreateMaterial();
-			sphereMaterials[i][j]->SetAlbedoColor(albedo);
-			sphereMaterials[i][j]->SetAmbientOcclusion(ao);
-			sphereMaterials[i][j]->SetMetalness(metalness);
-			sphereMaterials[i][j]->SetRoughness(glm::clamp((float)j / (float)nrColumns, 0.05f, 1.0f));
-		}
+	Engine::Graphics::Material* rustedIronMaterial = Engine::Graphics::Material::CreateMaterial();
+	{
+		Engine::Graphics::Texture2D* albedoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/albedo.png");
+		albedoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		albedoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* aoMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/ao.png");
+		aoMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		aoMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* metallicMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/metallic.png");
+		metallicMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		metallicMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* normalMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/normal.png");
+		normalMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		normalMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* roughnessMap = Engine::Graphics::Texture2D::CreateTexture("Assets/Textures/pbr/rusted_iron/roughness.png");
+		roughnessMap->SetTextureFilteringParams(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		roughnessMap->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		rustedIronMaterial->SetAlbedoMap(albedoMap);
+		rustedIronMaterial->SetAmbientOcclusionMap(aoMap);
+		rustedIronMaterial->SetMetallicMap(metallicMap);
+		rustedIronMaterial->SetNormalMap(normalMap);
+		rustedIronMaterial->SetRoughnessMap(roughnessMap);
+
+		Engine::Graphics::Texture::DestroyTexture(albedoMap);
+		Engine::Graphics::Texture::DestroyTexture(aoMap);
+		Engine::Graphics::Texture::DestroyTexture(metallicMap);
+		Engine::Graphics::Texture::DestroyTexture(normalMap);
+		Engine::Graphics::Texture::DestroyTexture(roughnessMap);
 	}
 	
 	Engine::Graphics::Material* lightMaterial = Engine::Graphics::Material::CreateMaterial(nullptr, nullptr);
@@ -266,16 +265,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material* skyboxMaterial = Engine::Graphics::Material::CreateMaterial(cubeMap, nullptr);
 
 	//Initialize actors
-	Engine::Actor* spheres[nrRows][nrColumns];
-	for (unsigned int i = 0; i < nrRows; i++) {
-		for (unsigned int j = 0; j < nrColumns; j++) {
-			spheres[i][j] = new Engine::Actor(sphereMesh, sphereMaterials[i][j]);
-			spheres[i][j]->transform.position = 
-				glm::vec3((float)(j - (nrColumns / 2.0f)) * spacing,
-				(float)(i - (nrRows / 2.0f)) * spacing,
-				0.0f);
-		}
-	}
+	Engine::Actor rustedIron(sphereMesh, rustedIronMaterial);
 
 	Engine::Actor cubeActor(cubeMesh, cubeMaterial);
 	Engine::Actor skybox(cubeMesh, skyboxMaterial);
@@ -392,14 +382,9 @@ int main(int argc, char* argv[]) {
 	}
 		
 	//Set IBL textures in sphere materials
-	for (int i = 0; i < nrRows; i++) {
-		float metalness = (float)i / (float)nrRows;
-		for (int j = 0; j < nrColumns; j++) {
-			sphereMaterials[i][j]->SetIrradianceMap(convolutionCubeMap);			
-			sphereMaterials[i][j]->SetPrefilterMap(prefilterEnvironmentMap);
-			sphereMaterials[i][j]->SetBRDFLUT(brdfLookupTexture);
-		}
-	}
+	rustedIronMaterial->SetIrradianceMap(convolutionCubeMap);			
+	rustedIronMaterial->SetPrefilterMap(prefilterEnvironmentMap);
+	rustedIronMaterial->SetBRDFLUT(brdfLookupTexture);
 
 	glViewport(0, 0, screenWidth, screenHeight);
 	//Render loop
@@ -434,11 +419,7 @@ int main(int argc, char* argv[]) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		for (unsigned int i = 0; i < nrRows; i++) {
-			for (unsigned int j = 0; j < nrColumns; j++) {
-				spheres[i][j]->Draw(pbrShader);
-			}
-		}
+		rustedIron.Draw(pbrShader);
 
 		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			pointLights[i]->Draw(lightShader);
@@ -458,34 +439,18 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Cleanup
-	for (unsigned int i = 0; i < nrRows; i++) {
-		for (unsigned int j = 0; j < nrColumns; j++) {
-			delete spheres[i][j];
-		}
-	}
-
 	for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 		delete lightActors[i];
 		delete pointLights[i];
 	}
 	lightActors.clear();
 	pointLights.clear();
-
-	for (int i = 0; i < nrRows; i++) {
-		for (int j = 0; j < nrColumns; j++) {
-			Engine::Graphics::Material::DestroyMaterial(sphereMaterials[i][j]);
-		}
-	}
-
+		
+	Engine::Graphics::Material::DestroyMaterial(rustedIronMaterial);
 	Engine::Graphics::Material::DestroyMaterial(lightMaterial);
 	Engine::Graphics::Shader::DestroyShader(lightShader);
 	Engine::Graphics::Shader::DestroyShader(pbrShader);
 	Engine::Graphics::Mesh::DestroyMesh(sphereMesh);
-	Engine::Graphics::Texture::DestroyTexture(albedoMap);
-	Engine::Graphics::Texture::DestroyTexture(aoMap);
-	Engine::Graphics::Texture::DestroyTexture(metallicMap);
-	Engine::Graphics::Texture::DestroyTexture(normalMap);
-	Engine::Graphics::Texture::DestroyTexture(roughnessMap);
 	Engine::Graphics::Mesh::DestroyMesh(cubeMesh);		
 	Engine::Graphics::Texture::DestroyTexture(cubeMap);
 	Engine::Graphics::Shader::DestroyShader(skyboxShader);
