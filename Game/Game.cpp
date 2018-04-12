@@ -205,7 +205,7 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Mesh* cubeMesh = Engine::Graphics::Mesh::GetCube();	
 
 	//Initialize textures
-	Engine::Graphics::Texture2D* equirectangularMap = Engine::Graphics::Texture2D::CreateHDRTexture("Assets/Textures/hdr/newport_loft.hdr");
+	Engine::Graphics::Texture2D* equirectangularMap = Engine::Graphics::Texture2D::CreateHDRTexture("Assets/Textures/hdr/Env.hdr");
 	equirectangularMap->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
 	equirectangularMap->SetTextureWrappingParams(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 
