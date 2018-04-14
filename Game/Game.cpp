@@ -362,12 +362,19 @@ int main(int argc, char* argv[]) {
 	//Initialize actors
 	Engine::Actor rustedIron(sphereMesh, rustedIronMaterial);
 	rustedIron.transform.position.x = -3.0f;
+	rustedIron.transform.position.z = -5.0f;
+
 	Engine::Actor gold(sphereMesh, goldMaterial);
 	gold.transform.position.x = -1.0f;
+	gold.transform.position.z = -5.0f;
+
 	Engine::Actor bathroomTile(sphereMesh, bathroomTileMaterial);
 	bathroomTile.transform.position.x = 1.0f;
+	bathroomTile.transform.position.z = -5.0f;
+
 	Engine::Actor grass(sphereMesh, grassMaterial);
 	grass.transform.position.x = 3.0f;
+	grass.transform.position.z = -5.0f;
 
 	Engine::Actor cubeActor(cubeMesh, cubeMaterial);
 	Engine::Actor skybox(cubeMesh, skyboxMaterial);
@@ -502,6 +509,46 @@ int main(int argc, char* argv[]) {
 		grassMaterial->SetBRDFLUT(brdfLookupTexture);
 	}
 
+	//Load model
+	Engine::Actor* cerberus = nullptr;
+	Engine::Utility::ImportModel("Assets/Models/Cerberus/Cerberus_LP.FBX", cerberus);
+	assert(cerberus);
+	cerberus->transform.scale = glm::vec3(0.1f);
+	cerberus->transform.position = glm::vec3(0.0f,0.0f,-20.0f);
+	{
+		//Load PBR textures and set them in the material
+		Engine::Graphics::Material* material = cerberus->GetMaterial(0);
+		Engine::Graphics::Texture2D* albedo = Engine::Graphics::Texture2D::CreateTexture("Assets/Models/Cerberus/Cerberus_A.tga");
+		albedo->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		albedo->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* metallic = Engine::Graphics::Texture2D::CreateTexture("Assets/Models/Cerberus/Cerberus_M.tga");
+		metallic->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		metallic->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* normal = Engine::Graphics::Texture2D::CreateTexture("Assets/Models/Cerberus/Cerberus_N.tga");
+		normal->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		normal->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		Engine::Graphics::Texture2D* roughness = Engine::Graphics::Texture2D::CreateTexture("Assets/Models/Cerberus/Cerberus_R.tga");
+		roughness->SetTextureFilteringParams(GL_LINEAR, GL_LINEAR);
+		roughness->SetTextureWrappingParams(GL_REPEAT, GL_REPEAT, GL_REPEAT);
+
+		material->SetAlbedoMap(albedo);
+		material->SetMetallicMap(metallic);
+		material->SetNormalMap(normal);
+		material->SetRoughnessMap(roughness);
+		material->SetIrradianceMap(convolutionCubeMap);
+		material->SetPrefilterMap(prefilterEnvironmentMap);
+		material->SetBRDFLUT(brdfLookupTexture);
+
+		Engine::Graphics::Material::DestroyMaterial(material);
+		Engine::Graphics::Texture2D::DestroyTexture(albedo);
+		Engine::Graphics::Texture2D::DestroyTexture(metallic);
+		Engine::Graphics::Texture2D::DestroyTexture(normal);
+		Engine::Graphics::Texture2D::DestroyTexture(roughness);
+	}
+
 	glViewport(0, 0, screenWidth, screenHeight);
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -535,10 +582,16 @@ int main(int argc, char* argv[]) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		rustedIron.Draw(pbrShader);
-		bathroomTile.Draw(pbrShader);
-		gold.Draw(pbrShader);
-		grass.Draw(pbrShader);
+		{
+			rustedIron.Draw(pbrShader);
+			bathroomTile.Draw(pbrShader);
+			gold.Draw(pbrShader);
+			grass.Draw(pbrShader);
+		}
+
+		{
+			cerberus->Draw(pbrShader);
+		}
 
 		for (int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); i++) {
 			pointLights[i]->Draw(lightShader);
@@ -580,6 +633,8 @@ int main(int argc, char* argv[]) {
 	Engine::Graphics::Material::DestroyMaterial(bathroomTileMaterial);
 	Engine::Graphics::Material::DestroyMaterial(goldMaterial);
 	Engine::Graphics::Material::DestroyMaterial(grassMaterial);
+
+	delete cerberus;
 
 	glfwTerminate();
 
