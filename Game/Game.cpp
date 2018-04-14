@@ -541,6 +541,7 @@ int main(int argc, char* argv[]) {
 		material->SetIrradianceMap(convolutionCubeMap);
 		material->SetPrefilterMap(prefilterEnvironmentMap);
 		material->SetBRDFLUT(brdfLookupTexture);
+		material->SetAmbientOcclusion(ao);
 
 		Engine::Graphics::Material::DestroyMaterial(material);
 		Engine::Graphics::Texture2D::DestroyTexture(albedo);
