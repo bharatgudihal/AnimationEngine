@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-const unsigned int screenWidth = 1280;
-const unsigned int screenHeight = 720;
+const unsigned int screenWidth = 1920;
+const unsigned int screenHeight = 1080;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float lastX = screenWidth / 2.0f, lastY = screenHeight / 2.0f;
